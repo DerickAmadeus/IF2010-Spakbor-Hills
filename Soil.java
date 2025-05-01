@@ -12,9 +12,13 @@ public class Soil extends Tile{
         this.seedPlanted = null;
         this.ferrtilizerCountdown = 5;
     }
+
+
+
     public boolean isWet() {
         return wetStatus;
     }
+
 
     public void tiling() {
         // Logic for tilling the soil
@@ -22,6 +26,7 @@ public class Soil extends Tile{
         setTileSymbol('T'); // Example symbol for tilled soil
         setTileName("Tilled Soil"); // Example name for tilled soil
     }
+
 
     public void recoverLand() {
         // Logic for recovering the land
@@ -36,6 +41,7 @@ public class Soil extends Tile{
         }
     }
 
+
     public void planting(Seeds seed) {
         // Logic for planting seeds
         System.out.println("Planting seeds...");
@@ -43,6 +49,7 @@ public class Soil extends Tile{
         setTileSymbol('P'); // Example symbol for planted soil
         setTileName("Planted Soil"); // Example name for planted soil
     }
+
 
     public void watering() {
         // Logic for watering the soil
@@ -52,6 +59,8 @@ public class Soil extends Tile{
         setTileSymbol('W'); // Example symbol for watered soil
         setTileName("Watered Soil"); // Example name for watered soil
     }
+
+
     public void fertilizing() {
         // Logic for fertilizing the soil
         System.out.println("Fertilizing the soil...");
@@ -59,6 +68,8 @@ public class Soil extends Tile{
         setTileSymbol('F'); // Example symbol for fertilized soil
         setTileName("Fertilized Soil"); // Example name for fertilized soil
     }
+
+
     public void harvest() {
         // Logic for harvesting the soil
         System.out.println("Harvesting the soil...");
@@ -66,9 +77,10 @@ public class Soil extends Tile{
         setTileName("Harvested Soil"); // Example name for harvested soil
 
         // pasang add to inventory
-        // Logic to add harvested seeds to inventory
+        // Logic to add harvested corps to inventory
     }
 
+    
     public void plantDead() {
         // Logic for dead plant
         if (seedPlanted != null && wetCountdown <= 0 && ferrtilizerCountdown <= 0) { 
