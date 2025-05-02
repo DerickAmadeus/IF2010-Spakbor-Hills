@@ -31,6 +31,37 @@ public class Map {
         System.out.println("Point not found: (" + x + ", " + y + ")");
     }
 
+    public void placeBuilding(int startX, int startY, int width, int height, Tile tile) {
+        boolean outOfBounds = false;
+
+        // Check if the building fits within the map boundaries
+        if (startX < 0 || startY < 0 || startX + width > this.width || startY + height > this.height) {
+            System.out.println("Building out of bounds.");
+            return;
+        }
+
+        // Place the building tiles
+        for (int y = startY; y < startY + height; y++) {
+            for (int x = startX; x < startX + width; x++) {
+                boolean pointFound = false;
+                for (Point point : points) {
+                    if (point.getX() == x && point.getY() == y) {
+                        point.setTileInfo(tile.getTileSymbol());
+                        pointFound = true;
+                        break;
+                    }
+                }
+                if (!pointFound) {
+                    outOfBounds = true;
+                }
+            }
+        }
+
+        if (outOfBounds) {
+            System.out.println("Some points were out of bounds.");
+        }
+    }
+
     public List<Point> getPoints() {
         return points;
     }
