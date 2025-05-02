@@ -1,6 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+
 public class Map {
     private int width;
     private int height;
@@ -83,6 +88,42 @@ public class Map {
     }
 
 
+    public void loadMap(String filePath, int width, int height) {
+        this.width = width;
+        this.height = height;
+        this.points = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            int y = 0;
+
+            while ((line = reader.readLine()) != null && y < height) {
+                String[] tiles = line.trim().split(" ");
+                for (int x = 0; x < Math.min(tiles.length, width); x++) {
+                    char symbol = tiles[x].charAt(0);
+                    Tile tile;
+                    switch (symbol) {
+                        case 'R':
+                            tile = new Tile("Rock", 'R', false);
+                            break;
+                        case 'B':
+                            tile = new Tile("Building", 'B', false);
+                            break;
+                        case 'S':
+                        default:
+                            tile = new Tile("Soil", 'S', true);
+                            break;
+                    }
+                    addPoint(x, y, tile);
+                }
+                y++;
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading map file: " + e.getMessage());
+        }
+    }
+
+
 
 
 
@@ -103,6 +144,55 @@ public class Map {
             }
             System.out.println();
         }
+    }
+
+
+
+    // Masi ngebug hehehe
+
+    public void displayMapGUI() {
+        javax.swing.JFrame frame = new javax.swing.JFrame("Map Display");
+        frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 800);
+
+        javax.swing.JPanel panel = new javax.swing.JPanel();
+        panel.setLayout(new java.awt.GridLayout(height, width));
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                javax.swing.JLabel label = new javax.swing.JLabel();
+                label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                label.setVerticalAlignment(javax.swing.SwingConstants.CENTER);
+
+                boolean found = false;
+                for (Point point : points) {
+                    if (point.getX() == x && point.getY() == y) {
+                        if (point.getTile() == 'S') {
+                            try {
+                                javax.swing.ImageIcon icon = new javax.swing.ImageIcon("grass.png");
+                                java.awt.Image scaledImage = icon.getImage().getScaledInstance(800 / width, 800 / height, java.awt.Image.SCALE_SMOOTH);
+                                label.setIcon(new javax.swing.ImageIcon(scaledImage));
+                            } catch (Exception e) {
+                                System.out.println("Error loading grass.png: " + e.getMessage());
+                                label.setText("G");
+                            }
+                        } else {
+                            label.setText(String.valueOf(point.getTile()));
+                        }
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    label.setText(".");
+                }
+
+                panel.add(label);
+            }
+        }
+
+        frame.add(panel);
+        frame.setVisible(true);
     }
     
 }

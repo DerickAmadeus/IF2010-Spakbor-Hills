@@ -9,19 +9,15 @@ public class Main {
         
         // Create a Point object
         int rows = 20; 
-        int cols = 20; 
+        int cols = 40; 
 
-        Map map = new Map(rows, cols); 
-        map.setEarlyMap(); 
-
-        map.changePoint(3, 4, water);
-        map.changePoint(2, 2, rock); // Change the tile at (2, 2) to tile2
-        map.placeBuilding(2, 4, 3, 3, building); // Place a building at (2, 4) with width 3 and height 3
-
+        Map map = new Map(rows, cols); // Create a map with 20 rows and 20 columns
+        map.loadMap("map.txt", rows, cols);
 
 
         // Example: Print the map
         map.printMap(); // Print the initial empty map
+        map.displayMapGUI();
 
     }
 }
