@@ -12,12 +12,23 @@ public class Map {
         this.points = new ArrayList<>();
     }
 
-    public void addPoint(int x, int y) {
+    public void addPoint(int x, int y, Tile tile) {
         if (x >= 0 && x < width && y >= 0 && y < height) {
-            points.add(new Point(x, y));
+            Point point = new Point(x, y, tile);
+            points.add(point);
         } else {
-            throw new IllegalArgumentException("Point is out of bounds");
+            System.out.println("Point out of bounds: (" + x + ", " + y + ")");
         }
+    }
+
+    public void changePoint(int x, int y, Tile tile) {
+        for (Point point : points) {
+            if (point.getX() == x && point.getY() == y) {
+                point.setTileInfo(tile.getTileSymbol());
+                return;
+            }
+        }
+        System.out.println("Point not found: (" + x + ", " + y + ")");
     }
 
     public List<Point> getPoints() {
@@ -30,6 +41,37 @@ public class Map {
 
     public int getHeight() {
         return height;
+    }
+
+    public void setEarlyMap() {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                addPoint(x, y, new Tile("Soil", 'S', true));
+            }
+        }
+    }
+
+
+
+
+
+    public void printMap() {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                boolean found = false;
+                for (Point point : points) {
+                    if (point.getX() == x && point.getY() == y) {
+                        System.out.print(point.getTile() + " ");
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    System.out.print(". "); // Empty space
+                }
+            }
+            System.out.println();
+        }
     }
     
 }

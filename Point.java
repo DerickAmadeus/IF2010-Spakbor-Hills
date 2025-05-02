@@ -1,11 +1,12 @@
 public class Point {
     private int x;
     private int y;
-    private String tileInfo;
+    private Tile tile;
 
-    public Point(int x, int y) {
+    public Point(int x, int y, Tile tile) {
         this.x = x;
         this.y = y;
+        this.tile = tile;
     }
 
     public int getX() {
@@ -24,12 +25,12 @@ public class Point {
         this.y = y;
     }
 
-    public String getTileInfo() {
-        return tileInfo;
+    public char getTile() {
+        return tile.getTileSymbol();
     }
 
-    public void setTileInfo(String tileInfo) {
-        this.tileInfo = tileInfo;
+    public void setTileInfo(char tileSymbol) {
+        this.tile.setTileSymbol(tileSymbol);
     }
 
     @Override
