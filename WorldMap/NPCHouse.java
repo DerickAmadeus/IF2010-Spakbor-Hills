@@ -1,0 +1,21 @@
+package WorldMap;
+
+public class NPCHouse extends WorldBuilsing {
+    private NPC owner;
+
+    public NPCHouse(String buildingName, NPC owner) {
+        super(buildingName);
+        this.owner = owner;
+    }
+
+    public NPC getOwner() {
+        return owner;
+    }
+
+    public void interact() {
+        System.out.println("Welcome to " + getBuildingName() + "! I am " + owner.getName() + ".");
+        // Implementasi interaksi dengan NPC
+        // owner.talk();
+    }
+    
+}

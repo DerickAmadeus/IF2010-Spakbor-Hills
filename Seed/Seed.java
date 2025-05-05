@@ -1,3 +1,4 @@
+package Seed;
 public class Seed {
     private String seedName;
     private int growthTime;
