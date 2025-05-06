@@ -8,6 +8,10 @@ public class Crops extends Item implements Sellable, Buyable, Edible{
         this.jumlahPerPanen = jumlahPerPanen; //setter
     }
     
+    public int getJumlahPerPanen() {
+        return jumlahPerPanen;
+    }
+
 
     public void buy() {
 

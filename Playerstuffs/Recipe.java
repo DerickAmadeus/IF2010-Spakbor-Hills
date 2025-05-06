@@ -1,5 +1,4 @@
 package Playerstuffs;
-
 public class Recipe {
     private String itemID;
     private String name;
