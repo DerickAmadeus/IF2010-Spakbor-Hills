@@ -10,6 +10,10 @@ public class Recipe {
         /*ingredients = new ArrayList<>()*/
     }
 
+    public String getItemID() {
+        return itemID;
+    }
+
     public String getName() {
         return name;
     }

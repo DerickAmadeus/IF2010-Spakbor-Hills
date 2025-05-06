@@ -8,7 +8,7 @@ public class Player {
     private static int maxEnergy = 100;
     private String farmName;
     private /*NPC */ String partner = null;
-    private int gold;
+    private int gold = 0;
     // private Inventory inventory;
     // private Point location;
     private List<Recipe> ownedRecipe;
@@ -18,7 +18,6 @@ public class Player {
         this.gender = gender;
         energy = maxEnergy;
         this.farmName = farmName;
-        gold = 0;
         // construct inventory
         // construct point
         ownedRecipe = new ArrayList<>();
@@ -42,6 +41,10 @@ public class Player {
 
     public int getGold() {
         return gold;
+    }
+
+    public String getFarmName() {
+        return farmName;
     }
 
     /*public Inventory getInventory() {
@@ -90,9 +93,9 @@ public class Player {
         ntr
     }*/
 
-    public void setRecipe(String unlocked) {
+    public void setRecipe() {
         for (int i = 0; i < ownedRecipe.size(); i++) {
-            if (ownedRecipe.get(i).equals(unlocked)) {
+            if (!ownedRecipe.get(i).getUnlockInfo()) {
                 ownedRecipe.get(i).setUnlockInfo(true);
             }
         }
