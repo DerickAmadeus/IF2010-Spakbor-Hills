@@ -4,8 +4,8 @@ abstract class Furniture{
     private String name;
     private int width;
     private int height;
-    private int symbol;
-    public Furniture(String name, int width, int height, int symbol){
+    private char symbol;
+    public Furniture(String name, int width, int height, char symbol){
         this.furniName = furniName;
         this.width = width;
         this.height = height;
@@ -20,7 +20,7 @@ abstract class Furniture{
     public int getHeight(){
         return height;
     }
-    public int getSymbol(){
+    public char getSymbol(){
         return symbol;
     }
     abstract void Action();
