@@ -13,6 +13,6 @@ public class InsideHouse {
         this.furnishing = new ArrayList<>();
     }
     public void addFurniture(Furniture furniture, int x, int y) {
-        
+        furnishing.add(furniture);
     }
 }
