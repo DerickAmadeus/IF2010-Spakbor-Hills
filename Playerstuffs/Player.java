@@ -1,6 +1,9 @@
 package Playerstuffs;
 import java.util.ArrayList;
 import java.util.List;
+import NPC.NPC;
+import Map.Point;
+import Items.Item;
 
 public class Player {
     private String name;
@@ -8,10 +11,10 @@ public class Player {
     private int energy;
     private static int maxEnergy = 100;
     private String farmName;
-    private /*NPC */ String partner = null;
+    private NPC partner = null;
     private int gold = 0;
-    // private Inventory inventory;
-    // private Point location;
+    private Inventory<Item> inventory;
+    //private Point location;
     private List<Recipe> ownedRecipe;
 
     public Player(String name, char gender, String farmName) {
@@ -19,8 +22,8 @@ public class Player {
         this.gender = gender;
         energy = maxEnergy;
         this.farmName = farmName;
-        // construct inventory
-        // construct point
+        inventory = new Inventory<>();
+        // location
         ownedRecipe = new ArrayList<>();
     }
 
@@ -36,7 +39,7 @@ public class Player {
         return energy;
     }
 
-    public /*NPC */ String getPartner() {
+    public NPC getPartner() {
         return partner;
     }
 
@@ -48,9 +51,9 @@ public class Player {
         return farmName;
     }
 
-    /*public Inventory getInventory() {
+    public Inventory<Item> getInventory() {
         return inventory;
-    }*/
+    }
 
     /*public Point getLocation() {
         return location;
@@ -68,27 +71,29 @@ public class Player {
         this.gender = gender;
     }
 
-    public void setEnergy(int energy) { // throws exception di kelas yang make
+    public void setEnergy(int energy) {
         if (energy > maxEnergy) {
             this.energy = maxEnergy;
-        } else if (energy < 0) { // lupa actual valuenya brp
-            this.energy = 0;
+        } else if (energy < 0 && energy > -20) {
+            // masih print
+            System.out.println("Warning: Energy is low! Action can still be performed, but consider sleeping.");
+            this.energy = energy;
+        } else if (energy < -20) {
+            // msdih print
+            System.out.println("Error: Energy is too low! sleeping rn...");
         } else {
             this.energy = energy;
         }
     }
+    
 
-    public void setPartner(String partner) {
+    public void setPartner(NPC partner) {
         this.partner = partner;
-    } //NPC
+    } 
 
-    public void setGold(int gold) { // throws exception di kelas yang make
+    public void setGold(int gold) { 
         this.gold = gold; // gold ga valid bakal dihandle di buying
     }
-
-    /*public void setInventory() {
-        hdeh
-    }*/
 
     /*public Point setLocation() {
         ntr
@@ -102,7 +107,18 @@ public class Player {
         }
     }
 
-    public void printInventory() {}
+    public void printInventory() {
+        if (inventory.getItemContainer().isEmpty()) {
+            System.out.println("Your inventory is empty.");
+        } else {
+            System.out.println("Your inventory:");
+            // Loop untuk menampilkan item dan jumlahnya
+            for (Item item : inventory.getItemContainer()) {
+                int count = inventory.getItemCount(item); // Mengambil jumlah item dalam inventory
+                System.out.println(item.getName() + " - " + count);
+            }
+        }
+    }
 
     public void proposing() {}
 

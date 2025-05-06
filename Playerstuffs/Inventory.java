@@ -1,9 +1,10 @@
 package Playerstuffs;
 
+import Items.Item;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Inventory<T> {
+public class Inventory<T extends Item> {
     private HashMap<T, Integer> items;
     private ArrayList<T> itemContainer;
 
@@ -36,6 +37,18 @@ public class Inventory<T> {
             items.put(item, count);
         }
         itemContainer.add(item);
+    }
+
+    public void removeItem(T item, int count) {
+        if (items.containsKey(item)) {
+            int currentCount = items.get(item);
+            if (count >= currentCount) {
+                items.remove(item); 
+                itemContainer.remove(item);
+            } else {
+                items.put(item, currentCount - count);
+            }
+        }
     }
 
     public ArrayList<T> getItemContainer() {
