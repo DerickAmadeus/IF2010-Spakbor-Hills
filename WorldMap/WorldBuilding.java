@@ -11,8 +11,5 @@ abstract class WorldBuilding {
     public String getBuildingName() {
         return buildingName;
     }
-    @Override
-    public void interact() {
-        System.out.println("Interacting with " + buildingName + ".");
-    }
+    abstract void interact();
 }

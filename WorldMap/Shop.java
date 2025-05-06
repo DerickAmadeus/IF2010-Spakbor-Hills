@@ -25,6 +25,8 @@ public class Shop extends WorldBuilding {
             System.out.println("- " + item.getName() + ": " + item.getDescription());
         }
     }
+
+    @Override
     public void interact() {
         System.out.println("Welcome to " + getBuildingName() + "! I am " + owner.getName() + ".");
         showItems();

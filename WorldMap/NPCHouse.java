@@ -1,6 +1,6 @@
 package WorldMap;
 
-public class NPCHouse extends WorldBuilsing {
+public class NPCHouse extends WorldBuilding {
     private NPC owner;
 
     public NPCHouse(String buildingName, NPC owner) {
@@ -12,6 +12,7 @@ public class NPCHouse extends WorldBuilsing {
         return owner;
     }
 
+    @Override
     public void interact() {
         System.out.println("Welcome to " + getBuildingName() + "! I am " + owner.getName() + ".");
         // Implementasi interaksi dengan NPC
