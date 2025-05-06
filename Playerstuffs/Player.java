@@ -9,7 +9,7 @@ public class Player {
     private String name;
     private char gender;
     private int energy;
-    private static int maxEnergy = 100;
+    private static final int MAX_ENERGY = 100; 
     private String farmName;
     private NPC partner = null;
     private int gold = 0;
@@ -20,7 +20,7 @@ public class Player {
     public Player(String name, char gender, String farmName) {
         this.name = name;
         this.gender = gender;
-        energy = maxEnergy;
+        energy = MAX_ENERGY;
         this.farmName = farmName;
         inventory = new Inventory<>();
         // location
@@ -72,8 +72,8 @@ public class Player {
     }
 
     public void setEnergy(int energy) {
-        if (energy > maxEnergy) {
-            this.energy = maxEnergy;
+        if (energy > MAX_ENERGY) {
+            this.energy = MAX_ENERGY;
         } else if (energy < 0 && energy > -20) {
             // masih print
             System.out.println("Warning: Energy is low! Action can still be performed, but consider sleeping.");
