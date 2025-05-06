@@ -6,7 +6,7 @@ abstract class Furniture{
     private int height;
     private char symbol;
     public Furniture(String name, int width, int height, char symbol){
-        this.furniName = furniName;
+        this.name = name;
         this.width = width;
         this.height = height;
         this.symbol = symbol;

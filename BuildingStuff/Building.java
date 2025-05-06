@@ -1,5 +1,7 @@
 package BuildingStuff;
 
+import Map.Tile;
+
 public class Building extends Tile {
     private String buildingName;
     private int width;
@@ -39,7 +41,7 @@ public class Building extends Tile {
     public int getWidth() {
         return width;
     }
-    public void getHeight() {
+    public int getHeight() {
         return height;
     }
     public char getSymbol() {

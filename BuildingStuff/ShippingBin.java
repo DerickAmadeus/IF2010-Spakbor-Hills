@@ -1,4 +1,5 @@
 package BuildingStuff;
+import Items.Item;
 
 public class ShippingBin extends Building{
     private int maxSlot;
