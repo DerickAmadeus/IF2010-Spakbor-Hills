@@ -32,9 +32,6 @@ public class Universe {
     public String getCurrentTime() {
         return currentTime;
     }
-    public void setCurrentTime(String currentTime) {
-        this.currentTime = currentTime;
-    }
 
     public String getCurrentSeason() {
         int currentMonth = Integer.parseInt(currentTime.split(":")[0]) / 3; // Assuming each season lasts 3 months

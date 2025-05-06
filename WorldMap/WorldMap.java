@@ -31,4 +31,5 @@ public class WorldMap {
             }
         }
         System.out.println("Place not found on the map.");
+    }
 }
