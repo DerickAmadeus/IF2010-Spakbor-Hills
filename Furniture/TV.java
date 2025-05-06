@@ -1,7 +1,7 @@
 package Furniture;
 
 public class TV extends Furniture{
-    public TV(String name, int width, int height, int symbol){
+    public TV(String name, int width, int height, char symbol){
         super(name, width, height, symbol);
     }
     @Override

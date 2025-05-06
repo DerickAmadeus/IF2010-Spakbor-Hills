@@ -1,4 +1,6 @@
 package WorldMap;
+import Items.Item;
+import NPC.NPC;
 
 import java.util.ArrayList;
 
@@ -22,7 +24,7 @@ public class Shop extends WorldBuilding {
     public void showItems() {
         System.out.println("Items available in " + getBuildingName() + ":");
         for (Item item : SelledItems) {
-            System.out.println("- " + item.getName() + ": " + item.getDescription());
+            System.out.println("- " + item.getName() + ": " + item.getDesc());
         }
     }
 

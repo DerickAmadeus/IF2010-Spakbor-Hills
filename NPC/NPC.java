@@ -1,4 +1,5 @@
 package NPC;
+import Items.Item;
 
 import java.util.ArrayList;
 import java.util.List;

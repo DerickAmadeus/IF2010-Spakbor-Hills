@@ -1,3 +1,5 @@
+package Items;
+
 public class Crops extends Item implements Sellable, Buyable, Edible{
     private int jumlahPerPanen;
 

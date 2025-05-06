@@ -1,4 +1,5 @@
 package WorldMap;
+import NPC.NPC;
 
 public class NPCHouse extends WorldBuilding {
     private NPC owner;
