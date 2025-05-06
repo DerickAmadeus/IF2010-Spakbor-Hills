@@ -1,8 +1,10 @@
 package Furniture;
+import Items.Item;
+import Items.Misc;
 
 public class Stove extends Furniture{
     private Misc fuel;
-    public Stove(String name, int width, int height, int symbol, Misc fuel){
+    public Stove(String name, int width, int height, char symbol, Misc fuel){
         super(name, width, height, symbol);
         this.fuel = fuel;
     }
