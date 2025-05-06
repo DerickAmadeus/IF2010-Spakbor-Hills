@@ -22,7 +22,8 @@ public class Seeds extends Item implements Buyable {
         return season;
     }
 
+    @Override
     public void buy() {
-        
+        System.out.println("Bought " + getName());
     }
 }

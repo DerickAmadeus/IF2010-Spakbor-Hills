@@ -14,11 +14,11 @@ public class Crops extends Item implements Sellable, Buyable, Edible{
 
 
     public void buy() {
-
+        System.out.println("Bought " + getName());
     }
 
     public void sell() {
-
+        System.out.println("Sold " + getName() + " for " + getHargaJual());
     }
 
     public void eat() {
