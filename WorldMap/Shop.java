@@ -42,7 +42,7 @@ public class Shop<T extends Item> extends WorldBuilding {
             removeItem(item);
             // Implementasi Tambahan sama Player
             // player.removeGold(item.getPrice());
-            Player.getInventory().addItem(item, 1);
+            player.getInventory().addItem(item, 1);
             player.setGold(player.getGold() - item.getHargaBeli());
         } else if (player.getGold() < item.getHargaBeli()) {
             System.out.println("You don't have enough gold to buy " + item.getName() + "."); 

@@ -11,5 +11,7 @@ abstract class WorldBuilding {
     public String getBuildingName() {
         return buildingName;
     }
+
+    
     abstract void interact();
 }
