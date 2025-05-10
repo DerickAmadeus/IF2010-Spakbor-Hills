@@ -13,18 +13,16 @@ import java.io.InputStreamReader;
 
 public class Map {
     GamePanel gp;
-    private int width;
-    private int height;
-    private Tile[] tileimage; // Assuming you have 10 different tiles
-    private int tiles[][];
+    public Tile[] tileimage; // Assuming you have 10 different tiles
+    public int tiles[][];
 
     public Map(GamePanel gp) {
         // this.width = width;
         // this.height = height;
-        this.tileimage = new Tile[10]; // Initialize tile images array
+        this.tileimage = new Tile[100]; // Initialize tile images array
         this.tiles = new int[gp.worldCol][gp.worldRow]; // Initialize tiles array
         this.gp = gp; // Initialize GamePanel if needed 
-        tileimage = new Tile[10]; // Initialize tile images array
+        tileimage = new Tile[100]; // Initialize tile images array
         getTileImage(); // Load tile images
         loadMap();
     }
@@ -64,30 +62,42 @@ public class Map {
         try {
             // GRASS
             tileimage[0] = new Tile("Grass", 'G', true);
-            tileimage[0].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass.png"));
+            tileimage[0].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grass.png"));
 
             tileimage[1] = new Tile("grass", 'G', true);
-            tileimage[1].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grasskiriatas.png"));
+            tileimage[1].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiriatas.png"));
 
             tileimage[2] = new Tile("grass", 'G', true);
-            tileimage[2].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grassatas.png"));
+            tileimage[2].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grassatas.png"));
 
             tileimage[3] = new Tile("grass", 'G', true);
-            tileimage[3].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grasskiri.png"));
+            tileimage[3].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiri.png"));
 
             tileimage[4] = new Tile("grass", 'G', true);
-            tileimage[4].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grasskiribawah.png"));
+            tileimage[4].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiribawah.png"));
+
+            tileimage[5] = new Tile("grass", 'G', true);
+            tileimage[5].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grassbawah.png"));
+
+            tileimage[6] = new Tile("grass", 'G', true);
+            tileimage[6].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskanan.png"));
+
+            tileimage[7] = new Tile("grass", 'G', true);       
+            tileimage[7].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananatas.png"));
+
+            tileimage[8] = new Tile("grass", 'G', true);
+            tileimage[8].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananbawah.png"));
 
 
             // // WATER
 
-            // tileimage[1] = new Tile("Water", 'W', false);
-            // tileimage[1].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/water.png"));
+            tileimage[9] = new Tile("Water", 'W', false);
+            tileimage[9].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/water.png"));
 
             // //DIRT
 
-            // tileimage[2] = new Tile("Sand", 'S', true);
-            // tileimage[2].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dirt.png"));
+            tileimage[10] = new Tile("Sand", 'S', true);
+            tileimage[10].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dirt.png"));
 
 
 

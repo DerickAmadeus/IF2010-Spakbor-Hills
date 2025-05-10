@@ -8,15 +8,18 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
 public class Player { // Sebaiknya: public class Player
     public int x, y;
-    private int speed;
+    public int speed;
     public int screenX;
     public int screenY; // Posisi layar (jika diperlukan untuk offset)
+    public Rectangle solidArea; // Area solid untuk deteksi tabrakan
+    public boolean collisionOn = false; // Untuk mendeteksi tabrakan
     GamePanel gp;
     KeyHandler keyH;
-    String direction; // Akan menyimpan state seperti "up", "down", "idleUp", "idleLeft", dll.
+    public String direction; // Akan menyimpan state seperti "up", "down", "idleUp", "idleLeft", dll.
     String lastMoveDirection; // Menyimpan arah gerakan terakhir ("up", "down", "left", "right")
 
     public BufferedImage[] idleDownFrames, idleUpFrames, idleLeftFrames, idleRightFrames,
@@ -32,6 +35,7 @@ public class Player { // Sebaiknya: public class Player
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2); // Posisi tengah layar
         this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2); // Posisi tengah layar
         this.keyH = keyH;
+        solidArea = new Rectangle(8, 16, 32, 32); // Ukuran area solid
         setDefaultValues();
         getPlayerImage();
     }
@@ -132,23 +136,56 @@ public class Player { // Sebaiknya: public class Player
         if (keyH.upPressed) {
             direction = "up";
             lastMoveDirection = "up"; // Simpan arah gerakan aktual terakhir
-            y -= speed;
-            moving = true;
         } else if (keyH.downPressed) {
             direction = "down";
             lastMoveDirection = "down";
-            y += speed;
             moving = true;
         } else if (keyH.leftPressed) {
             direction = "left";
             lastMoveDirection = "left";
-            x -= speed;
             moving = true;
         } else if (keyH.rightPressed) {
             direction = "right";
             lastMoveDirection = "right";
-            x += speed;
             moving = true;
+        }
+
+        collisionOn = false; // Reset collisionOn sebelum memeriksa tabrakan
+        gp.cChecker.checkTile(this); // Periksa tabrakan dengan tile
+
+
+        if (collisionOn == false) {
+            // Jika tidak ada tabrakan, lanjutkan dengan gerakan
+            switch (direction) {
+                case "up":
+                    y -= speed;
+                    break;
+                case "down":
+                    y += speed;
+                    break;
+                case "left":
+                    x -= speed;
+                    break;
+                case "right":
+                    x += speed;
+                    break;
+            }
+        } else {
+            // Jika ada tabrakan, kembalikan ke posisi sebelumnya
+            switch (direction) {
+                case "up":
+                    y += speed; // Kembali ke posisi sebelumnya
+                    break;
+                case "down":
+                    y -= speed; // Kembali ke posisi sebelumnya
+                    break;
+                case "left":
+                    x += speed; // Kembali ke posisi sebelumnya
+                    break;
+                case "right":
+                    x -= speed; // Kembali ke posisi sebelumnya
+                    break;
+            }
         }
 
         // Jika tidak ada tombol gerakan yang ditekan, tentukan state idle berdasarkan lastMoveDirection

@@ -27,6 +27,7 @@ public class GamePanel extends JPanel implements Runnable {
     Map map = new Map(this);
     KeyHandler keyHandler = new KeyHandler(); // Key handler for keyboard input 
     Thread gameThread; // Thread for the game loop
+    public CollisionChecker cChecker = new CollisionChecker(this); // Collision checker for player movement
     public Player player; // Player object
 
 
@@ -57,7 +58,6 @@ public class GamePanel extends JPanel implements Runnable {
         while (gameThread != null) {
             
 
-            System.out.println("Game loop running..."); // Debug message
             // Update game state
             update();
             // Repaint screen
