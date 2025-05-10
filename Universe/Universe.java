@@ -1,5 +1,6 @@
 package Universe;
 import Map.Map;
+import player.Player;
 import java.time.LocalDateTime;
 
 public class Universe {
@@ -23,7 +24,7 @@ public class Universe {
     public String getFarmName() {
         return farmName;
     }
-    public player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
     public Map getFarmMap() {
