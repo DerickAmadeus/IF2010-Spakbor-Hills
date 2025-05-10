@@ -10,63 +10,64 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-public class Player { // Sebaiknya: public class Player
-    public int x, y;
+public class Player {
+    public int x, y; // Player's world X and Y coordinates
     public int speed;
-    public int screenX;
-    public int screenY; // Posisi layar (jika diperlukan untuk offset)
-    public Rectangle solidArea; // Area solid untuk deteksi tabrakan
-    public boolean collisionOn = false; // Untuk mendeteksi tabrakan
+    public int screenX; // Player's X position on the screen (usually center)
+    public int screenY; // Player's Y position on the screen (usually center)
+    public Rectangle solidArea; // Collision area for the player
+    public boolean collisionOn = false; // Flag set by CollisionChecker
     GamePanel gp;
     KeyHandler keyH;
-    public String direction; // Akan menyimpan state seperti "up", "down", "idleUp", "idleLeft", dll.
-    String lastMoveDirection; // Menyimpan arah gerakan terakhir ("up", "down", "left", "right")
+    public String direction; // Current animation/movement state (e.g., "up", "idleDown")
+    String lastMoveDirection; // Last actual direction of movement input ("up", "down", "left", "right")
 
     public BufferedImage[] idleDownFrames, idleUpFrames, idleLeftFrames, idleRightFrames,
                            leftFrames, rightFrames, upFrames, downFrames;
 
     private int spriteCounter = 0;
     private int spriteNum = 0;
-    private final int ANIMATION_SPEED = 10; // Sesuaikan untuk kecepatan animasi yang diinginkan
-    private boolean moving = false;
+    private final int ANIMATION_SPEED = 10;
+    private boolean isActuallyMoving = false; // Tracks if the player's position changed in this frame
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
-        this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2); // Posisi tengah layar
-        this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2); // Posisi tengah layar
         this.keyH = keyH;
-        solidArea = new Rectangle(8, 16, 32, 32); // Ukuran area solid
+
+        // Player's position on the screen is usually fixed (center) for a scrolling camera
+        this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
+        this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
+
+        // Define the player's solid area relative to its top-left (x,y)
+        // Adjust these values (8, 16, 32, 32) based on your sprite
+        // (xOffset, yOffset, width, height)
+        solidArea = new Rectangle(8, 10, 32, 32); // Example: 8px inset from left, 16px from top, 32x32 size
+
         setDefaultValues();
         getPlayerImage();
     }
 
     public void setDefaultValues() {
-        this.x = 100; // Posisi awal X
-        this.y = 100; // Posisi awal Y
+        // Set player's starting position in the world
+        this.x = gp.tileSize * 10; // Example: Start at tile (10,10)
+        this.y = gp.tileSize * 10; // Example: Start at tile (10,10)
         this.speed = 4;
-        this.lastMoveDirection = "down"; // Arah gerakan terakhir default
-        this.direction = "idleDown";     // State animasi default (idle menghadap ke bawah)
+        this.lastMoveDirection = "down"; // Default facing direction when idle
+        this.direction = "idleDown";     // Default animation state
     }
 
     public void getPlayerImage() {
-        // Pastikan nama folder (parameter pertama) dan jumlah frame (parameter kedua) sesuai
-        // dengan file gambar Anda.
-        // Contoh: loadAnimationFrames("idledown", 6) akan mencari di folder /player/idledown/
-        // file bernama idledown_0.png, idledown_1.png, ..., idledown_5.png
-
+        // (Your existing getPlayerImage logic - seems fine)
+        // Example:
         idleDownFrames = loadAnimationFrames("idledown", 6);
         idleUpFrames = loadAnimationFrames("idleup", 6);
         idleLeftFrames = loadAnimationFrames("idleleft", 6);
         idleRightFrames = loadAnimationFrames("idleright", 6);
-
         upFrames = loadAnimationFrames("up", 6);
         downFrames = loadAnimationFrames("down", 6);
         leftFrames = loadAnimationFrames("left", 6);
         rightFrames = loadAnimationFrames("right", 6);
 
-        // Blok if di bawah ini baik untuk keamanan, tapi jika loadAnimationFrames
-        // selalu mengembalikan array (meskipun berisi placeholder), ini mungkin tidak
-        // selalu diperlukan, namun tidak berbahaya.
         if (upFrames == null) upFrames = new BufferedImage[0];
         if (downFrames == null) downFrames = new BufferedImage[0];
         if (leftFrames == null) leftFrames = new BufferedImage[0];
@@ -78,28 +79,21 @@ public class Player { // Sebaiknya: public class Player
     }
 
     private BufferedImage[] loadAnimationFrames(String animationIdentifier, int frameCount) {
+        // (Your existing loadAnimationFrames logic - seems fine)
         BufferedImage[] frames = new BufferedImage[frameCount];
         String actualFolderName;
-        String fileNamePrefix = animationIdentifier; // Nama file akan selalu menggunakan animationIdentifier sebagai prefix
-    
+        String fileNamePrefix = animationIdentifier;
+
         if (animationIdentifier.startsWith("idle")) {
-            // Semua animasi idle ada di dalam folder "idle"
             actualFolderName = "idle";
-            // fileNamePrefix sudah benar (misalnya "idleleft", "idledown")
         } else {
-            // Animasi bergerak ada di folder yang namanya sama dengan animationIdentifier
-            actualFolderName = animationIdentifier; // Misalnya "left", "up"
-            // fileNamePrefix sudah benar (misalnya "left", "up")
+            actualFolderName = animationIdentifier;
         }
-    
+
         try {
             for (int i = 0; i < frameCount; i++) {
-                // Path gambar yang dibangun: /player/<actualFolderName>/<fileNamePrefix>_i.png
-                // Contoh untuk idle: /player/idle/idleleft_0.png
-                // Contoh untuk gerak: /player/left/left_0.png
                 String imagePath = "/player/" + actualFolderName + "/" + fileNamePrefix + "_" + i + ".png";
                 InputStream is = getClass().getResourceAsStream(imagePath);
-    
                 if (is == null) {
                     System.err.println("Tidak dapat memuat gambar: " + imagePath);
                     frames[i] = createPlaceholderImage();
@@ -119,6 +113,7 @@ public class Player { // Sebaiknya: public class Player
     }
 
     private BufferedImage createPlaceholderImage() {
+        // (Your existing createPlaceholderImage logic - seems fine)
         BufferedImage placeholder = new BufferedImage(gp.tileSize, gp.tileSize, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = placeholder.createGraphics();
         g.setColor(Color.MAGENTA);
@@ -130,156 +125,155 @@ public class Player { // Sebaiknya: public class Player
     }
 
     public void update() {
-        String prevAnimationState = direction; // Simpan state animasi sebelumnya
-        moving = false;
+        String prevAnimationState = direction; // For resetting animation frames
+        isActuallyMoving = false; // Reset: Did the player's position change this frame?
 
-        if (keyH.upPressed) {
-            direction = "up";
-            lastMoveDirection = "up"; // Simpan arah gerakan aktual terakhir
-        } else if (keyH.downPressed) {
-            direction = "down";
-            lastMoveDirection = "down";
-            moving = true;
-        } else if (keyH.leftPressed) {
-            direction = "left";
-            lastMoveDirection = "left";
-            moving = true;
-        } else if (keyH.rightPressed) {
-            direction = "right";
-            lastMoveDirection = "right";
-            moving = true;
+        boolean isAttemptingMoveByKeyPress = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
+
+        if (isAttemptingMoveByKeyPress) {
+            // Determine intended direction from key press
+            if (keyH.upPressed) {
+                direction = "up";
+                lastMoveDirection = "up";
+            } else if (keyH.downPressed) {
+                direction = "down";
+                lastMoveDirection = "down";
+            } else if (keyH.leftPressed) {
+                direction = "left";
+                lastMoveDirection = "left";
+            } else if (keyH.rightPressed) {
+                direction = "right";
+                lastMoveDirection = "right";
+            }
+
+            // Check for tile collisions for the intended move
+            collisionOn = false; // Reset before check
+            // gp.cChecker.checkTile(this) should set this.collisionOn to true if the *next step* in
+            // the current 'direction' would cause a collision. It should NOT move the player.
+            gp.cChecker.checkTile(this);
+
+            // If no tile collision, then update player's world coordinates
+            if (!collisionOn) {
+                switch (direction) {
+                    case "up":    y -= speed; isActuallyMoving = true; break;
+                    case "down":  y += speed; isActuallyMoving = true; break;
+                    case "left":  x -= speed; isActuallyMoving = true; break;
+                    case "right": x += speed; isActuallyMoving = true; break;
+                }
+            }
         }
 
-        collisionOn = false; // Reset collisionOn sebelum memeriksa tabrakan
-        gp.cChecker.checkTile(this); // Periksa tabrakan dengan tile
+        // Enforce world boundaries AFTER any potential movement
+        // Player's x, y is top-left. Player's visual width/height is gp.tileSize.
+        // The solidArea might be smaller, but for boundary checks, using the visual extent is safer.
+        int worldWidth = gp.worldCol * gp.tileSize;
+        int worldHeight = gp.worldRow * gp.tileSize;
 
+        if (x < 0) {
+            x = 0;
+        }
+        // Player's right edge (x + playerWidth) should not exceed worldWidth.
+        if (x > worldWidth - gp.tileSize) { // Assumes player visual width is gp.tileSize
+            x = worldWidth - gp.tileSize;
+        }
+        if (y < 0) {
+            y = 0;
+        }
+        // Player's bottom edge (y + playerHeight) should not exceed worldHeight.
+        if (y > worldHeight - gp.tileSize) { // Assumes player visual height is gp.tileSize
+            y = worldHeight - gp.tileSize;
+        }
 
-        if (collisionOn == false) {
-            // Jika tidak ada tabrakan, lanjutkan dengan gerakan
-            switch (direction) {
-                case "up":
-                    y -= speed;
-                    break;
-                case "down":
-                    y += speed;
-                    break;
-                case "left":
-                    x -= speed;
-                    break;
-                case "right":
-                    x += speed;
-                    break;
-            }
+        // Determine final animation state (idle or walking)
+        if (isAttemptingMoveByKeyPress && !collisionOn && isActuallyMoving) {
+            // Player is successfully moving, 'direction' is already "up", "down", etc.
+            // No change needed to 'direction' for animation here.
         } else {
-            // Jika ada tabrakan, kembalikan ke posisi sebelumnya
-            switch (direction) {
-                case "up":
-                    y += speed; // Kembali ke posisi sebelumnya
-                    break;
-                case "down":
-                    y -= speed; // Kembali ke posisi sebelumnya
-                    break;
-                case "left":
-                    x += speed; // Kembali ke posisi sebelumnya
-                    break;
-                case "right":
-                    x -= speed; // Kembali ke posisi sebelumnya
-                    break;
-            }
-        }
-
-        // Jika tidak ada tombol gerakan yang ditekan, tentukan state idle berdasarkan lastMoveDirection
-        if (!moving) {
+            // Not attempting to move, or was attempting but collided, or movement was clamped by boundary
+            // Switch to idle animation based on the last intended movement direction
             switch (lastMoveDirection) {
-                case "up":
-                    direction = "idleUp";
-                    break;
-                case "down":
-                    direction = "idleDown";
-                    break;
-                case "left":
-                    direction = "idleLeft";
-                    break;
-                case "right":
-                    direction = "idleRight";
-                    break;
-                default: // Fallback jika lastMoveDirection tidak terdefinisi (seharusnya tidak terjadi)
-                    direction = "idleDown";
-                    break;
+                case "up":    direction = "idleUp";    break;
+                case "down":  direction = "idleDown";  break;
+                case "left":  direction = "idleLeft";  break;
+                case "right": direction = "idleRight"; break;
+                default:      direction = "idleDown";  break; // Default idle state
             }
         }
 
-        // Jika state animasi berubah (misalnya dari "left" ke "idleLeft", atau "idleLeft" ke "up")
-        // reset nomor sprite dan counter.
+        // Reset animation frame if the animation state (e.g. "walkLeft" to "idleLeft") has changed
         if (!prevAnimationState.equals(direction)) {
             spriteNum = 0;
             spriteCounter = 0;
         }
 
-        // Logika untuk mengganti frame animasi (berlaku untuk semua state animasi)
+        // Animate sprite
+        // Only animate if the current state is a walking animation OR if it's an idle animation
+        // (some idle animations might have multiple frames)
+        // The currentFrames.length check will handle single-frame idle animations correctly.
         spriteCounter++;
         if (spriteCounter > ANIMATION_SPEED) {
             spriteNum++;
             BufferedImage[] currentFrames = getCurrentAnimationFrames();
             if (currentFrames != null && currentFrames.length > 0) {
                 if (spriteNum >= currentFrames.length) {
-                    spriteNum = 0; // Kembali ke frame pertama
+                    spriteNum = 0; // Loop animation
                 }
             } else {
-                spriteNum = 0; // Fallback jika array frame tidak valid/kosong
+                spriteNum = 0; // Fallback if frames are null or empty
             }
             spriteCounter = 0;
         }
     }
 
     private BufferedImage[] getCurrentAnimationFrames() {
+        // (Your existing getCurrentAnimationFrames logic - seems fine)
         switch (direction) {
-            // Animasi Bergerak
-            case "up":
-                return (upFrames != null && upFrames.length > 0) ? upFrames : null;
-            case "down":
-                return (downFrames != null && downFrames.length > 0) ? downFrames : null;
-            case "left":
-                return (leftFrames != null && leftFrames.length > 0) ? leftFrames : null;
-            case "right":
-                return (rightFrames != null && rightFrames.length > 0) ? rightFrames : null;
-            // Animasi Idle Sesuai Arah
-            case "idleUp":
-                return (idleUpFrames != null && idleUpFrames.length > 0) ? idleUpFrames : null;
-            case "idleDown":
-                return (idleDownFrames != null && idleDownFrames.length > 0) ? idleDownFrames : null;
-            case "idleLeft":
-                return (idleLeftFrames != null && idleLeftFrames.length > 0) ? idleLeftFrames : null;
-            case "idleRight":
-                return (idleRightFrames != null && idleRightFrames.length > 0) ? idleRightFrames : null;
+            case "up": return (upFrames != null && upFrames.length > 0) ? upFrames : null;
+            case "down": return (downFrames != null && downFrames.length > 0) ? downFrames : null;
+            case "left": return (leftFrames != null && leftFrames.length > 0) ? leftFrames : null;
+            case "right": return (rightFrames != null && rightFrames.length > 0) ? rightFrames : null;
+            case "idleUp": return (idleUpFrames != null && idleUpFrames.length > 0) ? idleUpFrames : null;
+            case "idleDown": return (idleDownFrames != null && idleDownFrames.length > 0) ? idleDownFrames : null;
+            case "idleLeft": return (idleLeftFrames != null && idleLeftFrames.length > 0) ? idleLeftFrames : null;
+            case "idleRight": return (idleRightFrames != null && idleRightFrames.length > 0) ? idleRightFrames : null;
             default:
-                // Fallback jika 'direction' memiliki nilai yang tidak terduga.
-                // Anda bisa default ke idleDownFrames atau salah satu animasi gerakan.
                 if (idleDownFrames != null && idleDownFrames.length > 0) return idleDownFrames;
-                return null; // Akan menampilkan placeholder jika idleDownFrames juga tidak ada/kosong
+                return null;
         }
     }
 
     public void drawPlayer(Graphics2D g2) {
+        // (Your existing drawPlayer logic - seems fine, draws at screenX, screenY)
         BufferedImage image = null;
         BufferedImage[] currentFrames = getCurrentAnimationFrames();
 
         if (currentFrames != null && currentFrames.length > 0) {
-            if (spriteNum >= currentFrames.length) { // Keamanan tambahan
+            if (spriteNum >= currentFrames.length) {
                 spriteNum = 0;
             }
             image = currentFrames[spriteNum];
         }
 
         if (image == null) {
-            // System.err.println("Fallback: Menggambar placeholder untuk direction: " + direction + ", spriteNum: " + spriteNum);
-            g2.setColor(Color.RED); // Warna fallback jika gambar tidak ada
-            g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+            // Fallback: draw a red square if image is somehow null
+            g2.setColor(Color.RED);
+            // Draw at screenX, screenY because player is usually centered on screen
+            g2.fillRect(screenX, screenY, gp.tileSize, gp.tileSize);
+            // System.err.println("Fallback: Player image null for direction: " + direction);
             return;
         }
+        // Player is drawn at their screenX, screenY position (center of screen)
         g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
     }
 
+    // Getters for world coordinates, if needed by other classes like CollisionChecker or Map
     public int getX() { return x; }
     public int getY() { return y; }
+    // Getter for speed, if needed
+    public int getSpeed() { return speed; }
+    // Getter for solidArea, if needed
+    public Rectangle getSolidArea() { return solidArea; }
+    // Getter for direction, if needed by CollisionChecker
+    public String getDirection() { return direction; }
+
 }

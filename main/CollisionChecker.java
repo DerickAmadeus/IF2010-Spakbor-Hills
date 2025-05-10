@@ -1,7 +1,6 @@
 package main;
 
 import player.Player;
-import Map.Map;
 
 public class CollisionChecker {
 

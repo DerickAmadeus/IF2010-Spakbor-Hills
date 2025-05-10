@@ -1,8 +1,13 @@
 package main;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints.Key;
+import java.io.File;
+import java.io.IOException;
+import java.awt.image.BufferedImage;
+
 import player.Player; // Importing player class from player package
 import Map.Map; // Importing map class from Map package
 
@@ -30,18 +35,30 @@ public class GamePanel extends JPanel implements Runnable {
     public CollisionChecker cChecker = new CollisionChecker(this); // Collision checker for player movement
     public Player player; // Player object
 
+    private BufferedImage backgroundImage; // Background image for the game
+
 
     int playerX = 100; // Player's X position
     int playerY = 100; // Player's Y position
     int playerSpeed = 4; // Player's speed
 
+    
+
     public GamePanel() {
         this.setPreferredSize(new java.awt.Dimension(screenWidth, screenHeight));
-        this.setBackground(java.awt.Color.black);
+        // this.setBackground(java.awt.Color.cyan);
         this.setDoubleBuffered(true); // Enable double buffering for smoother rendering
         this.addKeyListener(keyHandler); // Add key listener for keyboard input
         this.setFocusable(true); // Make the panel focusable to receive key events
         this.player = new Player(this, keyHandler); // Initialize player object
+        try {
+            backgroundImage = ImageIO.read(getClass().getResourceAsStream("/main/cloud.png"));
+            System.out.println("Gambar latar belakang game berhasil dimuat.");
+        } catch (IOException e) {
+            System.err.println("Gagal memuat gambar latar belakang game: " + e.getMessage());
+            e.printStackTrace();
+            backgroundImage = null; // Atur ke null jika gagal, paintComponent akan menangani ini
+        }
     }
 
 
@@ -83,10 +100,18 @@ public class GamePanel extends JPanel implements Runnable {
         // Example: g.drawRect(0, 0, tileSize, tileSize); // Draw a rectangle at (0, 0) with size tileSize
         Graphics2D g2 = (Graphics2D) g; // Cast Graphics to Graphics2D for advanced drawing
         g2.setColor(java.awt.Color.white); // Set color to white
+                // Draw background image if available
+        if (backgroundImage != null) {
+            g2.drawImage(backgroundImage, 0, 0, screenWidth, screenHeight, null);
+        } else {
+            g2.setColor(java.awt.Color.cyan); // Set color to cyan if no image
+            g2.fillRect(0, 0, screenWidth, screenHeight); // Fill the background with cyan
+        }
 
         map.draw(g2); // Draw the map
 
         player.drawPlayer(g2);
+
     }
 
 
