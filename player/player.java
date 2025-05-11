@@ -2,6 +2,8 @@ package player;
 
 import main.GamePanel;
 import main.KeyHandler;
+import Map.Tile;
+import Map.Map;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -296,8 +298,31 @@ public class Player {
     public String getDirectionForCollision() { return direction; } // Current intended move direction for collision
     public String getLastMoveDirection() { return lastMoveDirection; } // Last direction player moved or faced
     public Rectangle getInteractionArea() { return interactionArea; } // The tile-aligned interaction area
+
+
+    // Action method for interaction
     public void interact()  {
         // Placeholder for interaction logic
-        System.out.println("Interacting with tile at: " + interactionArea.x + ", " + interactionArea.y);
+        Tile tile = gp.map.getTile(interactionArea.x, interactionArea.y);
+        if (tile == null) {
+            System.out.println("No tile found at interaction area.");
+            return;
+        } else {
+        System.out.println("Interacting with tile at: " + interactionArea.x + ", " + interactionArea.y + " (Tile: " + tile.getTileName() + ")");}
+
+        if (tile.getTileName().equals("Soil")) {
+            System.out.println("Interacting with soil tile.");
+            try {
+                Thread.sleep(5000); // Delay for 5 seconds
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            // Add logic for interacting with soil tile
+        } else if (tile.getTileName().equals("Building")) {
+            System.out.println("Interacting with building tile.");
+            // Add logic for interacting with building tile
+        } else {
+            System.out.println("No interaction available for this tile.");
+        }
     }
 }

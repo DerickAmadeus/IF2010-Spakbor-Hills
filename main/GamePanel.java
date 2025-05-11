@@ -29,7 +29,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int worldHeight = tileSize * worldRow; // World map height in pixels
 
 
-    Map map = new Map(this);
+    public Map map = new Map(this);
     KeyHandler keyHandler = new KeyHandler(); // Key handler for keyboard input 
     Thread gameThread; // Thread for the game loop
     public CollisionChecker cChecker = new CollisionChecker(this); // Collision checker for player movement

@@ -69,7 +69,7 @@ public class Map {
 
             // //DIRT
 
-            tileimage[10] = new Tile("Sand", 'S', true);
+            tileimage[10] = new Soil();
             tileimage[10].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dirt.png"));
 
             // Door
@@ -158,6 +158,18 @@ public void loadMap() {
                 worldCol = 0; // Reset column index
                 worldRow ++; // Move to the next row
             }
+        }
+    }
+
+
+    public Tile getTile(int x, int y) {
+        int col = x / gp.tileSize;
+        int row = y / gp.tileSize;
+
+        if (col >= 0 && col < gp.worldCol && row >= 0 && row < gp.worldRow) {
+            return tileimage[tiles[col][row]];
+        } else {
+            return null; // Out of bounds
         }
     }
     
