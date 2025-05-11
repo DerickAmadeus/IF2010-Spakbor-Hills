@@ -35,7 +35,9 @@ public class GamePanel extends JPanel implements Runnable {
     public CollisionChecker cChecker = new CollisionChecker(this); // Collision checker for player movement
     public Player player; // Player object
 
-    private BufferedImage backgroundImage; // Background image for the game
+    private BufferedImage backgroundImage; // Background image for the game\
+
+    public boolean debugMode = false;
 
 
     int playerX = 100; // Player's X position
@@ -91,7 +93,15 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update() {
         player.update();
-        
+        // Potentially update other game entities or systems here
+        // e.g., map.update(), npcs.update(), etc.
+
+        // Toggle debug mode with a key (e.g., F1) - OPTIONAL
+        if (keyHandler.f1Pressed) { // Assuming you add f1Pressed to KeyHandler
+            debugMode = !debugMode;
+            keyHandler.f1Pressed = false; // Consume the press to avoid rapid toggling
+            System.out.println("Debug mode: " + (debugMode ? "ON" : "OFF"));
+        }
     }
 
     public void paintComponent(java.awt.Graphics g) {
@@ -109,6 +119,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         map.draw(g2); // Draw the map
+
 
         player.drawPlayer(g2);
 

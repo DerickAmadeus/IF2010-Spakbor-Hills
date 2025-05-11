@@ -12,7 +12,7 @@ public class Tile {
         this.tileSymbol = tileSymbol;
         this.isWalkable = isWalkable;
     }
-    public String getTilename() {
+    public String getTileName() {
         return tilename;
     }
     public void setTilename(String tilename) {

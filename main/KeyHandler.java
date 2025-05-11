@@ -2,10 +2,12 @@ package main;
 import javax.swing.JFrame;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
+import main.GamePanel; // Importing GamePanel class from main package
 
 public class KeyHandler implements KeyListener{
 
-    public boolean upPressed, downPressed, leftPressed, rightPressed;
+    public boolean upPressed, downPressed, leftPressed, rightPressed, interactPressed, f1Pressed; // Boolean flags for key states
+    GamePanel gp; // Reference to the GamePanel
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -28,6 +30,11 @@ public class KeyHandler implements KeyListener{
         } else if (code == KeyEvent.VK_D) {
             rightPressed = true; // Set rightPressed to true when D key is pressed
             System.out.println("D key pressed"); // Move right
+        } else if (code == KeyEvent.VK_E) {
+            interactPressed = true; // Set interactPressed to true when E key is pressed
+        } else if (code == KeyEvent.VK_F1) {
+            f1Pressed = true; // Set f1Pressed to true when F1 key is pressed
+            
         }
     }
     

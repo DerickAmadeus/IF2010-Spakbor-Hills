@@ -16,7 +16,9 @@ public class Player {
     public int screenX; // Player's X position on the screen (usually center)
     public int screenY; // Player's Y position on the screen (usually center)
     public Rectangle solidArea; // Collision area for the player
-    public boolean collisionOn = false; // Flag set by CollisionChecker
+    public Rectangle interactionArea; // Area for checking interactions, will now align with a tile
+    public int solidAreaDefaultX, solidAreaDefaultY;
+    public boolean collisionOn = false;
     GamePanel gp;
     KeyHandler keyH;
     public String direction; // Current animation/movement state (e.g., "up", "idleDown")
@@ -27,38 +29,38 @@ public class Player {
 
     private int spriteCounter = 0;
     private int spriteNum = 0;
-    private final int ANIMATION_SPEED = 10;
-    private boolean isActuallyMoving = false; // Tracks if the player's position changed in this frame
+    private final int ANIMATION_SPEED = 10; // Frames per animation sprite
+    private boolean isActuallyMoving = false;
+
+    // Cooldown for interaction to prevent multiple interactions from a single long key press
+    private int interactionCooldown = 0;
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
         this.keyH = keyH;
 
-        // Player's position on the screen is usually fixed (center) for a scrolling camera
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
 
-        // Define the player's solid area relative to its top-left (x,y)
-        // Adjust these values (8, 16, 32, 32) based on your sprite
-        // (xOffset, yOffset, width, height)
-        solidArea = new Rectangle(8, 10, 32, 32); // Example: 8px inset from left, 16px from top, 32x32 size
+        solidArea = new Rectangle(8, 16, 32, 32);
+        solidAreaDefaultX = solidArea.x;
+        solidAreaDefaultY = solidArea.y;
+
+        interactionArea = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
 
         setDefaultValues();
         getPlayerImage();
     }
 
     public void setDefaultValues() {
-        // Set player's starting position in the world
-        this.x = gp.tileSize * 10; // Example: Start at tile (10,10)
-        this.y = gp.tileSize * 10; // Example: Start at tile (10,10)
+        this.x = gp.tileSize * 10; // Example: Start at tile (10,10) in world coordinates
+        this.y = gp.tileSize * 10; // Example: Start at tile (10,10) in world coordinates
         this.speed = 4;
-        this.lastMoveDirection = "down"; // Default facing direction when idle
+        this.lastMoveDirection = "down"; // Default facing direction
         this.direction = "idleDown";     // Default animation state
     }
 
     public void getPlayerImage() {
-        // (Your existing getPlayerImage logic - seems fine)
-        // Example:
         idleDownFrames = loadAnimationFrames("idledown", 6);
         idleUpFrames = loadAnimationFrames("idleup", 6);
         idleLeftFrames = loadAnimationFrames("idleleft", 6);
@@ -79,7 +81,6 @@ public class Player {
     }
 
     private BufferedImage[] loadAnimationFrames(String animationIdentifier, int frameCount) {
-        // (Your existing loadAnimationFrames logic - seems fine)
         BufferedImage[] frames = new BufferedImage[frameCount];
         String actualFolderName;
         String fileNamePrefix = animationIdentifier;
@@ -95,7 +96,7 @@ public class Player {
                 String imagePath = "/player/" + actualFolderName + "/" + fileNamePrefix + "_" + i + ".png";
                 InputStream is = getClass().getResourceAsStream(imagePath);
                 if (is == null) {
-                    System.err.println("Tidak dapat memuat gambar: " + imagePath);
+                    System.err.println("Cannot load image: " + imagePath);
                     frames[i] = createPlaceholderImage();
                 } else {
                     frames[i] = ImageIO.read(is);
@@ -103,7 +104,7 @@ public class Player {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Error saat memuat animasi untuk identifier: " + animationIdentifier);
+            System.err.println("Error loading animation frames for identifier: " + animationIdentifier);
             e.printStackTrace();
             for (int i = 0; i < frameCount; i++) {
                 if (frames[i] == null) frames[i] = createPlaceholderImage();
@@ -113,7 +114,6 @@ public class Player {
     }
 
     private BufferedImage createPlaceholderImage() {
-        // (Your existing createPlaceholderImage logic - seems fine)
         BufferedImage placeholder = new BufferedImage(gp.tileSize, gp.tileSize, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = placeholder.createGraphics();
         g.setColor(Color.MAGENTA);
@@ -124,37 +124,33 @@ public class Player {
         return placeholder;
     }
 
+
     public void update() {
-        String prevAnimationState = direction; // For resetting animation frames
-        isActuallyMoving = false; // Reset: Did the player's position change this frame?
+        String prevAnimationState = direction;
+        isActuallyMoving = false;
+
+        if (interactionCooldown > 0) {
+            interactionCooldown--;
+        }
 
         boolean isAttemptingMoveByKeyPress = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
 
         if (isAttemptingMoveByKeyPress) {
-            // Determine intended direction from key press
             if (keyH.upPressed) {
-                direction = "up";
-                lastMoveDirection = "up";
+                direction = "up"; lastMoveDirection = "up";
             } else if (keyH.downPressed) {
-                direction = "down";
-                lastMoveDirection = "down";
+                direction = "down"; lastMoveDirection = "down";
             } else if (keyH.leftPressed) {
-                direction = "left";
-                lastMoveDirection = "left";
+                direction = "left"; lastMoveDirection = "left";
             } else if (keyH.rightPressed) {
-                direction = "right";
-                lastMoveDirection = "right";
+                direction = "right"; lastMoveDirection = "right";
             }
 
-            // Check for tile collisions for the intended move
-            collisionOn = false; // Reset before check
-            // gp.cChecker.checkTile(this) should set this.collisionOn to true if the *next step* in
-            // the current 'direction' would cause a collision. It should NOT move the player.
-            gp.cChecker.checkTile(this);
+            collisionOn = false;
+            gp.cChecker.checkTile(this); // Check for tile collisions based on 'direction'
 
-            // If no tile collision, then update player's world coordinates
             if (!collisionOn) {
-                switch (direction) {
+                switch (direction) { // Use 'direction' for actual movement
                     case "up":    y -= speed; isActuallyMoving = true; break;
                     case "down":  y += speed; isActuallyMoving = true; break;
                     case "left":  x -= speed; isActuallyMoving = true; break;
@@ -163,53 +159,71 @@ public class Player {
             }
         }
 
-        // Enforce world boundaries AFTER any potential movement
-        // Player's x, y is top-left. Player's visual width/height is gp.tileSize.
-        // The solidArea might be smaller, but for boundary checks, using the visual extent is safer.
+        // Enforce world boundaries
         int worldWidth = gp.worldCol * gp.tileSize;
         int worldHeight = gp.worldRow * gp.tileSize;
+        if (x < 0) x = 0;
+        if (x > worldWidth - gp.tileSize) x = worldWidth - gp.tileSize; // Player's width is tileSize
+        if (y < 0) y = 0;
+        if (y > worldHeight - gp.tileSize) y = worldHeight - gp.tileSize; // Player's height is tileSize
 
-        if (x < 0) {
-            x = 0;
-        }
-        // Player's right edge (x + playerWidth) should not exceed worldWidth.
-        if (x > worldWidth - gp.tileSize) { // Assumes player visual width is gp.tileSize
-            x = worldWidth - gp.tileSize;
-        }
-        if (y < 0) {
-            y = 0;
-        }
-        // Player's bottom edge (y + playerHeight) should not exceed worldHeight.
-        if (y > worldHeight - gp.tileSize) { // Assumes player visual height is gp.tileSize
-            y = worldHeight - gp.tileSize;
+        // Update interaction area to be the tile in front of the player
+        // Player's current tile (center point for calculation)
+        int playerCurrentTileCol = (x + gp.tileSize / 2) / gp.tileSize;
+        int playerCurrentTileRow = (y + gp.tileSize / 2) / gp.tileSize;
+
+        int targetTileCol = playerCurrentTileCol;
+        int targetTileRow = playerCurrentTileRow;
+
+        switch (lastMoveDirection) { // Use lastMoveDirection to determine where the player is "facing"
+            case "up":
+                targetTileRow = playerCurrentTileRow - 1;
+                break;
+            case "down":
+                targetTileRow = playerCurrentTileRow + 1;
+                break;
+            case "left":
+                targetTileCol = playerCurrentTileCol - 1;
+                break;
+            case "right":
+                targetTileCol = playerCurrentTileCol + 1;
+                break;
         }
 
-        // Determine final animation state (idle or walking)
+        // Set interactionArea to the world coordinates and size of the target tile
+        interactionArea.x = targetTileCol * gp.tileSize;
+        interactionArea.y = targetTileRow * gp.tileSize;
+        interactionArea.width = gp.tileSize;  // Ensure it's exactly one tile wide
+        interactionArea.height = gp.tileSize; // Ensure it's exactly one tile high
+
+
+        // Handle Interaction Key Press
+        if (keyH.interactPressed && interactionCooldown == 0) {
+            interact();
+            keyH.interactPressed = false;
+        }
+
+
+        // Determine final animation state
         if (isAttemptingMoveByKeyPress && !collisionOn && isActuallyMoving) {
-            // Player is successfully moving, 'direction' is already "up", "down", etc.
-            // No change needed to 'direction' for animation here.
+            // 'direction' is already "up", "down", etc. for walking animations
         } else {
-            // Not attempting to move, or was attempting but collided, or movement was clamped by boundary
-            // Switch to idle animation based on the last intended movement direction
+            // Not moving or collided, switch to idle animation based on lastMoveDirection
             switch (lastMoveDirection) {
                 case "up":    direction = "idleUp";    break;
                 case "down":  direction = "idleDown";  break;
                 case "left":  direction = "idleLeft";  break;
                 case "right": direction = "idleRight"; break;
-                default:      direction = "idleDown";  break; // Default idle state
+                default:      direction = "idleDown";  break; // Fallback idle state
             }
         }
 
-        // Reset animation frame if the animation state (e.g. "walkLeft" to "idleLeft") has changed
         if (!prevAnimationState.equals(direction)) {
             spriteNum = 0;
             spriteCounter = 0;
         }
 
         // Animate sprite
-        // Only animate if the current state is a walking animation OR if it's an idle animation
-        // (some idle animations might have multiple frames)
-        // The currentFrames.length check will handle single-frame idle animations correctly.
         spriteCounter++;
         if (spriteCounter > ANIMATION_SPEED) {
             spriteNum++;
@@ -226,54 +240,64 @@ public class Player {
     }
 
     private BufferedImage[] getCurrentAnimationFrames() {
-        // (Your existing getCurrentAnimationFrames logic - seems fine)
         switch (direction) {
-            case "up": return (upFrames != null && upFrames.length > 0) ? upFrames : null;
-            case "down": return (downFrames != null && downFrames.length > 0) ? downFrames : null;
-            case "left": return (leftFrames != null && leftFrames.length > 0) ? leftFrames : null;
-            case "right": return (rightFrames != null && rightFrames.length > 0) ? rightFrames : null;
-            case "idleUp": return (idleUpFrames != null && idleUpFrames.length > 0) ? idleUpFrames : null;
+            case "up": return (upFrames != null && upFrames.length > 0) ? upFrames : idleDownFrames;
+            case "down": return (downFrames != null && downFrames.length > 0) ? downFrames : idleDownFrames;
+            case "left": return (leftFrames != null && leftFrames.length > 0) ? leftFrames : idleDownFrames;
+            case "right": return (rightFrames != null && rightFrames.length > 0) ? rightFrames : idleDownFrames;
+            case "idleUp": return (idleUpFrames != null && idleUpFrames.length > 0) ? idleUpFrames : idleDownFrames;
             case "idleDown": return (idleDownFrames != null && idleDownFrames.length > 0) ? idleDownFrames : null;
-            case "idleLeft": return (idleLeftFrames != null && idleLeftFrames.length > 0) ? idleLeftFrames : null;
-            case "idleRight": return (idleRightFrames != null && idleRightFrames.length > 0) ? idleRightFrames : null;
+            case "idleLeft": return (idleLeftFrames != null && idleLeftFrames.length > 0) ? idleLeftFrames : idleDownFrames;
+            case "idleRight": return (idleRightFrames != null && idleRightFrames.length > 0) ? idleRightFrames : idleDownFrames;
             default:
-                if (idleDownFrames != null && idleDownFrames.length > 0) return idleDownFrames;
-                return null;
+                return (idleDownFrames != null && idleDownFrames.length > 0) ? idleDownFrames : null;
         }
     }
 
     public void drawPlayer(Graphics2D g2) {
-        // (Your existing drawPlayer logic - seems fine, draws at screenX, screenY)
         BufferedImage image = null;
         BufferedImage[] currentFrames = getCurrentAnimationFrames();
 
-        if (currentFrames != null && currentFrames.length > 0) {
-            if (spriteNum >= currentFrames.length) {
-                spriteNum = 0;
-            }
+        if (currentFrames != null && currentFrames.length > 0 && spriteNum < currentFrames.length) {
             image = currentFrames[spriteNum];
+        } else if (idleDownFrames != null && idleDownFrames.length > 0) {
+            image = idleDownFrames[0]; // Fallback to first frame of idleDown
         }
+
 
         if (image == null) {
-            // Fallback: draw a red square if image is somehow null
             g2.setColor(Color.RED);
-            // Draw at screenX, screenY because player is usually centered on screen
             g2.fillRect(screenX, screenY, gp.tileSize, gp.tileSize);
-            // System.err.println("Fallback: Player image null for direction: " + direction);
             return;
         }
-        // Player is drawn at their screenX, screenY position (center of screen)
         g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
+
+        // DEBUG: Draw Solid Area and Interaction Area
+        if (gp.debugMode) {
+            // Draw Solid Area (relative to player's screen position)
+            g2.setColor(new Color(255, 0, 0, 100)); // Semi-transparent red
+            g2.fillRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
+
+            // Draw Interaction Area (needs to be converted from world to screen coordinates)
+            // Since interactionArea.x and .y are already world coordinates of the target tile,
+            // the conversion to screen coordinates remains the same.
+            g2.setColor(new Color(0, 255, 0, 100)); // Semi-transparent green
+            int interactionScreenX = interactionArea.x - x + screenX;
+            int interactionScreenY = interactionArea.y - y + screenY;
+            g2.fillRect(interactionScreenX, interactionScreenY, interactionArea.width, interactionArea.height);
+        }
     }
 
-    // Getters for world coordinates, if needed by other classes like CollisionChecker or Map
+    // Getters
     public int getX() { return x; }
     public int getY() { return y; }
-    // Getter for speed, if needed
     public int getSpeed() { return speed; }
-    // Getter for solidArea, if needed
     public Rectangle getSolidArea() { return solidArea; }
-    // Getter for direction, if needed by CollisionChecker
-    public String getDirection() { return direction; }
-
+    public String getDirectionForCollision() { return direction; } // Current intended move direction for collision
+    public String getLastMoveDirection() { return lastMoveDirection; } // Last direction player moved or faced
+    public Rectangle getInteractionArea() { return interactionArea; } // The tile-aligned interaction area
+    public void interact()  {
+        // Placeholder for interaction logic
+        System.out.println("Interacting with tile at: " + interactionArea.x + ", " + interactionArea.y);
+    }
 }

@@ -37,7 +37,7 @@ public class Building extends Tile {
     }
 
     // Tambahin override kalo mau bikin building satu satu
-    public void actios() {
+    public void actions() {
         System.out.println("Building " + buildingName + " is being used.");
     }
     
