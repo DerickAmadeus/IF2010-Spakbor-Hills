@@ -4,6 +4,7 @@ import main.GamePanel;
 import main.KeyHandler;
 import Map.Tile;
 import Map.Map;
+import Map.Soil;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -311,7 +312,15 @@ public class Player {
         System.out.println("Interacting with tile at: " + interactionArea.x + ", " + interactionArea.y + " (Tile: " + tile.getTileName() + ")");}
 
         if (tile.getTileName().equals("Soil")) {
+            Soil soil = (Soil) tile; // Cast to Soil type
             System.out.println("Interacting with soil tile.");
+            if (soil.getSeedPlanted() != null) {
+                System.out.println("Seed planted: " + soil.getWetCooldown());
+                
+            } else {
+                System.out.println("No seed planted on this tile.");
+            }
+            soil.harvestSeed();
             try {
                 Thread.sleep(5000); // Delay for 5 seconds
             } catch (InterruptedException e) {
