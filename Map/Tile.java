@@ -1,15 +1,18 @@
 package Map;
+
+import java.awt.image.BufferedImage;
 public class Tile {
     private String tilename;
     private char tileSymbol;
     private boolean isWalkable;
+    public BufferedImage Image; // Assuming you have an Image class for tile images
 
     public Tile(String tilename, char tileSymbol, boolean isWalkable) {
         this.tilename = tilename;
         this.tileSymbol = tileSymbol;
         this.isWalkable = isWalkable;
     }
-    public String getTilename() {
+    public String getTileName() {
         return tilename;
     }
     public void setTilename(String tilename) {

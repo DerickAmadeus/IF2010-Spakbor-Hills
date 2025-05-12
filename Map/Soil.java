@@ -7,7 +7,7 @@ public class Soil extends Tile {
     private Seeds seedPlanted;
 
 
-    public Soil(String tilename, char tileSymbol, boolean isWalkable, int wetCooldown) {
+    public Soil() {
         super("Soil", 'S', true);
         this.wetCooldown = 5;
         this.seedPlanted = null;

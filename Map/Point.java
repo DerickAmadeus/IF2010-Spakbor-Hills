@@ -34,7 +34,7 @@ public class Point {
     }
 
     public void tiling(Soil soil) {
-        if (tileinfo.getTilename().equals("Soil")){
+        if (tileinfo.getTileName().equals("Soil")){
             System.out.println("Tanah ini udah dibajak");
         } else {
             this.tileinfo = soil;
@@ -43,7 +43,7 @@ public class Point {
     }
 
     public void building(Building building) {
-        if (tileinfo.getTilename().equals("Building")){
+        if (tileinfo.getTileName().equals("Building")){
             System.out.println("Bangunan ini udah dibangun");
         } else {
             this.tileinfo = building;
