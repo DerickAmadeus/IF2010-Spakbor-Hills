@@ -1,8 +1,7 @@
 package main;
-import javax.swing.JFrame;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
-import main.GamePanel; // Importing GamePanel class from main package
+
 
 public class KeyHandler implements KeyListener{
 

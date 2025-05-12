@@ -3,8 +3,6 @@ package main;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints.Key;
-import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
 

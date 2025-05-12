@@ -3,7 +3,6 @@ package player;
 import main.GamePanel;
 import main.KeyHandler;
 import Map.Tile;
-import Map.Map;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
