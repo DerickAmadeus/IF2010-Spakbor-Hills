@@ -11,6 +11,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
+//error jir
+
 public class Player {
     public int x, y; // Player's world X and Y coordinates
     public int speed;
