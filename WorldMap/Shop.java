@@ -2,7 +2,7 @@ package WorldMap;
 import Items.Item;
 import NPC.NPC;
 import Playerstuffs.Player;
-import Playerstuffs.Inventory;
+import player.Inventory;
 
 import java.util.ArrayList;
 

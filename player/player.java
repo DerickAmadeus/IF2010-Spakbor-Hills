@@ -7,6 +7,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
+
+import Items.Item;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -34,6 +37,9 @@ public class Player {
     private int spriteNum = 0;
     private final int ANIMATION_SPEED = 10; // Frames per animation sprite
     private boolean isActuallyMoving = false;
+    private Inventory<Item> inventory = new Inventory<>();
+    private boolean inventoryOpen = false;
+
 
     // Cooldown for interaction to prevent multiple interactions from a single long key press
     private int interactionCooldown = 0;
@@ -206,6 +212,9 @@ public class Player {
         if (keyH.interactPressed && interactionCooldown == 0) {
             interact();
             keyH.interactPressed = false;
+        } else if (keyH.invPressed) {
+            inventoryOpen = !inventoryOpen; // Toggle buka/tutup
+            keyH.invPressed = false; // Reset agar tidak toggle terus
         }
 
 
@@ -301,6 +310,8 @@ public class Player {
     public String getDirectionForCollision() { return direction; } // Current intended move direction for collision
     public String getLastMoveDirection() { return lastMoveDirection; } // Last direction player moved or faced
     public Rectangle getInteractionArea() { return interactionArea; } // The tile-aligned interaction area
+    public Inventory<Item> getInventory() { return inventory;}
+    public boolean getInventoryOpen() {return inventoryOpen;}
 
 
     // Action method for interaction

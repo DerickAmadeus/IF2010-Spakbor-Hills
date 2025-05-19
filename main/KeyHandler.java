@@ -5,7 +5,7 @@ import java.awt.event.KeyEvent;
 
 public class KeyHandler implements KeyListener{
 
-    public boolean upPressed, downPressed, leftPressed, rightPressed, interactPressed, f1Pressed; // Boolean flags for key states
+    public boolean upPressed, downPressed, leftPressed, rightPressed, interactPressed, f1Pressed, invPressed; // Boolean flags for key states
     GamePanel gp; // Reference to the GamePanel
 
     @Override
@@ -33,7 +33,8 @@ public class KeyHandler implements KeyListener{
             interactPressed = true; // Set interactPressed to true when E key is pressed
         } else if (code == KeyEvent.VK_F1) {
             f1Pressed = true; // Set f1Pressed to true when F1 key is pressed
-            
+        } else if (code == KeyEvent.VK_I) {
+            invPressed = true;
         }
     }
     
@@ -49,6 +50,8 @@ public class KeyHandler implements KeyListener{
             downPressed = false; // Set downPressed to false when S key is released
         } else if (code == KeyEvent.VK_D) {
             rightPressed = false; // Set rightPressed to false when D key is released
+        } else if (code == KeyEvent.VK_I) {
+            invPressed = false;
         }
     }
 }

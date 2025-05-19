@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 
 import player.Player; // Importing player class from player package
 import Map.Map; // Importing map class from Map package
+import player.Inventory;
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -32,7 +33,6 @@ public class GamePanel extends JPanel implements Runnable {
     Thread gameThread; // Thread for the game loop
     public CollisionChecker cChecker = new CollisionChecker(this); // Collision checker for player movement
     public Player player; // Player object
-
     private BufferedImage backgroundImage; // Background image for the game\
 
     public boolean debugMode = false;
@@ -120,6 +120,9 @@ public class GamePanel extends JPanel implements Runnable {
 
 
         player.drawPlayer(g2);
+        if(player.getInventoryOpen()) {
+             player.getInventory().draw(g2);
+        }
 
     }
 

@@ -8,6 +8,7 @@ public class Bed extends Furniture{
     }
     public String getBedType(){
         return bedType;
+        
     }
     @Override
     public void Action() {

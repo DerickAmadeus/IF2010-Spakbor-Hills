@@ -23,5 +23,6 @@ public class ShippingBin extends Building{
     }
     public void selling(Item item){
         System.out.println("Item " + item + "has been sold. Yeay!");
+        
     }
 }

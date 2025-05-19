@@ -2,7 +2,6 @@ package Universe;
 
 import Playerstuffs.Player;
 import Map.Map;
-import player.Player;
 import java.time.LocalDateTime;
 
 public class Universe {

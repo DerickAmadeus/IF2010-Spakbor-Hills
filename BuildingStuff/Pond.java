@@ -6,5 +6,6 @@ public class Pond extends Building{
     }
     public void fishing(){
         System.out.println("Fishing.....");
+        
     }
 }

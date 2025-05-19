@@ -6,5 +6,6 @@ public class OutsideHouse extends Building{
     }
     public void getInside(){
         System.out.println("Entering the inside of the house!");
+        
     }
 }

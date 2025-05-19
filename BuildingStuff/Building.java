@@ -42,7 +42,7 @@ public class Building extends Tile {
         return width;
     }
     public int getHeight() {
-        return height;
+        return height; 
     }
     public char getSymbol() {
         return symbol;
