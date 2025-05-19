@@ -55,6 +55,8 @@ public class Player {
         getPlayerImage();
     }
 
+//test
+
     public void setDefaultValues() {
         this.x = gp.tileSize * 10; // Example: Start at tile (10,10) in world coordinates
         this.y = gp.tileSize * 10; // Example: Start at tile (10,10) in world coordinates
