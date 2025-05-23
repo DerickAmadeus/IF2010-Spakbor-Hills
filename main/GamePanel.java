@@ -100,6 +100,21 @@ public class GamePanel extends JPanel implements Runnable {
             keyHandler.f1Pressed = false; // Consume the press to avoid rapid toggling
             System.out.println("Debug mode: " + (debugMode ? "ON" : "OFF"));
         }
+        if (player.getInventoryOpen()) { // misalnya kamu punya flag untuk buka inventory
+            player.getInventory().updateInventoryCursor(
+                keyHandler.upPressed,
+                keyHandler.downPressed,
+                keyHandler.leftPressed,
+                keyHandler.rightPressed
+            );
+
+            // Supaya cursor nggak gerak terus saat tombol ditekan terus
+            keyHandler.upPressed = false;
+            keyHandler.downPressed = false;
+            keyHandler.leftPressed = false;
+            keyHandler.rightPressed = false;
+        }
+
     }
 
     public void paintComponent(java.awt.Graphics g) {
@@ -121,12 +136,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         player.drawPlayer(g2);
         if(player.getInventoryOpen()) {
-             player.getInventory().draw(g2);
+             player.getInventory().drawInventory(g2);
         }
 
     }
-
-
-
 
 }
