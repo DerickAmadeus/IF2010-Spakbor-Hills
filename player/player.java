@@ -42,10 +42,6 @@ public class Player {
     private Inventory<Item> inventory;
     private boolean inventoryOpen = false;
 
-    Fish carp = new Fish("Carp", "ini carp", 13, 13, "Any", "Any", "Pond", "Common");
-    Equipment fishrod = new Equipment("Fishing Rod", "ini fishing rod", 19, 19);
-
-
     // Cooldown for interaction to prevent multiple interactions from a single long key press
     private int interactionCooldown = 0;
 
@@ -53,10 +49,8 @@ public class Player {
         this.gp = gp;
         this.keyH = keyH;
         this.inventory = new Inventory<>(gp);
-        for(int i = 0; i < 3; i++) {
-            this.inventory.addItem(carp, 1);
-        }
-        this.inventory.addItem(fishrod, 1);
+        loadInitialEquipment();
+        loadInitialFish();
 
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
@@ -70,6 +64,62 @@ public class Player {
         setDefaultValues();
         getPlayerImage();
     }
+    public void loadInitialEquipment() {
+        Equipment wateringCan = new Equipment("Watering Can", "Untuk menyiram tanaman.", 10, 10);
+        Equipment pickaxe = new Equipment("Pickaxe", "Untuk menghancurkan batu.", 15, 15);
+        Equipment hoe = new Equipment("Hoe", "Untuk mencangkul tanah.", 12, 12);
+        Equipment fishingRod = new Equipment("Fishing Rod", "Untuk memancing ikan.", 19, 19);
+
+        inventory.addItem(wateringCan, 1);
+        inventory.addItem(pickaxe, 1);
+        inventory.addItem(hoe, 1);
+        inventory.addItem(fishingRod, 1);
+    }
+
+    public void loadInitialFish() {
+        Fish bullhead = new Fish("Bullhead", "Ikan Bullhead, mudah ditemukan.", 50, 50, "Any", "Any", "Mountain Lake", "Common");
+        Fish carp = new Fish("Carp", "Ini Carp.", 50, 50, "Any", "Any", "Pond", "Common");
+        Fish chub = new Fish("Chub", "Ikan Chub, cukup umum.", 50, 50, "Any", "Any", "Forest River", "Common");
+        Fish largemouthBass = new Fish("Largemouth Bass", "Ikan besar dari danau pegunungan.", 100, 100, "Any", "Any", "Mountain Lake", "Uncommon");
+        Fish rainbowTrout = new Fish("Rainbow Trout", "Ikan berwarna pelangi yang muncul saat cuaca cerah.", 120, 120, "Summer", "Sunny", "Forest River", "Uncommon");
+        Fish sturgeon = new Fish("Sturgeon", "Ikan langka dari danau pegunungan.", 200, 200, "Summer", "Any", "Mountain Lake", "Rare");
+        Fish midnightCarp = new Fish("Midnight Carp", "Ikan malam dari danau atau kolam.", 150, 150, "Fall", "Any", "Mountain Lake", "Uncommon");
+        Fish flounder = new Fish("Flounder", "Ikan pipih dari laut.", 90, 90, "Spring", "Any", "Ocean", "Common");
+        Fish halibut = new Fish("Halibut", "Ikan laut besar aktif pagi dan malam.", 110, 110, "Any", "Any", "Ocean", "Uncommon");
+        Fish octopus = new Fish("Octopus", "Gurita laut yang aktif siang hari.", 180, 180, "Summer", "Any", "Ocean", "Rare");
+        Fish pufferfish = new Fish("Pufferfish", "Ikan buntal beracun saat cuaca cerah.", 160, 160, "Summer", "Sunny", "Ocean", "Uncommon");
+        Fish sardine = new Fish("Sardine", "Ikan kecil dari laut.", 40, 40, "Any", "Any", "Ocean", "Common");
+        Fish superCucumber = new Fish("Super Cucumber", "Ikan misterius aktif malam hari.", 250, 250, "Summer", "Any", "Ocean", "Rare");
+        Fish catfish = new Fish("Catfish", "Ikan lele liar saat hujan.", 130, 130, "Spring", "Rainy", "Forest River", "Uncommon");
+        Fish salmon = new Fish("Salmon", "Ikan migrasi dari sungai.", 120, 120, "Fall", "Any", "Forest River", "Uncommon");
+        Fish angler = new Fish("Angler", "Ikan legendaris yang hanya muncul di musim gugur.", 1000, 1000, "Fall", "Any", "Pond", "Legendary");
+        Fish crimsonfish = new Fish("Crimsonfish", "Ikan legendaris dari laut tropis.", 1000, 1000, "Summer", "Any", "Ocean", "Legendary");
+        Fish glacierfish = new Fish("Glacierfish", "Ikan legendaris dari sungai beku.", 1000, 1000, "Winter", "Any", "Forest River", "Legendary");
+        Fish legend = new Fish("Legend", "Ikan legendaris tertinggi di danau gunung saat hujan.", 1200, 1200, "Spring", "Rainy", "Mountain Lake", "Legendary");
+
+
+        // Tambahkan ke inventory
+        inventory.addItem(bullhead, 13);
+        inventory.addItem(carp, 3); // Misalnya ingin 3
+        inventory.addItem(chub, 121);
+        inventory.addItem(largemouthBass, 91);
+        inventory.addItem(rainbowTrout, 51);
+        inventory.addItem(sturgeon, 13);
+        inventory.addItem(midnightCarp, 12);
+        inventory.addItem(flounder, 10);
+        inventory.addItem(halibut, 11);
+        inventory.addItem(octopus, 34);
+        inventory.addItem(pufferfish, 96);
+        inventory.addItem(sardine, 16);
+        inventory.addItem(superCucumber, 100);
+        inventory.addItem(catfish, 1000);
+        inventory.addItem(salmon, 112);
+        inventory.addItem(angler, 1);
+        inventory.addItem(crimsonfish, 1);
+        inventory.addItem(glacierfish, 1);
+        inventory.addItem(legend, 1);
+    }
+
 
 //test
 

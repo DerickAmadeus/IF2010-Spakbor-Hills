@@ -20,6 +20,8 @@ public class Inventory<T extends Item> {
     private final int SLOT_PADDING = 8;
 
     private final int VIEWPORT_HEIGHT = 300; // Tinggi area tampilan inventory (sama seperti height drawRect)
+    private final int MAX_ROWS_ON_SCREEN = VIEWPORT_HEIGHT / SLOT_SIZE;
+
 
     public Inventory(GamePanel gp) {
         items = new HashMap<>();
@@ -49,7 +51,7 @@ public class Inventory<T extends Item> {
 
         // CURSOR
         int cursorX = slotXStart + (gp.tileSize * slotCol);
-        int cursorY = slotYStart + (gp.tileSize * slotRow);
+        int cursorY = slotYStart + (gp.tileSize * (slotRow - scrollOffset));
         int cursorWidth = gp.tileSize;
         int cursorHeight = gp.tileSize;
 
@@ -60,54 +62,87 @@ public class Inventory<T extends Item> {
 
         int index = 0;
         for (T item : itemContainer) {
-            int col = index % ITEMS_PER_ROW;
             int row = index / ITEMS_PER_ROW;
 
+            if (row < scrollOffset) {
+                index++;
+                continue; // Lewati baris di atas viewport
+            }
+
+            if (row >= scrollOffset + MAX_ROWS_ON_SCREEN) {
+                break; // Hentikan kalau sudah melebihi viewport
+            }
+
+            int col = index % ITEMS_PER_ROW;
             int itemX = slotXStart + col * gp.tileSize;
-            int itemY = slotYStart + row * gp.tileSize;
+            int itemY = slotYStart + (row - scrollOffset) * gp.tileSize; // kurangi offset agar scroll naik
 
             if (item.getIcon() != null) {
                 int padding = 6;
-                g2.drawImage(item.getIcon(), itemX, itemY, gp.tileSize, gp.tileSize, null);
+                int drawSize = gp.tileSize - 2 * padding;
+                int drawX = itemX + padding;
+                int drawY = itemY + padding;
+
+                g2.drawImage(item.getIcon(), drawX, drawY, drawSize, drawSize, null);
             }
 
-            // Gambarkan jumlah item
             Integer count = getItemCount(item);
             if (count != null && count > 1) {
                 g2.setColor(Color.white);
                 g2.setFont(new Font("Arial", Font.BOLD, 12));
                 String countStr = String.valueOf(count);
                 int stringWidth = g2.getFontMetrics().stringWidth(countStr);
-                int stringHeight = g2.getFontMetrics().getHeight();
-
                 g2.drawString(countStr, itemX + gp.tileSize - stringWidth - 4, itemY + gp.tileSize - 4);
             }
 
             index++;
         }
 
+
     }
 
     public void updateInventoryCursor(boolean up, boolean down, boolean left, boolean right) {
+        int maxIndex = getItemCountTotal() - 1;
+        int currentIndex = slotRow * ITEMS_PER_ROW + slotCol;
+
         if (up && slotRow > 0) {
             slotRow--;
+            if (slotRow < scrollOffset) {
+                scrollOffset = slotRow;
+            }
         }
-        if (down && slotRow < getMaxRow()) {
-            slotRow++;
+        if (down) {
+            int nextIndex = (slotRow + 1) * ITEMS_PER_ROW + slotCol;
+            if (nextIndex <= maxIndex) {
+                slotRow++;
+                if (slotRow >= scrollOffset + MAX_ROWS_ON_SCREEN) {
+                    scrollOffset = slotRow - MAX_ROWS_ON_SCREEN + 1;
+                }
+            }
         }
         if (left && slotCol > 0) {
             slotCol--;
         }
-        if (right && slotCol < ITEMS_PER_ROW - 1) {
-            slotCol++;
+        if (right) {
+            if (slotCol < ITEMS_PER_ROW - 1) {
+                int nextIndex = slotRow * ITEMS_PER_ROW + slotCol + 1;
+                if (nextIndex <= maxIndex) {
+                    slotCol++;
+                }
+            }
         }
 
+        // Hindari cursor berada di slot kosong (misal kolom terlalu kanan di baris akhir)
+        if ((slotRow * ITEMS_PER_ROW + slotCol) > maxIndex) {
+            slotCol = maxIndex % ITEMS_PER_ROW;
+            slotRow = maxIndex / ITEMS_PER_ROW;
+        }
     }
 
-    private int getMaxRow() {
-        int itemCount = 100;
-        return (itemCount - 1) / ITEMS_PER_ROW; // Jumlah baris maksimum
+    private int getItemCountTotal() {
+        return itemContainer.size();
     }
+
 
     public T getItem(T key) {
         return items.containsKey(key) ? key : null;
