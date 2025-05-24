@@ -120,6 +120,10 @@ public class GamePanel extends JPanel implements Runnable {
             }
             keyHandler.invPressed = false;
         }
+        if (gameState == playState) {
+            player.tiling();
+            player.recoverLand();
+        }
         if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(
                 keyHandler.upPressed,

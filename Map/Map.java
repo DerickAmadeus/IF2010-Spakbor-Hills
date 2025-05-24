@@ -170,4 +170,14 @@ public void loadMap() {
         }
     }
     
+    public void setTile(int x, int y, int tileID) {
+        int col = x / gp.tileSize;
+        int row = y / gp.tileSize;
+
+        if (col >= 0 && col < gp.worldCol && row >= 0 && row < gp.worldRow) {
+            tiles[col][row] = tileID;
+        }
+    }
+
+    
 }

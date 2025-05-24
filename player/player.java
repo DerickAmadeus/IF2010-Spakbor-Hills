@@ -44,6 +44,8 @@ public class Player {
     private Equipment equippedItem;
     private int energy;
     private static final int MAX_ENERGY = 100; 
+    private Tile tile; 
+
 
     // Cooldown for interaction to prevent multiple interactions from a single long key press
     private int interactionCooldown = 0;
@@ -64,7 +66,6 @@ public class Player {
         solidAreaDefaultY = solidArea.y;
 
         interactionArea = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
-
         setDefaultValues();
         getPlayerImage();
     }
@@ -428,10 +429,9 @@ public class Player {
     // Action method for interaction
     public void interact()  {
         // Placeholder for interaction logic
-        Tile tile = gp.map.getTile(interactionArea.x, interactionArea.y);
+        tile = gp.map.getTile(interactionArea.x, interactionArea.y);
         if (tile == null) {
             System.out.println("No tile found at interaction area.");
-            setEnergy(getEnergy()-10);
             return;
         } else {
         System.out.println("Interacting with tile at: " + interactionArea.x + ", " + interactionArea.y + " (Tile: " + tile.getTileName() + ")");}
@@ -492,5 +492,24 @@ public class Player {
         }
     }
 
+    public void tiling() {
+        Tile tile = gp.map.getTile(interactionArea.x, interactionArea.y);
+        if (equippedItem != null && equippedItem.getName().equals("Hoe") && energy > -20 && keyH.enterPressed) {
+            if (tile != null && tile.getTileName().equals("Grass")) {
+                gp.map.setTile(interactionArea.x, interactionArea.y, 10);
+                setEnergy(getEnergy() - 5);
+            }
+        }
+    }
+
+    public void recoverLand() {
+        Tile tile = gp.map.getTile(interactionArea.x, interactionArea.y);
+        if ( equippedItem != null && equippedItem.getName().equals("Pickaxe") && energy > -20 && keyH.enterPressed) {
+            if ( tile != null && tile.getTileName().equals("Soil")) {
+                gp.map.setTile(interactionArea.x, interactionArea.y, 0);
+                setEnergy(getEnergy() - 5);
+            }
+        }
+    }
 
 }
