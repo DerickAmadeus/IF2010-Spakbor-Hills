@@ -4,6 +4,7 @@ import main.GamePanel;
 import main.KeyHandler;
 import Map.Tile;
 import java.awt.image.BufferedImage;
+import java.awt.Font;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
@@ -40,7 +41,9 @@ public class Player {
     private final int ANIMATION_SPEED = 10; // Frames per animation sprite
     private boolean isActuallyMoving = false;
     private Inventory<Item> inventory;
-    private boolean inventoryOpen = false;
+    private Equipment equippedItem;
+    private int energy;
+    private static final int MAX_ENERGY = 100; 
 
     // Cooldown for interaction to prevent multiple interactions from a single long key press
     private int interactionCooldown = 0;
@@ -48,6 +51,7 @@ public class Player {
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
         this.keyH = keyH;
+        this.energy = MAX_ENERGY;
         this.inventory = new Inventory<>(gp);
         loadInitialEquipment();
         loadInitialFish();
@@ -206,7 +210,7 @@ public class Player {
 
         boolean isAttemptingMoveByKeyPress = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
 
-        if (isAttemptingMoveByKeyPress && !inventoryOpen) {
+        if (isAttemptingMoveByKeyPress && gp.gameState == gp.playState) {
             if (keyH.upPressed) {
                 direction = "up"; lastMoveDirection = "up";
             } else if (keyH.downPressed) {
@@ -272,10 +276,8 @@ public class Player {
         if (keyH.interactPressed && interactionCooldown == 0) {
             interact();
             keyH.interactPressed = false;
-        } else if (keyH.invPressed) {
-            inventoryOpen = !inventoryOpen; // Toggle buka/tutup
-            keyH.invPressed = false; // Reset agar tidak toggle terus
-        }
+        } 
+
 
 
         // Determine final animation state
@@ -360,7 +362,57 @@ public class Player {
             int interactionScreenY = interactionArea.y - y + screenY;
             g2.fillRect(interactionScreenX, interactionScreenY, interactionArea.width, interactionArea.height);
         }
+        if (equippedItem != null && equippedItem.getIcon() != null) {
+            int handX = screenX + gp.tileSize / 2; // atur posisi relatif tangan
+            int handY = screenY + gp.tileSize / 2;
+
+            g2.drawImage(equippedItem.getIcon(), handX, handY, gp.tileSize / 2, gp.tileSize / 2, null);
+        }
+
     }
+    public void drawEnergyBar(Graphics2D g2) {
+        int barX = 20;
+        int barY = 20;
+        int barWidth = 200;
+        int barHeight = 30;
+
+        // Hitung proporsi energi
+        double percent = (double) energy / MAX_ENERGY;
+        int energyWidth = (int) (barWidth * percent);
+
+        // Gambar background bar (gelap)
+        g2.setColor(Color.darkGray);
+        g2.fillRoundRect(barX, barY, barWidth, barHeight, 10, 10);
+
+        // Tentukan warna berdasarkan persentase energi
+        Color energyColor;
+        if (percent > 0.5) {
+            energyColor = Color.green;
+        } else if (percent > 0.3) {
+            energyColor = Color.yellow;
+        } else if (percent > 0.15) {
+            energyColor = Color.orange;
+        } else {
+            energyColor = Color.red;
+        }
+
+        // Gambar bar energi dengan warna yang sesuai
+        g2.setColor(energyColor);
+        g2.fillRoundRect(barX, barY, energyWidth, barHeight, 10, 10);
+
+        // Gambar border luar
+        g2.setColor(Color.black);
+        g2.drawRoundRect(barX, barY, barWidth, barHeight, 10, 10);
+
+        // Tampilkan teks energi (di tengah bar)
+        g2.setColor(Color.white);
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
+        String energyText = energy + " / " + MAX_ENERGY;
+        int textX = barX + (barWidth - g2.getFontMetrics().stringWidth(energyText)) / 2;
+        int textY = barY + barHeight - 8;
+        g2.drawString(energyText, textX, textY);
+    }
+
 
     // Getters
     public int getX() { return x; }
@@ -371,7 +423,6 @@ public class Player {
     public String getLastMoveDirection() { return lastMoveDirection; } // Last direction player moved or faced
     public Rectangle getInteractionArea() { return interactionArea; } // The tile-aligned interaction area
     public Inventory<Item> getInventory() { return inventory;}
-    public boolean getInventoryOpen() {return inventoryOpen;}
 
 
     // Action method for interaction
@@ -380,6 +431,7 @@ public class Player {
         Tile tile = gp.map.getTile(interactionArea.x, interactionArea.y);
         if (tile == null) {
             System.out.println("No tile found at interaction area.");
+            setEnergy(getEnergy()-10);
             return;
         } else {
         System.out.println("Interacting with tile at: " + interactionArea.x + ", " + interactionArea.y + " (Tile: " + tile.getTileName() + ")");}
@@ -397,6 +449,48 @@ public class Player {
             // Add logic for interacting with building tile
         } else {
             System.out.println("No interaction available for this tile.");
+            setEnergy(getEnergy()+10);
         }
     }
+
+    public void openInventory(Graphics2D g2) {
+        inventory.drawInventory(g2);
+    }
+
+    public Item getEquippedItem() {
+        return equippedItem;
+    }
+    public void equipItem(Equipment equipment) {
+        if (equipment == null) {
+            // Unequip: kosongkan equipment
+            equippedItem = null;
+            System.out.println("Unequipped.");
+            return;
+        }
+
+        // Equip item baru
+        equippedItem = equipment;
+        System.out.println("Equipped: " + equipment.getName());
+    }
+
+    public int getEnergy() {
+        return energy;
+    }
+
+    public void setEnergy(int energy) {
+        if (energy > MAX_ENERGY) {
+            this.energy = MAX_ENERGY;
+        } else if (energy < 0 && energy > -20) {
+            // masih print
+            System.out.println("Warning: Energy is low! Action can still be performed, but consider sleeping.");
+            this.energy = energy;
+        } else if (energy < -20) {
+            // msdih print
+            System.out.println("Error: Energy is too low! sleeping rn...");
+        } else {
+            this.energy = energy;
+        }
+    }
+
+
 }

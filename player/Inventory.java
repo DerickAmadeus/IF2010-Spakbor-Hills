@@ -1,5 +1,6 @@
 package player;
 
+import Items.Equipment;
 import Items.Item;
 import java.awt.*;
 import java.util.ArrayList;
@@ -22,6 +23,10 @@ public class Inventory<T extends Item> {
     private final int VIEWPORT_HEIGHT = 300; // Tinggi area tampilan inventory (sama seperti height drawRect)
     private final int MAX_ROWS_ON_SCREEN = VIEWPORT_HEIGHT / SLOT_SIZE;
 
+    // selecting
+    public int selectedItemIndex = -1;
+    public int optionCommandNum = 0; // untuk navigasi menu opsi
+
 
     public Inventory(GamePanel gp) {
         items = new HashMap<>();
@@ -29,19 +34,23 @@ public class Inventory<T extends Item> {
         this.gp = gp;
     }
 
-    public void drawInventory(Graphics2D g2) {
-        // frame
+    public void drawSubwindow(Graphics2D g2, int frameX, int frameY, int frameWidth, int frameHeight) {
         Color c = new Color(0,0,0, 210);
-        int frameX = gp.tileSize*9;
-        int frameY = gp.tileSize;
-        int frameWidth = gp.tileSize*6;
-        int frameHeight = gp.tileSize*5;
         g2.setColor(c);
         g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
         c = new Color(255,255,255);
         g2.setColor(c);
         g2.setStroke(new BasicStroke(5));
         g2.drawRoundRect(frameX+5, frameY+5, frameWidth-10, frameHeight-10, 25, 25);
+    }
+
+    public void drawInventory(Graphics2D g2) {
+        // frame
+        int frameX = gp.tileSize*9;
+        int frameY = gp.tileSize;
+        int frameWidth = gp.tileSize*6;
+        int frameHeight = gp.tileSize*5;
+        drawSubwindow(g2, frameX, frameY, frameWidth, frameHeight);
 
         //slot
         final int slotXStart = frameX + 20;
@@ -59,6 +68,13 @@ public class Inventory<T extends Item> {
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(3));
         g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
+
+        // DRAW DESC WINDOW
+        int dFrameX = frameX;
+        int dFrameY = frameY + frameHeight;
+        int dFrameWidth = frameWidth;
+        int dFrameHeight = gp.tileSize * 3;
+        drawSubwindow(g2, dFrameX, dFrameY, dFrameWidth, dFrameHeight);
 
         int index = 0;
         for (T item : itemContainer) {
@@ -97,8 +113,76 @@ public class Inventory<T extends Item> {
 
             index++;
         }
+        // AFTER drawing all items...
 
+        // Hitung index dari cursor saat ini
+        int selectedIndex = slotRow * ITEMS_PER_ROW + slotCol;
 
+        if (selectedIndex >= 0 && selectedIndex < itemContainer.size()) {
+            T selectedItem = itemContainer.get(selectedIndex);
+            if (selectedItem != null) {
+                // Gambar nama dan deskripsi
+                g2.setColor(Color.white);
+                g2.setFont(new Font("Arial", Font.BOLD, 18));
+                g2.drawString(selectedItem.getName(), dFrameX + 20, dFrameY + 30);
+
+                g2.setFont(new Font("Arial", Font.PLAIN, 14));
+                // Bungkus teks deskripsi agar tidak keluar jendela
+                drawWrappedText(g2, selectedItem.getDesc(), dFrameX + 20, dFrameY + 55, dFrameWidth - 40, 18);
+            }
+        }
+    }
+
+    private void drawWrappedText(Graphics2D g2, String text, int x, int y, int maxWidth, int lineHeight) {
+        FontMetrics metrics = g2.getFontMetrics();
+        String[] words = text.split(" ");
+        StringBuilder line = new StringBuilder();
+        int drawY = y;
+
+        for (String word : words) {
+            String testLine = line + word + " ";
+            int lineWidth = metrics.stringWidth(testLine);
+            if (lineWidth > maxWidth) {
+                g2.drawString(line.toString(), x, drawY);
+                line = new StringBuilder(word + " ");
+                drawY += lineHeight;
+            } else {
+                line.append(word).append(" ");
+            }
+        }
+        if (!line.toString().isEmpty()) {
+            g2.drawString(line.toString(), x, drawY);
+        }
+    }
+    public void drawItemOptionWindow(Graphics2D g2) {
+        if (selectedItemIndex < 0 || selectedItemIndex >= itemContainer.size()) return;
+
+        T item = itemContainer.get(selectedItemIndex);
+        int x = 200, y = 100, w = 400, h = 150;
+
+        drawSubwindow(g2, x, y, w, h);
+
+        g2.setColor(Color.white);
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+
+        int textX = x + 40;
+        int textY = y + 50;
+        String[] options;
+
+        if (item instanceof Equipment) {
+            options = new String[]{"Equip/Unequip", "Cancel"};
+        } else {
+            options = new String[]{"Use", "Drop", "Cancel"};
+        }
+
+        for (int i = 0; i < options.length; i++) {
+            if (i == optionCommandNum) {
+                g2.setColor(Color.yellow);
+            } else {
+                g2.setColor(Color.white);
+            }
+            g2.drawString(options[i], textX, textY + (i * 40));
+        }
     }
 
     public void updateInventoryCursor(boolean up, boolean down, boolean left, boolean right) {
@@ -138,11 +222,25 @@ public class Inventory<T extends Item> {
             slotRow = maxIndex / ITEMS_PER_ROW;
         }
     }
+    public void selectCurrentItem() {
+        int selectedIndex = slotRow * ITEMS_PER_ROW + slotCol;
+        if (selectedIndex >= 0 && selectedIndex < itemContainer.size()) {
+            selectedItemIndex = selectedIndex; // ← Simpan index item
+            optionCommandNum = 0; // ← Reset opsi ke default (misal: "Equip")
+            gp.gameState = gp.itemOptionState; // ← Pindah ke opsi
+        }
+    }
 
     private int getItemCountTotal() {
         return itemContainer.size();
     }
 
+    public T getSelectedItem() {
+        if (selectedItemIndex >= 0 && selectedItemIndex < itemContainer.size()) {
+            return itemContainer.get(selectedItemIndex);
+        }
+        return null;
+    }
 
     public T getItem(T key) {
         return items.containsKey(key) ? key : null;
