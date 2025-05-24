@@ -7,28 +7,39 @@ import java.io.InputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 public class Map {
     GamePanel gp;
-    public Tile[] tileimage; // Assuming you have 10 different tiles
-    public int tiles[][];
+    public Tile[] tileimage;
+    public int tiles[][]; // Data tile untuk peta saat ini
+
+    public int currentMapWorldCol;
+    public int currentMapWorldRow;
+
+
+    public int currentMapID = 0; // ID peta yang sedang aktif
+    public String[] mapFilePaths = {
+            "/Map/maps/farm_map.txt",   
+            "/Map/maps/forest_map.txt", 
+            "/Map/maps/mountain_lake_map.txt", 
+            // ... tambahkan semua path file peta kamu di sini
+    };
 
     public Map(GamePanel gp) {
-        // this.width = width;
-        // this.height = height;
-        this.tileimage = new Tile[100]; // Initialize tile images array
-        this.tiles = new int[gp.worldCol][gp.worldRow]; // Initialize tiles array
-        this.gp = gp; // Initialize GamePanel if needed 
-        tileimage = new Tile[100]; // Initialize tile images array
-        getTileImage(); // Load tile images
-        loadMap();
+        this.gp = gp;
+        this.tileimage = new Tile[100]; // Asumsi maks 100 jenis tile
+        getTileImage(); // Load semua jenis gambar tile (dilakukan sekali)
+
+        // Langsung load peta awal berdasarkan currentMapID
+        loadMapByID(this.currentMapID);
     }
 
     
     public void getTileImage() {
         try {
             // GRASS
-            tileimage[0] = new Tile("Grass", '.', true);
+            tileimage[0] = new Tile("grass", '.', true);
             tileimage[0].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grass.png"));
 
             tileimage[1] = new Tile("grass", '.', true);
@@ -80,60 +91,66 @@ public class Map {
         }
     }
 
-public void loadMap() {
-    try {
-        InputStream is = getClass().getResourceAsStream("/Map/map.txt");
-        if (is == null) {
-            System.err.println("FATAL ERROR: File /Map/map.txt tidak ditemukan!");
-            // Mungkin isi semua tiles dengan tile error atau default
-            for (int r = 0; r < gp.worldRow; r++) {
-                for (int c = 0; c < gp.worldCol; c++) {
-                    tiles[c][r] = 0; // Default ke rumput jika map tidak ada
-                }
+    private void loadMapByPath(String mapFilePath) { // Perhatikan: 'private' jika hanya dipanggil dari loadMapByID
+        try {
+            InputStream is = getClass().getResourceAsStream(mapFilePath);
+            if (is == null) {
+                System.err.println("FATAL ERROR: File " + mapFilePath + " tidak ditemukan!");
+                createEmptyMap(gp.maxScreenCol, gp.maxScreenRow); // Gunakan dimensi default GP jika file tidak ada
+                return;
             }
-            return;
-        }
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
-        for (int row = 0; row < gp.worldRow || row < gp.worldCol; row++) { // Loop untuk setiap baris peta
-            String line = br.readLine();
-            if (line == null) {
-                System.err.println("Error: map.txt berakhir lebih awal pada baris ke-" + (row + 1) + ". Sisa peta akan diisi tile default (0).");
-                // Isi sisa baris dengan tile default jika file terlalu pendek
-                for (int rFiller = row; rFiller < gp.worldRow; rFiller++) {
-                    for (int cFiller = 0; cFiller < gp.worldCol; cFiller++) {
-                        tiles[cFiller][rFiller] = 0; // Tile default (misalnya rumput)
+            ArrayList<String> lines = new ArrayList<>();
+            String currentLine;
+            while ((currentLine = br.readLine()) != null) {
+                lines.add(currentLine);
+            }
+            br.close();
+
+            if (lines.isEmpty()) {
+                System.err.println("Map file is empty: " + mapFilePath);
+                createEmptyMap(gp.maxScreenCol, gp.maxScreenRow);
+                return;
+            }
+
+            this.currentMapWorldRow = lines.size();
+            if (this.currentMapWorldRow > 0 && lines.get(0) != null) {
+                this.currentMapWorldCol = lines.get(0).split(" ").length;
+            } else {
+                this.currentMapWorldCol = 0;
+            }
+
+            this.tiles = new int[this.currentMapWorldCol][this.currentMapWorldRow];
+
+            for (int row = 0; row < this.currentMapWorldRow; row++) {
+                String lineData = lines.get(row);
+                String[] numbers = lineData.split(" ");
+                for (int col = 0; col < this.currentMapWorldCol; col++) {
+                    if (col < numbers.length) {
+                        try {
+                            tiles[col][row] = Integer.parseInt(numbers[col].trim());
+                        } catch (NumberFormatException e) {
+                            System.err.println("Error parsing number in " + mapFilePath + " at row " + (row + 1) + ", col " + (col + 1) + ". Val: '" + numbers[col] + "'. Using 0.");
+                            tiles[col][row] = 0;
+                        }
+                    } else {
+                        tiles[col][row] = 0;
                     }
                 }
-                break; // Keluar dari loop baris
             }
+            System.out.println("Map loaded: " + mapFilePath + " Dimensions: " + this.currentMapWorldCol + "x" + this.currentMapWorldRow);
 
-            String[] numbers = line.split(" ");
-
-            for (int col = 0; col < gp.worldCol; col++) { // Loop untuk setiap kolom dalam baris saat ini
-                if (col < numbers.length) { // Pastikan ada cukup angka di baris ini
-                    try {
-                        tiles[col][row] = Integer.parseInt(numbers[col].trim()); // .trim() untuk menghapus spasi ekstra
-                    } catch (NumberFormatException e) {
-                        System.err.println("Error parsing angka di map.txt pada baris " + (row + 1) + ", kolom " + (col + 1) + ". Nilai: '" + numbers[col] + "'. Menggunakan tile default (0).");
-                        tiles[col][row] = 0; // Tile default jika ada error parsing
-                    }
-                } else {
-                    // Jika baris di map.txt lebih pendek dari gp.worldCol
-                    System.err.println("Peringatan: Baris " + (row + 1) + " di map.txt lebih pendek dari lebar peta. Kolom " + (col + 1) + " dst. diisi tile default (0).");
-                    tiles[col][row] = 0; // Tile default
-                }
-            }
+        } catch (IOException e) {
+            System.err.println("IOException loading map " + mapFilePath + ": " + e.getMessage());
+            e.printStackTrace();
+            createEmptyMap(gp.maxScreenCol, gp.maxScreenRow);
+        } catch (Exception e) {
+            System.err.println("Unexpected error loading map " + mapFilePath + ": " + e.getMessage());
+            e.printStackTrace();
+            createEmptyMap(gp.maxScreenCol, gp.maxScreenRow);
         }
-        br.close();
-    } catch (IOException e) { // Lebih spesifik untuk error I/O
-        System.err.println("IOException saat memuat peta: " + e.getMessage());
-        e.printStackTrace();
-    } catch (Exception e) { // Untuk error tak terduga lainnya
-        System.err.println("Error tak terduga saat memuat peta: " + e.getMessage());
-        e.printStackTrace();
     }
-}
 
     public void draw (Graphics2D g2) {
         int worldCol = 0;
@@ -156,6 +173,41 @@ public void loadMap() {
                 worldRow ++; // Move to the next row
             }
         }
+    }
+
+    public boolean loadMapByID(int mapID) {
+        if (mapID >= 0 && mapID < mapFilePaths.length && mapFilePaths[mapID] != null) {
+            loadMapByPath(mapFilePaths[mapID]); // Panggil metode yang lama dengan path yang benar
+            this.currentMapID = mapID; // Update ID peta saat ini
+            System.out.println("Successfully switched to map ID: " + mapID);
+            return true;
+        } else {
+            System.err.println("Error: Invalid mapID (" + mapID + ") or map file path not configured.");
+            // Fallback: coba load peta default (ID 0) jika ada error
+            if (mapFilePaths.length > 0 && mapFilePaths[0] != null) {
+                loadMapByPath(mapFilePaths[0]);
+                this.currentMapID = 0;
+                System.err.println("Reverted to default map ID: 0");
+            } else {
+                // Jika peta default pun tidak ada, buat peta kosong
+                createEmptyMap(gp.maxScreenCol, gp.maxScreenRow); // Sesuaikan ukuran default
+            }
+            return false;
+        }
+    }
+
+
+    private void createEmptyMap(int cols, int rows) {
+        // ... (isi method createEmptyMap seperti yang sudah kamu buat/modifikasi sebelumnya) ...
+        this.currentMapWorldCol = cols;
+        this.currentMapWorldRow = rows;
+        this.tiles = new int[this.currentMapWorldCol][this.currentMapWorldRow];
+        for (int r = 0; r < this.currentMapWorldRow; r++) {
+            for (int c = 0; c < this.currentMapWorldCol; c++) {
+                this.tiles[c][r] = 0;
+            }
+        }
+        System.out.println("Created/Reverted to empty map (" + cols + "x" + rows + ")");
     }
 
 
