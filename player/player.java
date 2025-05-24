@@ -348,5 +348,6 @@ public class Player {
         } else {
             System.out.println("No interaction available for this tile.");
         }
+        interactionCooldown = 300; // Delay for interaction key (about 0.25s if 60 FPS)
     }
 }

@@ -8,7 +8,6 @@ import java.awt.image.BufferedImage;
 
 import player.Player; // Importing player class from player package
 import Map.Map; // Importing map class from Map package
-import player.Inventory;
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -136,7 +135,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         player.drawPlayer(g2);
         if(player.getInventoryOpen()) {
-             player.getInventory().drawInventory(g2);
+            player.getInventory().drawInventory(g2);
         }
 
     }
