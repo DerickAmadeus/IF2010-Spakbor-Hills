@@ -4,11 +4,15 @@ import Items.Item;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import main.GamePanel;
 
 public class Inventory<T extends Item> {
 
     private HashMap<T, Integer> items;
     private ArrayList<T> itemContainer;
+    GamePanel gp;
+    private int slotCol = 0;
+    private int slotRow = 0;
 
     private int scrollOffset = 0;
     private final int ITEMS_PER_ROW = 5;
@@ -17,77 +21,92 @@ public class Inventory<T extends Item> {
 
     private final int VIEWPORT_HEIGHT = 300; // Tinggi area tampilan inventory (sama seperti height drawRect)
 
-    public Inventory() {
+    public Inventory(GamePanel gp) {
         items = new HashMap<>();
         itemContainer = new ArrayList<>();
+        this.gp = gp;
     }
 
-    public void draw(Graphics2D g2) {
-        int startX = 100;
-        int startY = 100;
-        int width = 400;
-        int height = VIEWPORT_HEIGHT;
+    public void drawInventory(Graphics2D g2) {
+        // frame
+        Color c = new Color(0,0,0, 210);
+        int frameX = gp.tileSize*9;
+        int frameY = gp.tileSize;
+        int frameWidth = gp.tileSize*6;
+        int frameHeight = gp.tileSize*5;
+        g2.setColor(c);
+        g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
+        c = new Color(255,255,255);
+        g2.setColor(c);
+        g2.setStroke(new BasicStroke(5));
+        g2.drawRoundRect(frameX+5, frameY+5, frameWidth-10, frameHeight-10, 25, 25);
 
-        // Background semi-transparan
-        g2.setColor(new Color(0, 0, 0, 200));
-        g2.fillRect(startX, startY, width, height);
+        //slot
+        final int slotXStart = frameX + 20;
+        final int slotYStart = frameY + 20;
+        int slotX = slotXStart;
+        int slotY = slotYStart;
 
-        // Border dan judul
-        g2.setColor(Color.WHITE);
-        g2.drawRect(startX, startY, width, height);
-        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 16f));
-        g2.drawString("Inventory", startX + 10, startY + 25);
+        // CURSOR
+        int cursorX = slotXStart + (gp.tileSize * slotCol);
+        int cursorY = slotYStart + (gp.tileSize * slotRow);
+        int cursorWidth = gp.tileSize;
+        int cursorHeight = gp.tileSize;
 
-        // Mulai menggambar grid item
-        int x = startX + SLOT_PADDING;
-        int y = startY + 40;
+        // DRAW CURSOR
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
 
-        int rowsVisible = (height - 40) / (SLOT_SIZE + SLOT_PADDING);
-        int maxVisibleItems = rowsVisible * ITEMS_PER_ROW;
+        int index = 0;
+        for (T item : itemContainer) {
+            int col = index % ITEMS_PER_ROW;
+            int row = index / ITEMS_PER_ROW;
 
-        ArrayList<T> itemsToShow = getItemContainer();
-        int endIndex = Math.min(scrollOffset + maxVisibleItems, itemsToShow.size());
+            int itemX = slotXStart + col * gp.tileSize;
+            int itemY = slotYStart + row * gp.tileSize;
 
-        for (int i = scrollOffset; i < endIndex; i++) {
-            T item = itemsToShow.get(i);
-            int row = (i - scrollOffset) / ITEMS_PER_ROW;
-            int col = (i - scrollOffset) % ITEMS_PER_ROW;
+            if (item.getIcon() != null) {
+                int padding = 6;
+                g2.drawImage(item.getIcon(), itemX, itemY, gp.tileSize, gp.tileSize, null);
+            }
 
-            int boxX = x + (SLOT_SIZE + SLOT_PADDING) * col;
-            int boxY = y + (SLOT_SIZE + SLOT_PADDING) * row;
+            // Gambarkan jumlah item
+            Integer count = getItemCount(item);
+            if (count != null && count > 1) {
+                g2.setColor(Color.white);
+                g2.setFont(new Font("Arial", Font.BOLD, 12));
+                String countStr = String.valueOf(count);
+                int stringWidth = g2.getFontMetrics().stringWidth(countStr);
+                int stringHeight = g2.getFontMetrics().getHeight();
 
-            // Gambar kotak item
-            g2.setColor(Color.DARK_GRAY);
-            g2.fillRect(boxX, boxY, SLOT_SIZE, SLOT_SIZE);
-            g2.setColor(Color.WHITE);
-            g2.drawRect(boxX, boxY, SLOT_SIZE, SLOT_SIZE);
+                g2.drawString(countStr, itemX + gp.tileSize - stringWidth - 4, itemY + gp.tileSize - 4);
+            }
 
-            // Nama item dan jumlah
-            g2.setFont(g2.getFont().deriveFont(10f));
-            g2.drawString(item.getName(), boxX + 5, boxY + 15);
-            g2.drawString("x" + getItemCount(item), boxX + 5, boxY + 30);
+            index++;
         }
+
     }
 
-    public void scrollUp() {
-        if (scrollOffset - ITEMS_PER_ROW >= 0) {
-            scrollOffset -= ITEMS_PER_ROW;
+    public void updateInventoryCursor(boolean up, boolean down, boolean left, boolean right) {
+        if (up && slotRow > 0) {
+            slotRow--;
         }
-    }
-
-    public void scrollDown() {
-        int totalItems = itemContainer.size();
-        int rowsNeeded = (int) Math.ceil(totalItems / (double) ITEMS_PER_ROW);
-        int totalHeight = rowsNeeded * (SLOT_SIZE + SLOT_PADDING);
-        int maxOffset = Math.max(0, totalItems - getMaxVisibleItems());
-
-        if (scrollOffset + ITEMS_PER_ROW < totalItems && scrollOffset + ITEMS_PER_ROW <= maxOffset) {
-            scrollOffset += ITEMS_PER_ROW;
+        if (down && slotRow < getMaxRow()) {
+            slotRow++;
         }
+        if (left && slotCol > 0) {
+            slotCol--;
+        }
+        if (right && slotCol < ITEMS_PER_ROW - 1) {
+            slotCol++;
+        }
+
     }
 
-    private int getMaxVisibleItems() {
-        return ((VIEWPORT_HEIGHT - 40) / (SLOT_SIZE + SLOT_PADDING)) * ITEMS_PER_ROW;
+    private int getMaxRow() {
+        int itemCount = 100;
+        return (itemCount - 1) / ITEMS_PER_ROW; // Jumlah baris maksimum
     }
 
     public T getItem(T key) {

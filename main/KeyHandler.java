@@ -19,6 +19,7 @@ public class KeyHandler implements KeyListener{
 
         if (code == KeyEvent.VK_W) {
             upPressed = true; // Set upPressed to true when W key is pressed
+            
             System.out.println("W key pressed"); // Move up
         } else if (code == KeyEvent.VK_A) {
             leftPressed = true; // Set leftPressed to true when A key is pressed

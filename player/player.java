@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
 
+import Items.Equipment;
+import Items.Fish;
 import Items.Item;
 
 import java.awt.Color;
@@ -37,8 +39,11 @@ public class Player {
     private int spriteNum = 0;
     private final int ANIMATION_SPEED = 10; // Frames per animation sprite
     private boolean isActuallyMoving = false;
-    private Inventory<Item> inventory = new Inventory<>();
+    private Inventory<Item> inventory;
     private boolean inventoryOpen = false;
+
+    Fish carp = new Fish("Carp", "ini carp", 13, 13, "Any", "Any", "Pond", "Common");
+    Equipment fishrod = new Equipment("Fishing Rod", "ini fishing rod", 19, 19);
 
 
     // Cooldown for interaction to prevent multiple interactions from a single long key press
@@ -47,6 +52,11 @@ public class Player {
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
         this.keyH = keyH;
+        this.inventory = new Inventory<>(gp);
+        for(int i = 0; i < 3; i++) {
+            this.inventory.addItem(carp, 1);
+        }
+        this.inventory.addItem(fishrod, 1);
 
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
@@ -146,7 +156,7 @@ public class Player {
 
         boolean isAttemptingMoveByKeyPress = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
 
-        if (isAttemptingMoveByKeyPress) {
+        if (isAttemptingMoveByKeyPress && !inventoryOpen) {
             if (keyH.upPressed) {
                 direction = "up"; lastMoveDirection = "up";
             } else if (keyH.downPressed) {
