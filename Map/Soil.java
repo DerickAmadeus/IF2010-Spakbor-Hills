@@ -10,7 +10,7 @@ public class Soil extends Tile {
     public Soil(Seeds seedPlanted) {
         super("Soil", 'S', true);
         this.wetCooldown = 5;
-        this.seedPlanted = null;
+        this.seedPlanted = seedPlanted;
     }
 
     //Getters
@@ -23,6 +23,7 @@ public class Soil extends Tile {
     //Actions
 
     public void plantSeed(Seeds seed) {
+
         if (this.seedPlanted == null) {
             this.seedPlanted = seed;
             System.out.println("Seed " + seed.getName() + " has been planted.");

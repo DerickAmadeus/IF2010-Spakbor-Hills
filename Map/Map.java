@@ -216,21 +216,46 @@ public void loadMap() {
         }
     }
 
-    public void plantSeedAtTile(int x, int y, Seeds seed) {
-        int col = x / gp.tileSize;
-        int row = y / gp.tileSize;
+    public void plantSeedAtTile(int worldX, int worldY, Seeds seedToPlant) {
+        int col = worldX / gp.tileSize;
+        int row = worldY / gp.tileSize;
 
+        // Asumsi gp.worldCol/Row adalah dimensi peta saat ini yang benar dari GamePanel
+        // Jika Map.java sudah jadi MapManager, gunakan this.currentMapWorldCol/Row
         if (col >= 0 && col < gp.worldCol && row >= 0 && row < gp.worldRow) {
-            int tileID = tiles[col][row];
-            Tile tile = tileimage[tileID];
-            
-            if (tile instanceof Soil) {
-                Soil soilTile = (Soil) tile;
-                soilTile.plantSeed(seed);
-                tiles[col][row] = seed.getTileIndex();
+            int currentTileGridID = this.tiles[col][row];
+            // Tile currentTilePrototype = this.tileimage[currentTileGridID]; // Tidak perlu ambil object prototype-nya jika hanya mau cek ID
+
+            // Hanya boleh menanam di tile yang merupakan "Empty Soil" (misal, ID 10)
+            if (currentTileGridID == 10) { // ID 10 adalah prototype Soil(null) kamu
+                
+                // Langsung dapatkan ID tile baru untuk bibit yang ditanam
+                int newPlantedTileID = seedToPlant.getTileIndex(); // Dari Seeds.java
+
+                if (newPlantedTileID != -1 && newPlantedTileID != currentTileGridID) { 
+                    this.tiles[col][row] = newPlantedTileID; // GANTI ID TILE DI GRID PETA
+                    System.out.println(seedToPlant.getName() + " planted at (" + col + "," + row + "). New Tile ID: " + newPlantedTileID);
+                } else {
+                    System.out.println("Cannot plant: Invalid new tile ID ("+ newPlantedTileID +") for " + seedToPlant.getName());
+                }
             } else {
-                System.out.println("Tile at (" + col + "," + row + ") is not Soil.");
+                // Jika bukan tanah kosong (ID 10), cek apakah tile ini punya bibit (untuk debug)
+                Tile targetTile = this.tileimage[currentTileGridID];
+                String plantedStatus = "is not Soil or unknown";
+                if (targetTile instanceof Soil) {
+                    Soil s = (Soil) targetTile;
+                    if (s.getSeedPlanted() != null) {
+                        plantedStatus = "is already planted with " + s.getSeedPlanted().getName();
+                    } else {
+                        // Ini bisa terjadi jika ID-nya bukan 10 tapi Soil(null), misal ID untuk tanah yang sudah dicangkul tapi belum ditanami.
+                        // Untuk sekarang, kita anggap hanya ID 10 yang bisa ditanami dari awal.
+                        plantedStatus = "is Soil but not the initial empty soil (ID 10) or its prototype is empty.";
+                    }
+                }
+                System.out.println("Cannot plant: Tile at (" + col + "," + row + ") " + plantedStatus + ". Current Grid ID: " + currentTileGridID);
             }
+        } else {
+            System.out.println("Cannot plant: Coordinates (" + col + "," + row + ") are out of map bounds.");
         }
     }
 
