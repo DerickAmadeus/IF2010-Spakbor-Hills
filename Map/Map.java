@@ -2,6 +2,9 @@ package Map;
 
 import main.GamePanel;
 import javax.imageio.ImageIO;
+
+import Items.Seeds;
+
 import java.awt.Graphics2D;
 import java.io.InputStream;
 import java.io.BufferedReader;
@@ -19,7 +22,6 @@ public class Map {
         this.tileimage = new Tile[100]; // Initialize tile images array
         this.tiles = new int[gp.worldCol][gp.worldRow]; // Initialize tiles array
         this.gp = gp; // Initialize GamePanel if needed 
-        tileimage = new Tile[100]; // Initialize tile images array
         getTileImage(); // Load tile images
         loadMap();
     }
@@ -66,14 +68,49 @@ public class Map {
 
             // //DIRT
 
-            tileimage[10] = new Soil();
+            tileimage[10] = new Soil(null);
             tileimage[10].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dirt.png"));
 
             // Door
             tileimage[12] = new Building("Door", 'D', false, "House", 2, 4);
-            tileimage[12].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/door.png"));
+            tileimage[12].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dirt.png")); //door blm ada
 
+            // Planted Seeds
+            tileimage[13] = new Soil(new Seeds("Parsnip Seeds", "Grows quickly in Spring", 10, 20, 1, "Spring",13));
+            tileimage[13].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Parsnip Seeds.png"));
 
+            tileimage[14] = new Soil(new Seeds("Cauliflower Seeds", "Takes time but very profitable", 40, 80, 5, "Spring",14));
+            tileimage[14].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Cauliflower Seeds.png"));
+
+            tileimage[15] = new Soil(new Seeds("Potato Seeds", "Decent crop with good value", 25, 50, 3, "Spring",15));
+            tileimage[15].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Potato Seeds.png"));
+
+            tileimage[16] = new Soil(new Seeds("Wheat Seeds", "Grows fast in multiple seasons", 30, 60, 1, "Spring",16));
+            tileimage[16].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Wheat Seeds.png"));
+
+            tileimage[17] = new Soil(new Seeds("Blueberry Seeds", "Highly productive summer crop", 40, 80, 7, "Summer",17));
+            tileimage[17].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Blueberry Seeds.png"));
+
+            tileimage[18] = new Soil(new Seeds("Tomato Seeds", "Summer favorite", 25, 50, 3, "Summer",18));
+            tileimage[18].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Tomato Seeds.png"));
+
+            tileimage[19] = new Soil(new Seeds("Hot Pepper Seeds", "Spicy and grows quickly", 20, 40, 1, "Summer",19));
+            tileimage[19].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Hot Pepper Seeds.png"));
+
+            tileimage[20] = new Soil(new Seeds("Melon Seeds", "Juicy summer crop", 40, 80, 4, "Summer",20));
+            tileimage[20].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Melon Seeds.png"));
+
+            tileimage[21] = new Soil(new Seeds("Cranberry Seeds", "Profitable fall crop", 50, 100, 2, "Fall",21));
+            tileimage[21].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Cranberry Seeds.png"));
+
+            tileimage[22] = new Soil(new Seeds("Pumpkin Seeds", "Fall favorite with high value", 75, 150, 7, "Fall",22));
+            tileimage[22].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Pumpkin Seeds.png"));
+
+            tileimage[23] = new Soil(new Seeds("Wheat Seeds", "Also grows well in fall", 30, 60, 1, "Fall",23));
+            tileimage[23].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Wheat Seeds.png"));
+
+            tileimage[24] = new Soil(new Seeds("Grape Seeds", "Climbing fall crop", 30, 60, 3, "Fall",24));
+            tileimage[24].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Grape Seeds.png")); 
 
         } catch (Exception e) {
             System.out.println("Error loading tile images: " + e.getMessage());
@@ -169,7 +206,7 @@ public void loadMap() {
             return null; // Out of bounds
         }
     }
-    
+
     public void setTile(int x, int y, int tileID) {
         int col = x / gp.tileSize;
         int row = y / gp.tileSize;
@@ -179,5 +216,22 @@ public void loadMap() {
         }
     }
 
-    
+    public void plantSeedAtTile(int x, int y, Seeds seed) {
+        int col = x / gp.tileSize;
+        int row = y / gp.tileSize;
+
+        if (col >= 0 && col < gp.worldCol && row >= 0 && row < gp.worldRow) {
+            int tileID = tiles[col][row];
+            Tile tile = tileimage[tileID];
+            
+            if (tile instanceof Soil) {
+                Soil soilTile = (Soil) tile;
+                soilTile.plantSeed(seed);
+                tiles[col][row] = seed.getTileIndex();
+            } else {
+                System.out.println("Tile at (" + col + "," + row + ") is not Soil.");
+            }
+        }
+    }
+
 }

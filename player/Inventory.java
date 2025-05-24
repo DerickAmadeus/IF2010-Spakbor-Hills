@@ -2,6 +2,7 @@ package player;
 
 import Items.Equipment;
 import Items.Item;
+import Items.Seeds;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -171,8 +172,10 @@ public class Inventory<T extends Item> {
 
         if (item instanceof Equipment) {
             options = new String[]{"Equip/Unequip", "Cancel"};
+        } else if (item instanceof Seeds) {
+            options = new String[]{"Hold/Put Out", "Cancel"};
         } else {
-            options = new String[]{"Use", "Drop", "Cancel"};
+            options = new String[]{"damn"};
         }
 
         for (int i = 0; i < options.length; i++) {

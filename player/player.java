@@ -3,16 +3,14 @@ package player;
 import main.GamePanel;
 import main.KeyHandler;
 import Map.Tile;
+import Map.Soil;
 import java.awt.image.BufferedImage;
 import java.awt.Font;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
 
-import Items.Equipment;
-import Items.Fish;
-import Items.Item;
-
+import Items.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -41,7 +39,7 @@ public class Player {
     private final int ANIMATION_SPEED = 10; // Frames per animation sprite
     private boolean isActuallyMoving = false;
     private Inventory<Item> inventory;
-    private Equipment equippedItem;
+    private Item equippedItem;
     private int energy;
     private static final int MAX_ENERGY = 100; 
     private Tile tile; 
@@ -57,6 +55,7 @@ public class Player {
         this.inventory = new Inventory<>(gp);
         loadInitialEquipment();
         loadInitialFish();
+        loadInitialSeeds();
 
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
@@ -69,6 +68,38 @@ public class Player {
         setDefaultValues();
         getPlayerImage();
     }
+    public void loadInitialSeeds() {
+        Seeds parsnip = new Seeds("Parsnip Seeds", "Grows quickly in Spring", 10, 20, 1, "Spring", 13);
+        Seeds cauliflower = new Seeds("Cauliflower Seeds", "Takes time but valuable", 40, 80, 5, "Spring", 14);
+        Seeds potato = new Seeds("Potato Seeds", "Produces multiple potatoes", 25, 50, 3, "Spring", 15);
+        Seeds wheatSpring = new Seeds("Wheat Seeds", "Spring wheat crop", 30, 60, 1, "Spring", 16);
+
+        Seeds blueberry = new Seeds("Blueberry Seeds", "Produces blueberries", 40, 80, 7, "Summer", 17);
+        Seeds tomato = new Seeds("Tomato Seeds", "Popular summer crop", 25, 50, 3, "Summer", 18);
+        Seeds hotPepper = new Seeds("Hot Pepper Seeds", "Grows quickly", 20, 40, 1, "Summer", 19);
+        Seeds melon = new Seeds("Melon Seeds", "Large summer fruit", 40, 80, 4, "Summer", 20);
+
+        Seeds cranberry = new Seeds("Cranberry Seeds", "Multiple harvests", 50, 100, 2, "Fall", 21);
+        Seeds pumpkin = new Seeds("Pumpkin Seeds", "Big and valuable", 75, 150, 7, "Fall", 22);
+        Seeds wheatFall = new Seeds("Wheat Seeds", "Fall wheat crop", 30, 60, 1, "Fall", 23);
+        Seeds grape = new Seeds("Grape Seeds", "Climbing vine fruit", 30, 60, 3, "Fall", 24);
+
+        inventory.addItem(parsnip, 5);
+        inventory.addItem(cauliflower, 2);
+        inventory.addItem(potato, 4);
+        inventory.addItem(wheatSpring, 3);
+
+        inventory.addItem(blueberry, 2);
+        inventory.addItem(tomato, 6);
+        inventory.addItem(hotPepper, 3);
+        inventory.addItem(melon, 1);
+
+        inventory.addItem(cranberry, 2);
+        inventory.addItem(pumpkin, 1);
+        inventory.addItem(wheatFall, 4);
+        inventory.addItem(grape, 3);
+    }
+
     public void loadInitialEquipment() {
         Equipment wateringCan = new Equipment("Watering Can", "Untuk menyiram tanaman.", 10, 10);
         Equipment pickaxe = new Equipment("Pickaxe", "Untuk menghancurkan batu.", 15, 15);
@@ -364,10 +395,22 @@ public class Player {
             g2.fillRect(interactionScreenX, interactionScreenY, interactionArea.width, interactionArea.height);
         }
         if (equippedItem != null && equippedItem.getIcon() != null) {
-            int handX = screenX + gp.tileSize / 2; // atur posisi relatif tangan
+            int handX = screenX + gp.tileSize / 2; // posisi relatif tangan
             int handY = screenY + gp.tileSize / 2;
 
+            // Gambar item
             g2.drawImage(equippedItem.getIcon(), handX, handY, gp.tileSize / 2, gp.tileSize / 2, null);
+
+            // Dapatkan jumlah item di inventory
+            Integer count = inventory.getItemCount(equippedItem);
+            if (count != null && count > 1) {
+                g2.setColor(Color.white);
+                g2.setFont(new Font("Arial", Font.BOLD, 12));
+                String countStr = String.valueOf(count);
+                int stringWidth = g2.getFontMetrics().stringWidth(countStr);
+
+                g2.drawString(countStr, handX + gp.tileSize / 2 - stringWidth + 2, handY + gp.tileSize / 2 + 2);
+            }
         }
 
     }
@@ -438,8 +481,14 @@ public class Player {
 
         if (tile.getTileName().equals("Soil")) {
             System.out.println("Interacting with soil tile.");
+            Soil p = (Soil) tile;
+            if (p.getSeedPlanted() != null) {
+                System.out.println(p.getSeedPlanted());
+            } else {
+                System.out.println("gaada bibit");
+            }
             try {
-                Thread.sleep(5000); // Delay for 5 seconds
+                Thread.sleep(1000); // Delay for 5 seconds
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -460,8 +509,8 @@ public class Player {
     public Item getEquippedItem() {
         return equippedItem;
     }
-    public void equipItem(Equipment equipment) {
-        if (equipment == null) {
+    public void equipItem(Item item) {
+        if (item == null) {
             // Unequip: kosongkan equipment
             equippedItem = null;
             System.out.println("Unequipped.");
@@ -469,8 +518,8 @@ public class Player {
         }
 
         // Equip item baru
-        equippedItem = equipment;
-        System.out.println("Equipped: " + equipment.getName());
+        equippedItem = item;
+        System.out.println("Equipped: " + item.getName());
     }
 
     public int getEnergy() {
@@ -504,10 +553,30 @@ public class Player {
 
     public void recoverLand() {
         Tile tile = gp.map.getTile(interactionArea.x, interactionArea.y);
-        if ( equippedItem != null && equippedItem.getName().equals("Pickaxe") && energy > -20 && keyH.enterPressed) {
+        if (equippedItem != null && equippedItem.getName().equals("Pickaxe") && energy > -20 && keyH.enterPressed) {
             if ( tile != null && tile.getTileName().equals("Soil")) {
                 gp.map.setTile(interactionArea.x, interactionArea.y, 0);
                 setEnergy(getEnergy() - 5);
+            }
+        }
+    }
+
+    public void planting() {
+        Tile tile = gp.map.getTile(interactionArea.x, interactionArea.y);
+        boolean isLast = false;
+        if (equippedItem != null && equippedItem instanceof Seeds && energy > -20 && keyH.enterPressed && tile instanceof Soil) {
+            Soil planted = (Soil) tile;
+            if (tile != null && planted.getSeedPlanted() == null) {
+                if (inventory.getItemCount(equippedItem) == 1) {
+                    isLast = true;
+                }
+                Seeds planting = (Seeds) equippedItem;
+                gp.map.plantSeedAtTile(interactionArea.x, interactionArea.y, planting);
+                inventory.removeItem(equippedItem, 1);
+                setEnergy(getEnergy() - 5);
+                if (isLast) {
+                    equipItem(null);
+                }
             }
         }
     }

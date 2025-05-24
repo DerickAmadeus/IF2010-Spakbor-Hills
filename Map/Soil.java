@@ -7,7 +7,7 @@ public class Soil extends Tile {
     private Seeds seedPlanted;
 
 
-    public Soil() {
+    public Soil(Seeds seedPlanted) {
         super("Soil", 'S', true);
         this.wetCooldown = 5;
         this.seedPlanted = null;

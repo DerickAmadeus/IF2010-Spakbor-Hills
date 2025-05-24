@@ -4,7 +4,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import Items.Equipment;
-import Items.Item;
+import Items.*;
 
 import java.awt.Graphics2D;
 import java.io.IOException;
@@ -123,6 +123,7 @@ public class GamePanel extends JPanel implements Runnable {
         if (gameState == playState) {
             player.tiling();
             player.recoverLand();
+            player.planting();
         }
         if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(
@@ -158,6 +159,17 @@ public class GamePanel extends JPanel implements Runnable {
                 if (keyHandler.enterPressed) {
                     Item selected = player.getInventory().getSelectedItem();
                     if (selected instanceof Equipment eq) {
+                        if (player.getInventory().optionCommandNum == 0) {
+                            if (player.getEquippedItem() == eq) {
+                                player.equipItem(null);
+                            } else {
+                                player.equipItem(eq);
+                            }
+                            gameState = inventoryState;
+                        } else if (player.getInventory().optionCommandNum == 1) {
+                            gameState = inventoryState; // Cancel
+                        }
+                    }  else if (selected instanceof Seeds eq) {
                         if (player.getInventory().optionCommandNum == 0) {
                             if (player.getEquippedItem() == eq) {
                                 player.equipItem(null);
