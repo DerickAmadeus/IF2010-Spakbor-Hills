@@ -572,7 +572,7 @@ public class Player {
 
     public void tiling() {
         if (equippedItem != null && equippedItem.getName().equals("Hoe") && 
-            energy > -20 && keyH.enterPressed && interactionCooldown == 0) {
+            energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
             Tile tileToTill = gp.map.getTile(interactionArea.x, interactionArea.y);
             if (tileToTill != null && tileToTill.getTileName().equals("grass")) { // Pastikan nama "grass" konsisten
                 gp.map.setTileType(interactionArea.x, interactionArea.y, 10); // ID 10 adalah Soil kosong
@@ -586,7 +586,7 @@ public class Player {
 
     public void recoverLand() {
         if (equippedItem != null && equippedItem.getName().equals("Pickaxe") && 
-            energy > -20 && keyH.enterPressed && interactionCooldown == 0) {
+            energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
             Tile tileToTill = gp.map.getTile(interactionArea.x, interactionArea.y);
             if (tileToTill != null && tileToTill.getTileName().equals("soil")) { // Pastikan nama "grass" konsisten
                 Soil recoverable = (Soil) tileToTill;
@@ -603,7 +603,7 @@ public class Player {
 
     public void planting() {
         if (equippedItem != null && equippedItem instanceof Seeds && 
-            energy > -20 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState == gp.playState) {
+            energy >= -15 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState == gp.playState) {
             
             Tile tileToPlantOn = gp.map.getTile(interactionArea.x, interactionArea.y);
             boolean isLast = false;
@@ -632,7 +632,7 @@ public class Player {
     }
     public void watering() {
         if (equippedItem != null && equippedItem.getName().equals("Watering Can") && 
-            energy > -20 && keyH.enterPressed && interactionCooldown == 0) {
+            energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
             Tile tileToWater = gp.map.getTile(interactionArea.x, interactionArea.y);
             if (tileToWater != null && tileToWater instanceof Soil) { // Pastikan nama "grass" konsisten
                 Soil watered = (Soil) tileToWater;
@@ -645,7 +645,7 @@ public class Player {
     }
 
     public void harvesting() {
-        if (equippedItem == null && energy > -20 && keyH.enterPressed && interactionCooldown == 0) {
+        if (equippedItem == null && energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
             Tile tileToHarvest = gp.map.getTile(interactionArea.x, interactionArea.y);
             if (tileToHarvest != null && tileToHarvest instanceof Soil) {
                 Soil harvest = (Soil) tileToHarvest;
@@ -660,9 +660,12 @@ public class Player {
     public void eating() {
         Item get = inventory.getSelectedItem();
         if ((get instanceof Fish || get instanceof Crops || get instanceof Food) && energy < MAX_ENERGY && keyH.enterPressed && interactionCooldown == 0) {
-            inventory.removeItem(get, 1);
             if (get instanceof Fish) {
-                setEnergy(getEnergy() + 1);
+                Fish eaten = (Fish) get;
+                eaten.eat(this, eaten);
+            } else if (get instanceof Crops) {
+                Crops eaten = (Crops) get;
+                eaten.eat(this, get);
             }
         }
     }
