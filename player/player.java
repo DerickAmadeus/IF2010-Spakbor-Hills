@@ -500,6 +500,7 @@ public class Player {
             System.out.println("No interaction available for this tile.");
             setEnergy(getEnergy()+10);
         }
+        interactionCooldown = 300; // Delay for interaction key (about 0.25s if 60 FPS)
     }
 
     public void openInventory(Graphics2D g2) {
