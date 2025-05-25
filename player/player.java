@@ -486,7 +486,7 @@ public class Player {
         if (tileToInteract instanceof Soil) {
             System.out.println("Player: Interacting with Soil tile.");
             Soil soilTile = (Soil) tileToInteract; // Casting aman setelah instanceof
-
+            System.out.println("wet cooldown" + soilTile.getWetCooldown());
             if (soilTile.getSeedPlanted() != null) {
 
                 System.out.println("Player: Ada tanaman -> " + soilTile.getSeedPlanted().getName());

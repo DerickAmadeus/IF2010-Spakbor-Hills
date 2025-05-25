@@ -44,6 +44,10 @@ public class Soil extends Tile {
         return this.seedPlanted;
     }
 
+    public int getWetCooldown() {
+        return this.wetCooldown;
+    }
+
     public void plantSeed(Seeds seed, GamePanel gp) {
         if (canPlant()) {
             this.seedPlanted = seed;
