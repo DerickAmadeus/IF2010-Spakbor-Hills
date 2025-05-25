@@ -22,6 +22,21 @@ public class Crops extends Item implements Sellable, Buyable, Edible{
     }
 
     public void eat() {
-        
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Crops crops = (Crops) o;
+
+        return this.getName().equals(crops.getName()); // Atau sesuaikan dengan ID unik yang kamu punya
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getName().hashCode(); // Atau kombinasi field yang unik
+    }
+
 }

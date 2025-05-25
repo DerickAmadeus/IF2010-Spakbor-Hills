@@ -107,11 +107,52 @@ public class Map {
             tileimage[21].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Cranberry Seeds.png"));
             tileimage[22] = new Tile("Planted Pumpkin Visual", true);
             tileimage[22].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Pumpkin Seeds.png"));
-            tileimage[23] = new Tile("Planted Wheat Fall Visual", true); // Beda nama jika perlu
-            tileimage[23].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Wheat Seeds.png"));
-            tileimage[24] = new Tile("Planted Grape Visual", true);
-            tileimage[24].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Grape Seeds.png"));
-
+            tileimage[23] = new Tile("Planted Grape Visual", true);
+            tileimage[23].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Grape Seeds.png"));
+            tileimage[24] = new Tile("Wet Parsnip Visual", true);
+            tileimage[24].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Parsnip Seeds.png"));
+            tileimage[25] = new Tile("Wet Cauliflower Visual", true);
+            tileimage[25].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Cauliflower Seeds.png"));
+            tileimage[26] = new Tile("Wet Potato Visual", true);
+            tileimage[26].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Potato Seeds.png"));
+            tileimage[27] = new Tile("Wet Wheat Visual", true);
+            tileimage[27].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Wheat Seeds.png"));
+            tileimage[28] = new Tile("Wet Blueberry Visual", true);
+            tileimage[28].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Blueberry Seeds.png"));
+            tileimage[29] = new Tile("Wet Tomato Visual", true);
+            tileimage[29].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Tomato Seeds.png"));
+            tileimage[30] = new Tile("Wet Hot Pepper Visual", true);
+            tileimage[30].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Hot Pepper Seeds.png"));
+            tileimage[31] = new Tile("Wet Melon Visual", true);
+            tileimage[31].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Melon Seeds.png"));
+            tileimage[32] = new Tile("Wet Cranberry Visual", true);
+            tileimage[32].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Cranberry Seeds.png"));
+            tileimage[33] = new Tile("Wet Pumpkin Visual", true);
+            tileimage[33].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Pumpkin Seeds.png"));
+            tileimage[34] = new Tile("Wet Grape Visual", true);
+            tileimage[34].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Grape Seeds.png"));
+            tileimage[35] = new Tile("Harvestable Parsnip Visual", true);
+            tileimage[35].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Parsnip.png"));
+            tileimage[36] = new Tile("Harvestable Cauliflower Visual", true);
+            tileimage[36].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Cauliflower.png"));
+            tileimage[37] = new Tile("Harvestable Potato Visual", true);
+            tileimage[37].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Potato.png"));
+            tileimage[38] = new Tile("Harvestable Wheat Visual", true);
+            tileimage[38].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Wheat.png"));
+            tileimage[39] = new Tile("Harvestable Blueberry Visual", true);
+            tileimage[39].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Blueberry.png"));
+            tileimage[40] = new Tile("Harvestable Tomato Visual", true);
+            tileimage[40].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Tomato.png"));
+            tileimage[41] = new Tile("Harvestable Hot Pepper Visual", true);
+            tileimage[41].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Hot Pepper.png"));
+            tileimage[42] = new Tile("Harvestable Melon Visual", true);
+            tileimage[42].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Melon.png"));
+            tileimage[43] = new Tile("Harvestable Cranberry Visual", true);
+            tileimage[43].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Cranberry.png"));
+            tileimage[44] = new Tile("Harvestable Pumpkin Visual", true);
+            tileimage[44].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Pumpkin.png"));
+            tileimage[45] = new Tile("Harvestable Grape Visual", true);
+            tileimage[45].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Grape.png"));
         } catch (IOException e) { // Lebih spesifik menangkap IOException untuk ImageIO
             System.err.println("Error loading tile prototype images: " + e.getMessage());
             e.printStackTrace();
@@ -260,8 +301,13 @@ public class Map {
         if (tiles == null) return;
         for (int r = 0; r < currentMapWorldRow; r++) {
             for (int c = 0; c < currentMapWorldCol; c++) {
-                if (tiles[c][r] != null) {
-                    tiles[c][r].update(); // Panggil update() dari Tile. Soil akan override jika perlu logika khusus.
+                if (tiles[c][r] != null && tiles[c][r] instanceof Soil) {
+                    tiles[c][r].update(); 
+                    Soil wet = (Soil) tiles[c][r];
+                    if (wet.getSeedPlanted() != null) {
+                        wet.updateImageBasedOnState(gp);
+                    }
+                    // Panggil update() dari Tile. Soil akan override jika perlu logika khusus.
                                           // Jika update di Soil butuh GamePanel: tiles[c][r].update(gp);
                                           // Maka Tile.update() juga harus terima GamePanel gp.
                 }
@@ -344,5 +390,15 @@ public class Map {
             String tileType = (targetTile != null) ? targetTile.getClass().getSimpleName() : "Out of bounds or null";
             System.out.println("Cannot plant at ("+ (worldX/gp.tileSize) + "," + (worldY/gp.tileSize) +"): Tile is not Soil. It is " + tileType);
         }
+    }
+    public void harvestSeedAtTile(int worldX, int worldY) {
+        Tile targetTile = getTile(worldX, worldY);
+
+        if (targetTile instanceof Soil) {
+            Soil soilTile = (Soil) targetTile;
+            if (!soilTile.canPlant()) {
+                soilTile.harvest(gp, gp.player); 
+            } 
+        } 
     }
 }

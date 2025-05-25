@@ -37,7 +37,10 @@ public class Tile {
     }
 
     public void update() {
-
+        if (this instanceof Soil) {
+            Soil update = (Soil) this;
+            update.update();
+        }
     }
 
 }
