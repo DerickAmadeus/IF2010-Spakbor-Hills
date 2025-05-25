@@ -470,38 +470,43 @@ public class Player {
 
 
     // Action method for interaction
-    public void interact()  {
-        // Placeholder for interaction logic
-        tile = gp.map.getTile(interactionArea.x, interactionArea.y);
-        if (tile == null) {
-            System.out.println("No tile found at interaction area.");
-            return;
-        } else {
-        System.out.println("Interacting with tile at: " + interactionArea.x + ", " + interactionArea.y + " (Tile: " + tile.getTileName() + ")");}
+    public void interact() {
+        // Variabel tile sekarang menjadi lokal
+        Tile tileToInteract = gp.map.getTile(interactionArea.x, interactionArea.y);
 
-        if (tile.getTileName().equals("Soil")) {
-            System.out.println("Interacting with soil tile.");
-            Soil p = (Soil) tile;
-            if (p.getSeedPlanted() != null) {
-                System.out.println(p.getSeedPlanted());
-            } else {
-                System.out.println("gaada bibit");
-            }
-            try {
-                Thread.sleep(1000); // Delay for 5 seconds
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            // Add logic for interacting with soil tile
-        } else if (tile.getTileName().equals("Building")) {
-            System.out.println("Interacting with building tile.");
-            // Add logic for interacting with building tile
-        } else {
-            System.out.println("No interaction available for this tile.");
-            setEnergy(getEnergy()+10);
+        if (tileToInteract == null) {
+            System.out.println("Player: No tile found at interaction area (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ").");
+            return;
         }
-        interactionCooldown = 300; // Delay for interaction key (about 0.25s if 60 FPS)
+
+        // Pastikan Tile.java punya getTileName() atau ganti dengan getName()
+        System.out.println("Player: Interacting with tile at: (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ") Name: " + tileToInteract.getTileName());
+
+        // Gunakan instanceof untuk pengecekan tipe yang lebih aman
+        if (tileToInteract instanceof Soil) {
+            System.out.println("Player: Interacting with Soil tile.");
+            Soil soilTile = (Soil) tileToInteract; // Casting aman setelah instanceof
+
+            if (soilTile.getSeedPlanted() != null) {
+
+                System.out.println("Player: Ada tanaman -> " + soilTile.getSeedPlanted().getName());
+
+            } else {
+                System.out.println("Player: Tanah ini kosong (tidak ada bibit).");
+            }
+
+        } else if (tileToInteract.getTileName().toLowerCase().contains("door")) { // Contoh interaksi dengan pintu
+            System.out.println("Player: Interacting with a door.");
+            // Logika pindah map atau masuk gedung
+        } else if (tileToInteract.getTileName().toLowerCase().contains("building")) { // Contoh
+            System.out.println("Player: Interacting with building: " + tileToInteract.getTileName());
+        } else {
+            System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
+            // setEnergy(getEnergy()+10); // Mungkin tidak perlu untuk interaksi umum
+        }
+        // Cooldown sudah diatur di metode update() setelah memanggil interact()
     }
+
 
     public void openInventory(Graphics2D g2) {
         inventory.drawInventory(g2);
@@ -543,43 +548,61 @@ public class Player {
     }
 
     public void tiling() {
-        Tile tile = gp.map.getTile(interactionArea.x, interactionArea.y);
-        if (equippedItem != null && equippedItem.getName().equals("Hoe") && energy > -20 && keyH.enterPressed) {
-            if (tile != null && tile.getTileName().equals("Grass")) {
-                gp.map.setTile(interactionArea.x, interactionArea.y, 10);
+        if (equippedItem != null && equippedItem.getName().equals("Hoe") && 
+            energy > -20 && keyH.enterPressed && interactionCooldown == 0) {
+            Tile tileToTill = gp.map.getTile(interactionArea.x, interactionArea.y);
+            if (tileToTill != null && tileToTill.getTileName().equals("grass")) { // Pastikan nama "grass" konsisten
+                gp.map.setTileType(interactionArea.x, interactionArea.y, 10); // ID 10 adalah Soil kosong
                 setEnergy(getEnergy() - 5);
+                System.out.println("Player: Tilled grass at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
+            } else if (tileToTill != null) {
+                System.out.println("Player: Cannot till " + tileToTill.getTileName());
             }
         }
     }
 
     public void recoverLand() {
-        Tile tile = gp.map.getTile(interactionArea.x, interactionArea.y);
-        if (equippedItem != null && equippedItem.getName().equals("Pickaxe") && energy > -20 && keyH.enterPressed) {
-            if ( tile != null && tile.getTileName().equals("Soil")) {
-                gp.map.setTile(interactionArea.x, interactionArea.y, 0);
+        if (equippedItem != null && equippedItem.getName().equals("Pickaxe") && 
+            energy > -20 && keyH.enterPressed && interactionCooldown == 0) {
+            Tile tileToTill = gp.map.getTile(interactionArea.x, interactionArea.y);
+            if (tileToTill != null && tileToTill.getTileName().equals("soil")) { // Pastikan nama "grass" konsisten
+                gp.map.setTileType(interactionArea.x, interactionArea.y, 0); // ID 10 adalah Soil kosong
                 setEnergy(getEnergy() - 5);
+                System.out.println("Player: Ubah ke soil at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
+            } else if (tileToTill != null) {
+                System.out.println("Player: Cannot till " + tileToTill.getTileName());
             }
         }
     }
 
     public void planting() {
-        Tile tile = gp.map.getTile(interactionArea.x, interactionArea.y);
-        boolean isLast = false;
-        if (equippedItem != null && equippedItem instanceof Seeds && energy > -20 && keyH.enterPressed && tile instanceof Soil) {
-            Soil planted = (Soil) tile;
-            if (tile != null && planted.getSeedPlanted() == null) {
-                if (inventory.getItemCount(equippedItem) == 1) {
-                    isLast = true;
+        if (equippedItem != null && equippedItem instanceof Seeds && 
+            energy > -20 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState == gp.playState) {
+            
+            Tile tileToPlantOn = gp.map.getTile(interactionArea.x, interactionArea.y);
+            boolean isLast = false;
+
+            if (tileToPlantOn instanceof Soil) {
+                Soil soilTile = (Soil) tileToPlantOn;
+                if (soilTile.canPlant()) {
+                    if (inventory.getItemCount(equippedItem) == 1) {
+                        isLast = true;
+                    }
+                    Seeds seedToPlant = (Seeds) equippedItem;
+                    gp.map.plantSeedAtTile(interactionArea.x, interactionArea.y, seedToPlant);
+                    inventory.removeItem(equippedItem, 1);
+                    setEnergy(getEnergy() - 2);
+                    // Pesan sudah ada di Map.plantSeedAtTile atau Soil.plantSeed
+                    if (isLast) {
+                        equipItem(null);
+                    }
+                } else {
+                     System.out.println("Player: Cannot plant, soil already has a seed or not suitable.");
                 }
-                Seeds planting = (Seeds) equippedItem;
-                gp.map.plantSeedAtTile(interactionArea.x, interactionArea.y, planting);
-                inventory.removeItem(equippedItem, 1);
-                setEnergy(getEnergy() - 5);
-                if (isLast) {
-                    equipItem(null);
-                }
+            } else if (tileToPlantOn != null) {
+                System.out.println("Player: Cannot plant " + ((Seeds)equippedItem).getName() + " on " + tileToPlantOn.getTileName());
             }
+            keyH.enterPressed = false;
         }
     }
-
 }

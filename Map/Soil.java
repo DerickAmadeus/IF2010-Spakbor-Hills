@@ -1,65 +1,92 @@
 package Map;
 import Items.Seeds;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.IOException;
+import main.GamePanel;
+import Items.Crops;
 
 
 public class Soil extends Tile {
-    private int wetCooldown;
     private Seeds seedPlanted;
+    private int wetCooldown;
+    private String emptySoilImagePath; // Path to the image for empty soil
+    private int dayHarvest;
 
 
-    public Soil(Seeds seedPlanted) {
-        super("Soil", 'S', true);
-        this.wetCooldown = 5;
-        this.seedPlanted = seedPlanted;
+
+    public Soil(String name, boolean isWalkable, String emptySoilImagePath) {
+        super(name, isWalkable);
+        this.emptySoilImagePath = emptySoilImagePath;
+        this.seedPlanted = null; 
+        this.wetCooldown = 0; 
+        this.dayHarvest = 0;
+    }
+
+    public Soil(Soil other) {
+        super(other);
+        this.emptySoilImagePath = other.emptySoilImagePath;
+        this.seedPlanted = null;
+        this.wetCooldown = 0;
+        this.dayHarvest = 0;
+
+        if (this.Image == null && this.emptySoilImagePath != null) {
+            loadImage(emptySoilImagePath);
+        }
     }
 
     //Getters
-    public int getWetCooldown() {
-        return wetCooldown;
+    public boolean canPlant() {
+        return seedPlanted == null;
     }
+
     public Seeds getSeedPlanted() {
-        return seedPlanted;
+        return this.seedPlanted;
     }
-    //Actions
 
-    public void plantSeed(Seeds seed) {
-
-        if (this.seedPlanted == null) {
+    public void plantSeed(Seeds seed, GamePanel gp) {
+        if (canPlant()) {
             this.seedPlanted = seed;
-            System.out.println("Seed " + seed.getName() + " has been planted.");
-        } else {
-            System.out.println("Soil is already occupied by " + this.seedPlanted.getName() + ".");
+            this.wetCooldown = 5; // Set the wet cooldown based on the seed
+            this.dayHarvest = seed.getDaysToHarvest();
+            updateImageBasedOnState(gp);
         }
     }
 
-    public void harvestSeed() {
-        if (this.seedPlanted != null) {
-            System.out.println("Harvesting " + this.seedPlanted.getName() + ".");
-            // Masukin ke Inventory
-            this.seedPlanted = null; // Remove the seed after harvesting
+
+    public void watering(GamePanel gp) {
+        this.wetCooldown = 5;
+        updateImageBasedOnState(gp);
+    }
+
+    // public Crops harvest() {
+    //     if (seedPlanted != null && dayHarvest <= 0) {
+    //         Crops harvestcrop = null;  // Masalah nanti
+    //         this.seedPlanted = null;
+    //         this.wetCooldown = 0;
+    //         updateImageBasedOnState(null);
+    //         return harvestcrop; // Return the harvested crop
+
+
+    //     }
+    // }
+
+    public void updateImageBasedOnState(GamePanel gp) { 
+        if (seedPlanted != null) {
+            int visualID = seedPlanted.getTileIndex(); 
+            if (gp != null && visualID != -1 && visualID < gp.map.tileimage.length && gp.map.tileimage[visualID] != null) {
+                 this.Image = gp.map.tileimage[visualID].Image; // Gunakan image dari prototype visual
+            } else {
+                System.err.println("Failed to update image for planted seed: " + seedPlanted.getName());
+
+            }
         } else {
-            System.out.println("No seed planted to harvest.");
+            // Jika tidak ada benih, tampilkan gambar tanah kosong
+            loadImage(this.emptySoilImagePath);
         }
     }
 
-    public void waterSeed() {
-        if (this.seedPlanted != null) {
-            System.out.println("Watering " + this.seedPlanted.getName() + ".");
-            // Pake watering can 
-            wetCooldown = 5; // Reset the wet cooldown
-            
-        } else {
-            System.out.println("No seed planted to water.");
-        }
-    }
 
-    public void plantDead() {
-        if (this.seedPlanted != null && wetCooldown <= 0) {
-            System.out.println("Seed " + this.seedPlanted.getName() + " has died due to lack of water.");
-            this.setTileSymbol('D'); // Remove the seed after it dies
-        } else {
-            wetCooldown--;//Buat ngurangin cooldown (Aku gatau sih)
-        }
-    }
+
     
 }
