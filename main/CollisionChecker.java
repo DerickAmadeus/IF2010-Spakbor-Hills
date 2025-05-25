@@ -1,6 +1,7 @@
 package main;
 
 import player.Player;
+import Map.Tile;
 
 public class CollisionChecker {
 
@@ -24,7 +25,7 @@ public class CollisionChecker {
         int currentTileRowTop = playerTopY / gp.tileSize;
         int currentTileRowBottom = playerBottomY / gp.tileSize;
 
-        int tileNum1, tileNum2;
+        Tile tileNum1, tileNum2;
 
 
         int numMapCols = gp.map.tiles.length;
@@ -48,7 +49,7 @@ public class CollisionChecker {
                     // If within bounds, check walkability of the two tiles the player's top edge would hit
                     tileNum1 = gp.map.tiles[currentTileColLeft][targetTileRow];
                     tileNum2 = gp.map.tiles[currentTileColRight][targetTileRow];
-                    if (!gp.map.tileimage[tileNum1].isWalkable() || !gp.map.tileimage[tileNum2].isWalkable()) {
+                    if ((tileNum1 != null && !tileNum1.isWalkable()) || (tileNum2 != null && !tileNum2.isWalkable())) {
                         player.collisionOn = true;
                     }
                 }
@@ -65,7 +66,7 @@ public class CollisionChecker {
                     // If within bounds, check walkability of the two tiles the player's bottom edge would hit
                     tileNum1 = gp.map.tiles[currentTileColLeft][targetTileRow]; // This was line 38
                     tileNum2 = gp.map.tiles[currentTileColRight][targetTileRow];
-                    if (!gp.map.tileimage[tileNum1].isWalkable() || !gp.map.tileimage[tileNum2].isWalkable()) {
+                    if ((tileNum1 != null && !tileNum1.isWalkable()) || (tileNum2 != null && !tileNum2.isWalkable())) {
                         player.collisionOn = true;
                     }
                 }
@@ -83,7 +84,7 @@ public class CollisionChecker {
                     // If within bounds, check walkability of the two tiles the player's left edge would hit
                     tileNum1 = gp.map.tiles[targetTileCol][currentTileRowTop];
                     tileNum2 = gp.map.tiles[targetTileCol][currentTileRowBottom];
-                    if (!gp.map.tileimage[tileNum1].isWalkable() || !gp.map.tileimage[tileNum2].isWalkable()) {
+                    if ((tileNum1 != null && !tileNum1.isWalkable()) || (tileNum2 != null && !tileNum2.isWalkable())) {
                         player.collisionOn = true;
                     }
                 }
@@ -103,7 +104,7 @@ public class CollisionChecker {
                     // If within bounds, check walkability of the two tiles the player's right edge would hit
                     tileNum1 = gp.map.tiles[targetTileCol][currentTileRowTop];
                     tileNum2 = gp.map.tiles[targetTileCol][currentTileRowBottom];
-                    if (!gp.map.tileimage[tileNum1].isWalkable() || !gp.map.tileimage[tileNum2].isWalkable()) {
+                    if ((tileNum1 != null && !tileNum1.isWalkable()) || (tileNum2 != null && !tileNum2.isWalkable())) {
                         player.collisionOn = true;
                     }
                 }
