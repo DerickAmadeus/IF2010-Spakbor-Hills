@@ -20,7 +20,6 @@ public abstract class Item {
         // Tentukan nama folder berdasarkan class turunan
         String className = getClass().getSimpleName().toLowerCase(); // contoh: "Food" → "food"
         String imagePath = String.format("image/%s/%s.png", className, name);
-
         try {
             BufferedImage icon = ImageIO.read(getClass().getResourceAsStream(imagePath));
             setIcon(icon);

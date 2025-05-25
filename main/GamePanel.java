@@ -2,6 +2,10 @@ package main;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+
+import Items.Equipment;
+import Items.*;
+
 import java.awt.Graphics2D;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
@@ -10,6 +14,14 @@ import player.Player; // Importing player class from player package
 import Map.Map; // Importing map class from Map package
 
 public class GamePanel extends JPanel implements Runnable {
+    
+    //Game State
+    public final int playState = 0;
+    public final int pauseState = 1;
+    public final int dialogState = 2;
+    public final int inventoryState = 3;
+    public final int itemOptionState = 4;
+    public int gameState = playState;
 
     final int originalTileSize = 16; // Original tile size in pixels
     final int scale = 3; // Scale factor
@@ -99,7 +111,20 @@ public class GamePanel extends JPanel implements Runnable {
             keyHandler.f1Pressed = false; // Consume the press to avoid rapid toggling
             System.out.println("Debug mode: " + (debugMode ? "ON" : "OFF"));
         }
-        if (player.getInventoryOpen()) { // misalnya kamu punya flag untuk buka inventory
+        if (keyHandler.invPressed) {
+            if (gameState == playState) {
+                gameState = inventoryState;
+            } else if (gameState == inventoryState || gameState == itemOptionState) {
+                gameState = playState;
+            }
+            keyHandler.invPressed = false;
+        }
+        if (gameState == playState) {
+            player.tiling();
+            player.recoverLand();
+            player.planting();
+        }
+        if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(
                 keyHandler.upPressed,
                 keyHandler.downPressed,
@@ -107,11 +132,58 @@ public class GamePanel extends JPanel implements Runnable {
                 keyHandler.rightPressed
             );
 
-            // Supaya cursor nggak gerak terus saat tombol ditekan terus
+            // Reset arah tombol agar tidak repeat terus
             keyHandler.upPressed = false;
             keyHandler.downPressed = false;
             keyHandler.leftPressed = false;
             keyHandler.rightPressed = false;
+
+            // Saat tekan Enter, buka opsi untuk item yang dipilih
+            if (keyHandler.enterPressed) {
+                player.getInventory().selectCurrentItem();
+                keyHandler.enterPressed = false;
+            }
+        }
+        else if (gameState == itemOptionState) {
+            if (keyHandler.upPressed) {
+                player.getInventory().optionCommandNum = (player.getInventory().optionCommandNum - 1 + 3) % 3;
+                keyHandler.upPressed = false;
+            }
+            if (keyHandler.downPressed) {
+                player.getInventory().optionCommandNum = (player.getInventory().optionCommandNum + 1) % 3;
+                keyHandler.downPressed = false;
+            }
+
+            if (gameState == itemOptionState) {
+                if (keyHandler.enterPressed) {
+                    Item selected = player.getInventory().getSelectedItem();
+                    if (selected instanceof Equipment eq) {
+                        if (player.getInventory().optionCommandNum == 0) {
+                            if (player.getEquippedItem() == eq) {
+                                player.equipItem(null);
+                            } else {
+                                player.equipItem(eq);
+                            }
+                            gameState = inventoryState;
+                        } else if (player.getInventory().optionCommandNum == 1) {
+                            gameState = inventoryState; // Cancel
+                        }
+                    }  else if (selected instanceof Seeds eq) {
+                        if (player.getInventory().optionCommandNum == 0) {
+                            if (player.getEquippedItem() == eq) {
+                                player.equipItem(null);
+                            } else {
+                                player.equipItem(eq);
+                            }
+                            gameState = inventoryState;
+                        } else if (player.getInventory().optionCommandNum == 1) {
+                            gameState = inventoryState; // Cancel
+                        }
+                    }
+                    keyHandler.enterPressed = false;
+                }
+            }
+
         }
 
     }
@@ -134,8 +206,13 @@ public class GamePanel extends JPanel implements Runnable {
 
 
         player.drawPlayer(g2);
-        if(player.getInventoryOpen()) {
-            player.getInventory().drawInventory(g2);
+        player.drawEnergyBar(g2);
+
+        if(gameState == inventoryState) {
+             player.openInventory(g2);
+        }
+        if (gameState == itemOptionState) {
+            player.getInventory().drawItemOptionWindow(g2);
         }
 
     }
