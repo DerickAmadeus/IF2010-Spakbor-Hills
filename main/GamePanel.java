@@ -22,12 +22,16 @@ import java.awt.Font; // Tambahkan import ini
 public class GamePanel extends JPanel implements Runnable {
     
     //Game State
+    public final int titleState = -2;
+    public final int farmNameInputState = -1;
     public final int playState = 0;
     public final int pauseState = 1;
     public final int dialogState = 2;
     public final int inventoryState = 3;
     public final int itemOptionState = 4;
-    public int gameState = playState;
+    public int gameState = titleState;
+    private long lastMapUpdateTime = 0;
+    private static final long MAP_UPDATE_INTERVAL = 10_000; // 10 detik dalam milidetik
 
     final int originalTileSize = 16; // Original tile size in pixels
     final int scale = 3; // Scale factor
@@ -37,6 +41,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int maxScreenRow = 12; // Maximum number of rows on the screen
     public final int screenWidth = tileSize * maxScreenCol; // Screen width in pixels
     public final int screenHeight = tileSize * maxScreenRow; // Screen height in pixels
+
 
     //WorldMap Parameters
     public final int worldCol = 32; // Number of columns in the world map
@@ -48,7 +53,8 @@ public class GamePanel extends JPanel implements Runnable {
 
 
     public Map map = new Map(this);
-    KeyHandler keyHandler = new KeyHandler(); // Key handler for keyboard input 
+    public KeyHandler keyHandler = new KeyHandler(this); // Key handler for keyboard input 
+    public final TitlePage  titlePage  = new TitlePage(this);
     Thread gameThread; // Thread for the game loop
     public CollisionChecker cChecker = new CollisionChecker(this); // Collision checker for player movement
     public Player player; // Player object
@@ -69,6 +75,9 @@ public class GamePanel extends JPanel implements Runnable {
         this.setDoubleBuffered(true); // Enable double buffering for smoother rendering
         this.addKeyListener(keyHandler); // Add key listener for keyboard input
         this.setFocusable(true); // Make the panel focusable to receive key events
+        
+        gameState = titleState; // start dari title dulu
+
         this.player = new Player(this, keyHandler); // Initialize player object
         initializeTransitions(); // Panggil setelah tileSize dan player siap
 
@@ -170,6 +179,10 @@ public class GamePanel extends JPanel implements Runnable {
 
 
 
+    public void setupGame(){
+        gameState = titleState;
+    }
+
 
     public void startGameThread() {
         gameThread = new Thread(this); // Create a new thread for the game loop
@@ -197,7 +210,29 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
+        if (gameState == titleState){
+            if(keyHandler.enterPressed){
+                if(titlePage.commandNumber == 0){
+                    gameState = farmNameInputState;
+                }
+                else if (titlePage.commandNumber == 2){
+                    System.exit(0);
+                }
+                keyHandler.enterPressed = false;
+            }
+        }
+        else if (gameState == farmNameInputState){
+            if(keyHandler.enterPressed){
+              gameState = playState;
+            }
+        }
+        
         player.update();
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastMapUpdateTime >= MAP_UPDATE_INTERVAL) {
+            map.updateTiles();
+            lastMapUpdateTime = currentTime; 
+        }
         // Potentially update other game entities or systems here
         // e.g., map.update(), npcs.update(), etc.
 
@@ -220,6 +255,9 @@ public class GamePanel extends JPanel implements Runnable {
             player.recoverLand();
             player.planting();
             checkMapTransitions();
+            player.watering();
+            player.harvesting();
+
         }
         if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(
@@ -254,7 +292,8 @@ public class GamePanel extends JPanel implements Runnable {
             if (gameState == itemOptionState) {
                 if (keyHandler.enterPressed) {
                     Item selected = player.getInventory().getSelectedItem();
-                    if (selected instanceof Equipment eq) {
+                    if (selected instanceof Equipment) {
+                        Equipment eq = (Equipment) selected;
                         if (player.getInventory().optionCommandNum == 0) {
                             if (player.getEquippedItem() == eq) {
                                 player.equipItem(null);
@@ -265,13 +304,21 @@ public class GamePanel extends JPanel implements Runnable {
                         } else if (player.getInventory().optionCommandNum == 1) {
                             gameState = inventoryState; // Cancel
                         }
-                    }  else if (selected instanceof Seeds eq) {
+                    }  else if (selected instanceof Seeds) {
+                        Seeds eq = (Seeds) selected;
                         if (player.getInventory().optionCommandNum == 0) {
                             if (player.getEquippedItem() == eq) {
                                 player.equipItem(null);
                             } else {
                                 player.equipItem(eq);
                             }
+                            gameState = inventoryState;
+                        } else if (player.getInventory().optionCommandNum == 1) {
+                            gameState = inventoryState; // Cancel
+                        }
+                    } else if (selected instanceof Fish || selected instanceof Crops || selected instanceof Food) {
+                        if (player.getInventory().optionCommandNum == 0) {
+                            player.eating();
                             gameState = inventoryState;
                         } else if (player.getInventory().optionCommandNum == 1) {
                             gameState = inventoryState; // Cancel
@@ -290,7 +337,22 @@ public class GamePanel extends JPanel implements Runnable {
         // Draw game elements here
         // Example: g.drawRect(0, 0, tileSize, tileSize); // Draw a rectangle at (0, 0) with size tileSize
         Graphics2D g2 = (Graphics2D) g; // Cast Graphics to Graphics2D for advanced drawing
-        g2.setColor(java.awt.Color.white); // Set color to white
+        
+        if (gameState == titleState){
+            titlePage.draw(g2);
+            g2.dispose();
+            return;
+        } else if (gameState == farmNameInputState){
+            // Untuk testing, beri latar hitam dengan tulisan "Farm Name Input"
+            g2.setColor(java.awt.Color.black);
+            g2.fillRect(0, 0, screenWidth, screenHeight);
+            g2.setColor(java.awt.Color.white);
+            g2.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 30));
+            g2.drawString("Farm Name Input State", 100, screenHeight / 2);
+            g2.dispose();
+            return;
+        }
+        // g2.setColor(java.awt.Color.white); // Set color to white
                 // Draw background image if available
         if (backgroundImage != null) {
             g2.drawImage(backgroundImage, 0, 0, screenWidth, screenHeight, null);
@@ -334,6 +396,6 @@ public class GamePanel extends JPanel implements Runnable {
             player.getInventory().drawItemOptionWindow(g2);
         }
 
+        g2.dispose();
     }
-
 }

@@ -1,5 +1,6 @@
 package Map;
 import Items.Seeds;
+import player.Player;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import Items.Crops;
 public class Soil extends Tile {
     private Seeds seedPlanted;
     private int wetCooldown;
+    private  final int MAX_COOLDOWN = 5;
     private String emptySoilImagePath; // Path to the image for empty soil
     private int dayHarvest;
 
@@ -40,6 +42,10 @@ public class Soil extends Tile {
         return seedPlanted == null;
     }
 
+    public boolean canWater() {
+        return wetCooldown < MAX_COOLDOWN;
+    }
+
     public Seeds getSeedPlanted() {
         return this.seedPlanted;
     }
@@ -48,38 +54,63 @@ public class Soil extends Tile {
         return this.wetCooldown;
     }
 
+    public int getDaysToHarvest() {
+        return dayHarvest;
+    }
+
     public void plantSeed(Seeds seed, GamePanel gp) {
         if (canPlant()) {
             this.seedPlanted = seed;
-            this.wetCooldown = 5; // Set the wet cooldown based on the seed
+            this.wetCooldown = 3; // Set the wet cooldown based on the seed
             this.dayHarvest = seed.getDaysToHarvest();
             updateImageBasedOnState(gp);
         }
     }
 
-
-    public void watering(GamePanel gp) {
-        this.wetCooldown = 5;
+    public void water(GamePanel gp) {
+        this.wetCooldown = MAX_COOLDOWN;
         updateImageBasedOnState(gp);
     }
 
-    // public Crops harvest() {
-    //     if (seedPlanted != null && dayHarvest <= 0) {
-    //         Crops harvestcrop = null;  // Masalah nanti
-    //         this.seedPlanted = null;
-    //         this.wetCooldown = 0;
-    //         updateImageBasedOnState(null);
-    //         return harvestcrop; // Return the harvested crop
+    public Crops[] loadInitialCrops() {
+        return new Crops[] {
+            new Crops("Parsnip", "Sayuran akar musim semi", 35, 50, 1),
+            new Crops("Cauliflower", "Sayuran bunga putih", 150, 200, 1),
+            new Crops("Potato", "Umbi penghasil karbohidrat", 80, 0, 1),
+            new Crops("Wheat", "Serealia untuk dijadikan tepung", 30, 50, 3),
+            new Crops("Blueberry", "Buah kecil biru musim panas", 40, 150, 3),
+            new Crops("Tomato", "Buah merah serbaguna", 60, 90, 1),
+            new Crops("Hot Pepper", "Cabai pedas untuk musim panas", 40, 0, 1),
+            new Crops("Melon", "Buah musim panas besar dan manis", 250, 0, 1),
+            new Crops("Cranberry", "Buah musim gugur asam", 25, 0, 10),
+            new Crops("Pumpkin", "Buah besar untuk musim gugur", 250, 300, 1),
+            new Crops("Grape", "Buah ungu yang bisa dijadikan wine", 10, 100, 20)
+        };
+    }
 
-
-    //     }
-    // }
+    public void harvest(GamePanel gp, Player player) {
+        Crops[] crops = loadInitialCrops();
+        player.getInventory().addItem(crops[seedPlanted.getTileIndex() - 13], crops[seedPlanted.getTileIndex() - 13].getJumlahPerPanen());
+        seedPlanted = null;
+        updateImageBasedOnState(gp);
+    }
 
     public void updateImageBasedOnState(GamePanel gp) { 
         if (seedPlanted != null) {
             int visualID = seedPlanted.getTileIndex(); 
             if (gp != null && visualID != -1 && visualID < gp.map.tileimage.length && gp.map.tileimage[visualID] != null) {
-                 this.Image = gp.map.tileimage[visualID].Image; // Gunakan image dari prototype visual
+                if (dayHarvest > 0) {
+                    if (wetCooldown == 5) {
+                        this.Image = gp.map.tileimage[visualID + Seeds.getTotalSeeds()].Image; // Gunakan image dari prototype visual
+                    } else {
+                        this.Image = gp.map.tileimage[visualID].Image; // Gunakan image dari prototype visual
+                    }
+                } else {
+                    if (wetCooldown > 0) {
+                        wetCooldown = MAX_COOLDOWN;
+                        this.Image = gp.map.tileimage[visualID + Seeds.getTotalSeeds() * 2].Image;
+                    }
+                }
             } else {
                 System.err.println("Failed to update image for planted seed: " + seedPlanted.getName());
 
@@ -90,7 +121,16 @@ public class Soil extends Tile {
         }
     }
 
+    @Override
+    public void update() {
+        if (wetCooldown > 0 && dayHarvest > 0) {
+            wetCooldown--;
+        }
 
-
-    
+        if (seedPlanted != null) {
+            if (dayHarvest > 0) {
+                dayHarvest--;
+            }
+        }
+    }
 }

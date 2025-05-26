@@ -56,6 +56,7 @@ public class Player {
         loadInitialEquipment();
         loadInitialFish();
         loadInitialSeeds();
+        loadInitialFood();
 
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
@@ -68,11 +69,12 @@ public class Player {
         setDefaultValues();
         getPlayerImage();
     }
+
     public void loadInitialSeeds() {
         Seeds parsnip = new Seeds("Parsnip Seeds", "Grows quickly in Spring", 10, 20, 1, "Spring", 13);
         Seeds cauliflower = new Seeds("Cauliflower Seeds", "Takes time but valuable", 40, 80, 5, "Spring", 14);
         Seeds potato = new Seeds("Potato Seeds", "Produces multiple potatoes", 25, 50, 3, "Spring", 15);
-        Seeds wheatSpring = new Seeds("Wheat Seeds", "Spring wheat crop", 30, 60, 1, "Spring", 16);
+        Seeds wheat = new Seeds("Wheat Seeds", "Spring wheat crop", 30, 60, 1, "Spring", 16);
 
         Seeds blueberry = new Seeds("Blueberry Seeds", "Produces blueberries", 40, 80, 7, "Summer", 17);
         Seeds tomato = new Seeds("Tomato Seeds", "Popular summer crop", 25, 50, 3, "Summer", 18);
@@ -81,23 +83,73 @@ public class Player {
 
         Seeds cranberry = new Seeds("Cranberry Seeds", "Multiple harvests", 50, 100, 2, "Fall", 21);
         Seeds pumpkin = new Seeds("Pumpkin Seeds", "Big and valuable", 75, 150, 7, "Fall", 22);
-        Seeds wheatFall = new Seeds("Wheat Seeds", "Fall wheat crop", 30, 60, 1, "Fall", 23);
-        Seeds grape = new Seeds("Grape Seeds", "Climbing vine fruit", 30, 60, 3, "Fall", 24);
+        Seeds grape = new Seeds("Grape Seeds", "Climbing vine fruit", 30, 60, 3, "Fall", 23);
 
         inventory.addItem(parsnip, 5);
         inventory.addItem(cauliflower, 2);
         inventory.addItem(potato, 4);
-        inventory.addItem(wheatSpring, 3);
-
+        inventory.addItem(wheat, 3);
         inventory.addItem(blueberry, 2);
         inventory.addItem(tomato, 6);
         inventory.addItem(hotPepper, 3);
         inventory.addItem(melon, 1);
-
         inventory.addItem(cranberry, 2);
         inventory.addItem(pumpkin, 1);
-        inventory.addItem(wheatFall, 4);
         inventory.addItem(grape, 3);
+    }
+
+    /*public void loadInitialCrops() {
+        Crops parsnip = new Crops("Parsnip", "Sayuran akar musim semi", 35, 50, 1);
+        Crops cauliflower = new Crops("Cauliflower", "Sayuran bunga putih", 150, 200, 1);
+        Crops potato = new Crops("Potato", "Umbi penghasil karbohidrat", 80, 0, 1);
+        Crops wheat = new Crops("Wheat", "Serealia untuk dijadikan tepung", 30, 50, 3);
+        Crops blueberry = new Crops("Blueberry", "Buah kecil biru musim panas", 40, 150, 3);
+        Crops tomato = new Crops("Tomato", "Buah merah serbaguna", 60, 90, 1);
+        Crops hotPepper = new Crops("Hot Pepper", "Cabai pedas untuk musim panas", 40, 0, 1);
+        Crops melon = new Crops("Melon", "Buah musim panas besar dan manis", 250, 0, 1);
+        Crops cranberry = new Crops("Cranberry", "Buah musim gugur asam", 25, 0, 10);
+        Crops pumpkin = new Crops("Pumpkin", "Buah besar untuk musim gugur", 250, 300, 1);
+        Crops grape = new Crops("Grape", "Buah ungu yang bisa dijadikan wine", 10, 100, 20);
+
+        inventory.addItem(parsnip, 1);
+        inventory.addItem(cauliflower, 1);
+        inventory.addItem(potato, 2);
+        inventory.addItem(wheat, 3);
+        inventory.addItem(blueberry, 2);
+        inventory.addItem(tomato, 2);
+        inventory.addItem(hotPepper, 2);
+        inventory.addItem(melon, 2);
+        inventory.addItem(cranberry, 2);
+        inventory.addItem(pumpkin, 2);
+        inventory.addItem(grape, 2);
+    }*/
+
+    public void loadInitialFood() {
+        Food fishChips = new Food("Fish n' Chips", "Makanan goreng yang gurih", 135, 150, 50);
+        Food baguette = new Food("Baguette", "Roti khas Prancis", 80, 100, 25);
+        Food sashimi = new Food("Sashimi", "Irisan ikan mentah segar", 275, 300, 70);
+        Food fugu = new Food("Fugu", "Ikan buntal beracun namun lezat", 135, 0, 50);
+        Food wine = new Food("Wine", "Minuman hasil fermentasi anggur", 90, 100, 20);
+        Food pumpkinPie = new Food("Pumpkin Pie", "Pai labu manis dan lembut", 100, 120, 35);
+        Food veggieSoup = new Food("Veggie Soup", "Sup sehat dari sayuran", 120, 140, 40);
+        Food fishStew = new Food("Fish Stew", "Semur ikan hangat", 260, 280, 70);
+        Food spakborSalad = new Food("Spakbor Salad", "Salad legendaris dari sayuran terbaik", 250, 0, 70);
+        Food fishSandwich = new Food("Fish Sandwich", "Sandwich isi ikan", 180, 200, 50);
+        Food legendSpakbor = new Food("The Legends of Spakbor", "Mitos yang bisa dimakan", 2000, 0, 100);
+        Food pigHead = new Food("Cooked Pig's Head", "Kepala babi panggang spesial", 0, 1000, 100);
+
+        inventory.addItem(fishChips, 2);
+        inventory.addItem(baguette, 3);
+        inventory.addItem(sashimi, 1);
+        inventory.addItem(fugu, 1);
+        inventory.addItem(wine, 2);
+        inventory.addItem(pumpkinPie, 2);
+        inventory.addItem(veggieSoup, 2);
+        inventory.addItem(fishStew, 1);
+        inventory.addItem(spakborSalad, 1);
+        inventory.addItem(fishSandwich, 1);
+        inventory.addItem(legendSpakbor, 1);
+        inventory.addItem(pigHead, 1);
     }
 
     public void loadInitialEquipment() {
@@ -475,7 +527,6 @@ public class Player {
     public void interact() {
         // Variabel tile sekarang menjadi lokal
         Tile tileToInteract = gp.map.getTile(interactionArea.x, interactionArea.y);
-
         if (tileToInteract == null) {
             System.out.println("Player: No tile found at interaction area (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ").");
             return;
@@ -488,11 +539,11 @@ public class Player {
         if (tileToInteract instanceof Soil) {
             System.out.println("Player: Interacting with Soil tile.");
             Soil soilTile = (Soil) tileToInteract; // Casting aman setelah instanceof
-            System.out.println("wet cooldown" + soilTile.getWetCooldown());
             if (soilTile.getSeedPlanted() != null) {
-
-                System.out.println("Player: Ada tanaman -> " + soilTile.getSeedPlanted().getName());
-
+                //System.out.println("Player: Ada tanaman -> " + soilTile.getSeedPlanted().getName());
+                System.out.println("Tile index:" + (soilTile.getSeedPlanted().getTileIndex() - 13) + "Wet Index:" + soilTile.getSeedPlanted().getWetIndex());
+                System.out.println("wet cooldown: " + soilTile.getWetCooldown());
+                System.out.println("days: " + soilTile.getDaysToHarvest());
             } else {
                 System.out.println("Player: Tanah ini kosong (tidak ada bibit).");
             }
@@ -543,6 +594,7 @@ public class Player {
             this.energy = energy;
         } else if (energy < -20) {
             // msdih print
+            this.energy = -20;
             System.out.println("Error: Energy is too low! sleeping rn...");
         } else {
             this.energy = energy;
@@ -551,7 +603,7 @@ public class Player {
 
     public void tiling() {
         if (equippedItem != null && equippedItem.getName().equals("Hoe") && 
-            energy > -20 && keyH.enterPressed && interactionCooldown == 0) {
+            energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
             Tile tileToTill = gp.map.getTile(interactionArea.x, interactionArea.y);
             if (tileToTill != null && tileToTill.getTileName().equals("grass")) { // Pastikan nama "grass" konsisten
                 gp.map.setTileType(interactionArea.x, interactionArea.y, 10); // ID 10 adalah Soil kosong
@@ -565,12 +617,15 @@ public class Player {
 
     public void recoverLand() {
         if (equippedItem != null && equippedItem.getName().equals("Pickaxe") && 
-            energy > -20 && keyH.enterPressed && interactionCooldown == 0) {
+            energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
             Tile tileToTill = gp.map.getTile(interactionArea.x, interactionArea.y);
             if (tileToTill != null && tileToTill.getTileName().equals("soil")) { // Pastikan nama "grass" konsisten
-                gp.map.setTileType(interactionArea.x, interactionArea.y, 0); // ID 10 adalah Soil kosong
-                setEnergy(getEnergy() - 5);
-                System.out.println("Player: Ubah ke soil at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
+                Soil recoverable = (Soil) tileToTill;
+                if (recoverable.canPlant()) {
+                    gp.map.setTileType(interactionArea.x, interactionArea.y, 0); // ID 10 adalah Soil kosong
+                    setEnergy(getEnergy() - 5);
+                    System.out.println("Player: Ubah ke soil at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
+                }
             } else if (tileToTill != null) {
                 System.out.println("Player: Cannot till " + tileToTill.getTileName());
             }
@@ -579,7 +634,7 @@ public class Player {
 
     public void planting() {
         if (equippedItem != null && equippedItem instanceof Seeds && 
-            energy > -20 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState == gp.playState) {
+            energy >= -15 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState == gp.playState) {
             
             Tile tileToPlantOn = gp.map.getTile(interactionArea.x, interactionArea.y);
             boolean isLast = false;
@@ -604,7 +659,48 @@ public class Player {
             } else if (tileToPlantOn != null) {
                 System.out.println("Player: Cannot plant " + ((Seeds)equippedItem).getName() + " on " + tileToPlantOn.getTileName());
             }
-            keyH.enterPressed = false;
+        }
+    }
+    public void watering() {
+        if (equippedItem != null && equippedItem.getName().equals("Watering Can") && 
+            energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
+            Tile tileToWater = gp.map.getTile(interactionArea.x, interactionArea.y);
+            if (tileToWater != null && tileToWater instanceof Soil) { // Pastikan nama "grass" konsisten
+                Soil watered = (Soil) tileToWater;
+                if (!watered.canPlant() && watered.canWater()) {
+                    watered.water(gp);
+                    setEnergy(getEnergy() - 5);
+                }
+            }
+        }
+    }
+
+    public void harvesting() {
+        if (equippedItem == null && energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
+            Tile tileToHarvest = gp.map.getTile(interactionArea.x, interactionArea.y);
+            if (tileToHarvest != null && tileToHarvest instanceof Soil) {
+                Soil harvest = (Soil) tileToHarvest;
+                if (!harvest.canPlant() && harvest.getDaysToHarvest() == 0 && harvest.getWetCooldown() > 0) {
+                    gp.map.harvestSeedAtTile(interactionArea.x, interactionArea.y);
+                    setEnergy(getEnergy() - 5);
+                }
+            }
+        }
+    }
+
+    public void eating() {
+        Item get = inventory.getSelectedItem();
+        if ((get instanceof Fish || get instanceof Crops || get instanceof Food) && energy < MAX_ENERGY && keyH.enterPressed && interactionCooldown == 0) {
+            if (get instanceof Fish) {
+                Fish eaten = (Fish) get;
+                eaten.eat(this, eaten);
+            } else if (get instanceof Crops) {
+                Crops eaten = (Crops) get;
+                eaten.eat(this, get);
+            } else if (get instanceof Food) {
+                Food eaten = (Food) get;
+                eaten.eat(this, get);
+            }
         }
     }
 }

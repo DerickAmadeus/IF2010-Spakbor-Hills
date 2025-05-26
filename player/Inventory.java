@@ -1,8 +1,6 @@
 package player;
 
-import Items.Equipment;
-import Items.Item;
-import Items.Seeds;
+import Items.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +17,6 @@ public class Inventory<T extends Item> {
     private int scrollOffset = 0;
     private final int ITEMS_PER_ROW = 5;
     private final int SLOT_SIZE = 64;
-    private final int SLOT_PADDING = 8;
 
     private final int VIEWPORT_HEIGHT = 300; // Tinggi area tampilan inventory (sama seperti height drawRect)
     private final int MAX_ROWS_ON_SCREEN = VIEWPORT_HEIGHT / SLOT_SIZE;
@@ -56,8 +53,6 @@ public class Inventory<T extends Item> {
         //slot
         final int slotXStart = frameX + 20;
         final int slotYStart = frameY + 20;
-        int slotX = slotXStart;
-        int slotY = slotYStart;
 
         // CURSOR
         int cursorX = slotXStart + (gp.tileSize * slotCol);
@@ -174,6 +169,8 @@ public class Inventory<T extends Item> {
             options = new String[]{"Equip/Unequip", "Cancel"};
         } else if (item instanceof Seeds) {
             options = new String[]{"Hold/Put Out", "Cancel"};
+        } else if (item instanceof Fish || item instanceof Crops || item instanceof Food){
+            options = new String[]{"Eat", "Cancel"};
         } else {
             options = new String[]{"damn"};
         }
@@ -190,7 +187,6 @@ public class Inventory<T extends Item> {
 
     public void updateInventoryCursor(boolean up, boolean down, boolean left, boolean right) {
         int maxIndex = getItemCountTotal() - 1;
-        int currentIndex = slotRow * ITEMS_PER_ROW + slotCol;
 
         if (up && slotRow > 0) {
             slotRow--;
