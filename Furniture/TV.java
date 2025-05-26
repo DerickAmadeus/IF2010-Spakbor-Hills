@@ -1,8 +1,8 @@
 package Furniture;
 
 public class TV extends Furniture{
-    public TV(String name, int width, int height, char symbol){
-        super(name, width, height, symbol);
+    public TV(String name, Boolean isWalkable) {
+        super(name, true);
     }
     @Override
     public void Action() {

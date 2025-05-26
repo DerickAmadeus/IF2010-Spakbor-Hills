@@ -5,6 +5,9 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage; // Untuk error tile & prototype image
 import Items.Seeds;
 import Furniture.Bed;
+import Furniture.Stove;
+import Furniture.TV;
+import Items.Misc;
 
 import java.awt.Graphics2D;
 import java.io.InputStream;
@@ -120,24 +123,31 @@ public class Map {
             tileimage[71] = new Tile("karpet", true); // walkable = true
             tileimage[71].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpet.png"));
 
+
+            // Furnitures
+
             tileimage[72] = new Bed("Bed", false, "king"); // walkable = true
             tileimage[72].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed1.png")); // Gambar tempat tidur
-            tileimage[73] = new Bed("Bed", false, "queen"); // walkable = true
+            tileimage[73] = new Bed("Bed", false, "king"); // walkable = true
             tileimage[73].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed2.png")); // Gambar tempat tidur
-            tileimage[74] = new Bed("Bed", false, "single"); // walkable = true
+            tileimage[74] = new Bed("Bed", false, "king"); // walkable = true
             tileimage[74].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed3.png")); // Gambar tempat tidur
-            tileimage[75] = new Tile("Bed", false); // walkable = true
+            tileimage[75] = new Bed("Bed", false, "king"); // walkable = true
             tileimage[75].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed4.png")); // Gambar tempat tidur
-            tileimage[76] = new Tile("Bed", false); // walkable = true
+            tileimage[76] = new Bed("Bed", false, "king"); // walkable = true
             tileimage[76].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed5.png")); // Gambar tempat tidur
-            tileimage[77] = new Tile("Bed", false); // walkable = true
+            tileimage[77] = new Bed("Bed", false, "king"); // walkable = true
             tileimage[77].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed6.png")); // Gambar tempat tidur
-            tileimage[78] = new Tile("Bed", false); // walkable = true
+            tileimage[78] = new Bed("Bed", false, "king"); // walkable = true
             tileimage[78].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed7.png")); // Gambar tempat tidur
-            tileimage[79] = new Tile("Bed", false); // walkable = true
+            tileimage[79] = new Bed("Bed", false, "king"); // walkable = true
             tileimage[79].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed8.png")); // Gambar tempat tidur
-            tileimage[80] = new Tile("Bed", false); // walkable = true
+            tileimage[80] = new Bed("Bed", false, "king"); // walkable = true
             tileimage[80].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed9.png")); // Gambar tempat tidur
+            tileimage[81] = new Stove("stove"); // walkable = true
+            tileimage[81].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/stove.png")); // Gambar kompor
+            tileimage[82] = new Tile("tv", false); // walkable = true
+            tileimage[82].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/TV.png")); // Gambar TV
 
 
             // WATER
