@@ -114,6 +114,14 @@ public class GamePanel extends JPanel implements Runnable {
         // Area pemicu di Mountain Lake Map: kolom 10-12, baris 16
         // Muncul di Farm Map pada tile (16, 1)
         transitions.add(new TransitionData(2, 10, 10, 3, 1, 0, 16, 1, false, tileSize));
+        
+        // Dari Farm Map (ID 0) ke HouseMap (ID 3)
+        // Area pemicu, Door
+        //muncul di depan door rumah
+        transitions.add(new TransitionData(0, 5, 10, 1, 1, 3, 7, 12, false, tileSize));
+        // No additional transitions needed here for background color change.
+
+        transitions.add(new TransitionData(3, 7, 13, 1, 1, 0, 5, 11, false, tileSize));
 
 
         // Tambahkan transisi lain sesuai kebutuhan Anda
@@ -225,7 +233,7 @@ public class GamePanel extends JPanel implements Runnable {
             if(keyHandler.enterPressed){
               gameState = playState;
             }
-        }
+        }   
         
         player.update();
         long currentTime = System.currentTimeMillis();
@@ -233,10 +241,7 @@ public class GamePanel extends JPanel implements Runnable {
             map.updateTiles();
             lastMapUpdateTime = currentTime; 
         }
-        // Potentially update other game entities or systems here
-        // e.g., map.update(), npcs.update(), etc.
 
-        // Toggle debug mode with a key (e.g., F1) - OPTIONAL
         if (keyHandler.f1Pressed) { // Assuming you add f1Pressed to KeyHandler
             debugMode = !debugMode;
             keyHandler.f1Pressed = false; // Consume the press to avoid rapid toggling
@@ -267,7 +272,6 @@ public class GamePanel extends JPanel implements Runnable {
                 keyHandler.rightPressed
             );
 
-            // Reset arah tombol agar tidak repeat terus
             keyHandler.upPressed = false;
             keyHandler.downPressed = false;
             keyHandler.leftPressed = false;
@@ -333,35 +337,38 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void paintComponent(java.awt.Graphics g) {
-        super.paintComponent(g); // Call the superclass method to clear the screen
-        // Draw game elements here
-        // Example: g.drawRect(0, 0, tileSize, tileSize); // Draw a rectangle at (0, 0) with size tileSize
-        Graphics2D g2 = (Graphics2D) g; // Cast Graphics to Graphics2D for advanced drawing
-        
-        if (gameState == titleState){
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
+
+
+        if (gameState == titleState) {
             titlePage.draw(g2);
-            g2.dispose();
-            return;
-        } else if (gameState == farmNameInputState){
-            // Untuk testing, beri latar hitam dengan tulisan "Farm Name Input"
+
+            return; // Keluar setelah menggambar title state
+        } else if (gameState == farmNameInputState) {
             g2.setColor(java.awt.Color.black);
             g2.fillRect(0, 0, screenWidth, screenHeight);
             g2.setColor(java.awt.Color.white);
             g2.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 30));
             g2.drawString("Farm Name Input State", 100, screenHeight / 2);
-            g2.dispose();
-            return;
-        }
-        // g2.setColor(java.awt.Color.white); // Set color to white
-                // Draw background image if available
-        if (backgroundImage != null) {
-            g2.drawImage(backgroundImage, 0, 0, screenWidth, screenHeight, null);
-        } else {
-            g2.setColor(java.awt.Color.cyan); // Set color to cyan if no image
-            g2.fillRect(0, 0, screenWidth, screenHeight); // Fill the background with cyan
+            // Sebaiknya jangan panggil g2.dispose() di sini
+            return; // Keluar setelah menggambar farm name input state
         }
 
-        map.draw(g2); // Draw the map
+        if (map.currentMapID == 3) { // Ganti angka 3 jika ID peta rumah Anda berbeda
+            g2.setColor(java.awt.Color.black); // Atur latar belakang menjadi hitam untuk rumah
+            g2.fillRect(0, 0, screenWidth, screenHeight);
+        } else {
+            // Jika bukan peta rumah, gambar latar belakang luar ruangan seperti biasa
+            if (backgroundImage != null) {
+                g2.drawImage(backgroundImage, 0, 0, screenWidth, screenHeight, null);
+            } else {
+                g2.setColor(java.awt.Color.cyan); // Latar belakang fallback jika gambar awan gagal dimuat
+                g2.fillRect(0, 0, screenWidth, screenHeight);
+            }
+        }
+
+        map.draw(g2);
 
 
         player.drawPlayer(g2);
@@ -371,7 +378,6 @@ public class GamePanel extends JPanel implements Runnable {
             for (TransitionData transition : transitions) {
                 if (transition.sourceMapID == map.currentMapID) {
                     g2.setColor(new Color(0, 0, 255, 80)); // Biru transparan
-                    // Konversi koordinat dunia area transisi ke koordinat layar
                     int screenAreaX = transition.sourceArea.x - player.x + player.screenX;
                     int screenAreaY = transition.sourceArea.y - player.y + player.screenY;
                     g2.fillRect(screenAreaX, screenAreaY, transition.sourceArea.width, transition.sourceArea.height);
@@ -381,21 +387,18 @@ public class GamePanel extends JPanel implements Runnable {
                         g2.setFont(new Font("Arial", Font.BOLD, 12));
                         g2.drawString("COOLDOWN: " + transition.cooldownFrames, screenAreaX, screenAreaY - 5);
                     }
-                     g2.setColor(Color.WHITE);
-                     g2.setFont(new Font("Arial", Font.BOLD, 10));
-                     g2.drawString("ToMap:"+transition.targetMapID, screenAreaX, screenAreaY + 12);
-
+                    g2.setColor(Color.WHITE);
+                    g2.setFont(new Font("Arial", Font.BOLD, 10));
+                    g2.drawString("ToMap:" + transition.targetMapID, screenAreaX, screenAreaY + 12);
                 }
             }
         }
 
-        if(gameState == inventoryState) {
-             player.openInventory(g2);
+        if (gameState == inventoryState) {
+            player.openInventory(g2);
         }
         if (gameState == itemOptionState) {
             player.getInventory().drawItemOptionWindow(g2);
         }
-
-        g2.dispose();
     }
 }
