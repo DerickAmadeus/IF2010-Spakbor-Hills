@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import NPC.NPC;
 import player.Inventory;
+import Map.Point;
 import Items.Item;
 
 public class Player {

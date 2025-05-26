@@ -2,12 +2,12 @@ package Map;
 
 import main.GamePanel;
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImage; // Untuk error tile & prototype image
 import Items.Seeds;
 import Furniture.Bed;
 import Furniture.Stove;
 import Furniture.TV;
-// import Items.Misc; // Misc tidak digunakan secara langsung di sini, bisa dihapus jika tidak ada rencana
+import Items.Misc;
 
 import java.awt.Graphics2D;
 import java.io.InputStream;
@@ -15,10 +15,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap; // Untuk menyimpan state peta
 
 public class Map {
     GamePanel gp;
+
     public Tile[] tileImage; // Array untuk PROTOTYPE tile (diganti nama dari tileimage)
     public Tile[][] currentMapTiles;  // Array 2D untuk INSTANCE tile di peta AKTIF
 
@@ -38,26 +38,30 @@ public class Map {
 
     public int currentMapWorldCol;
     public int currentMapWorldRow;
-    public int currentMapID = -1; // Inisialisasi ke -1 agar peta pertama pasti dimuat fresh
 
+    public int currentMapID = 0;
     public String[] mapFilePaths = {
             "/Map/maps/farm_map.txt",
             "/Map/maps/forest_map.txt",
             "/Map/maps/mountain_lake_map.txt",
             "/Map/maps/house_map.txt"
+            // ... tambahkan semua path file peta kamu di sini
     };
 
     public Map(GamePanel gp) {
         this.gp = gp;
+
         this.tileImage = new Tile[100];
         this.loadedMapStates = new HashMap<>();
+
         getTileImagePrototypes();
-        loadMapByID(0); // Memuat peta default (misalnya ID 0)
+        loadMapByID(0); // Memuat peta default
     }
 
     public void getTileImagePrototypes() {
         try {
             // GRASS
+
             tileImage[0] = new Tile("grass", true);
             tileImage[0].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grass.png"));
             tileImage[1] = new Tile("grass_kiri_atas", true);
@@ -245,60 +249,134 @@ public class Map {
             tileImage[45] = new Tile("Harvestable Grape Visual", true);
             tileImage[45].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Grape.png"));
 
-        } catch (IOException e) {
+
+            // VISUAL PROTOTYPES untuk Benih yang Ditanam (sebagai Tile biasa)
+            // Objek Soil di peta akan menggunakan .Image dari prototype Tile ini
+            tileimage[13] = new Tile("Planted Parsnip Visual", true); // walkable true agar player bisa lewat
+            tileimage[13].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Parsnip Seeds.png"));
+            tileimage[14] = new Tile("Planted Cauliflower Visual", true);
+            tileimage[14].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Cauliflower Seeds.png"));
+            tileimage[15] = new Tile("Planted Potato Visual", true);
+            tileimage[15].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Potato Seeds.png"));
+            tileimage[16] = new Tile("Planted Wheat Visual", true);
+            tileimage[16].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Wheat Seeds.png"));
+            tileimage[17] = new Tile("Planted Blueberry Visual", true);
+            tileimage[17].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Blueberry Seeds.png"));
+            tileimage[18] = new Tile("Planted Tomato Visual", true);
+            tileimage[18].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Tomato Seeds.png"));
+            tileimage[19] = new Tile("Planted Hot Pepper Visual", true);
+            tileimage[19].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Hot Pepper Seeds.png"));
+            tileimage[20] = new Tile("Planted Melon Visual", true);
+            tileimage[20].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Melon Seeds.png"));
+            tileimage[21] = new Tile("Planted Cranberry Visual", true);
+            tileimage[21].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Cranberry Seeds.png"));
+            tileimage[22] = new Tile("Planted Pumpkin Visual", true);
+            tileimage[22].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Pumpkin Seeds.png"));
+            tileimage[23] = new Tile("Planted Grape Visual", true);
+            tileimage[23].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Grape Seeds.png"));
+            tileimage[24] = new Tile("Wet Parsnip Visual", true);
+            tileimage[24].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Parsnip Seeds.png"));
+            tileimage[25] = new Tile("Wet Cauliflower Visual", true);
+            tileimage[25].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Cauliflower Seeds.png"));
+            tileimage[26] = new Tile("Wet Potato Visual", true);
+            tileimage[26].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Potato Seeds.png"));
+            tileimage[27] = new Tile("Wet Wheat Visual", true);
+            tileimage[27].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Wheat Seeds.png"));
+            tileimage[28] = new Tile("Wet Blueberry Visual", true);
+            tileimage[28].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Blueberry Seeds.png"));
+            tileimage[29] = new Tile("Wet Tomato Visual", true);
+            tileimage[29].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Tomato Seeds.png"));
+            tileimage[30] = new Tile("Wet Hot Pepper Visual", true);
+            tileimage[30].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Hot Pepper Seeds.png"));
+            tileimage[31] = new Tile("Wet Melon Visual", true);
+            tileimage[31].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Melon Seeds.png"));
+            tileimage[32] = new Tile("Wet Cranberry Visual", true);
+            tileimage[32].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Cranberry Seeds.png"));
+            tileimage[33] = new Tile("Wet Pumpkin Visual", true);
+            tileimage[33].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Pumpkin Seeds.png"));
+            tileimage[34] = new Tile("Wet Grape Visual", true);
+            tileimage[34].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Grape Seeds.png"));
+            tileimage[35] = new Tile("Harvestable Parsnip Visual", true);
+            tileimage[35].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Parsnip.png"));
+            tileimage[36] = new Tile("Harvestable Cauliflower Visual", true);
+            tileimage[36].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Cauliflower.png"));
+            tileimage[37] = new Tile("Harvestable Potato Visual", true);
+            tileimage[37].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Potato.png"));
+            tileimage[38] = new Tile("Harvestable Wheat Visual", true);
+            tileimage[38].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Wheat.png"));
+            tileimage[39] = new Tile("Harvestable Blueberry Visual", true);
+            tileimage[39].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Blueberry.png"));
+            tileimage[40] = new Tile("Harvestable Tomato Visual", true);
+            tileimage[40].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Tomato.png"));
+            tileimage[41] = new Tile("Harvestable Hot Pepper Visual", true);
+            tileimage[41].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Hot Pepper.png"));
+            tileimage[42] = new Tile("Harvestable Melon Visual", true);
+            tileimage[42].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Melon.png"));
+            tileimage[43] = new Tile("Harvestable Cranberry Visual", true);
+            tileimage[43].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Cranberry.png"));
+            tileimage[44] = new Tile("Harvestable Pumpkin Visual", true);
+            tileimage[44].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Pumpkin.png"));
+            tileimage[45] = new Tile("Harvestable Grape Visual", true);
+            tileimage[45].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Grape.png"));
+        } catch (IOException e) { // Lebih spesifik menangkap IOException untuk ImageIO
             System.err.println("Error loading tile prototype images: " + e.getMessage());
             e.printStackTrace();
-        } catch (Exception e) {
+        } catch (Exception e) { // Menangkap error lain
             System.err.println("Unexpected error in getTileImagePrototypes: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    // Helper untuk cek kelas Building (opsional)
+    private boolean classExists(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
     private Tile createTileInstance(int prototypeID) {
+
         if (prototypeID < 0 || prototypeID >= tileImage.length || tileImage[prototypeID] == null) {
             System.err.println("Warning: Invalid prototypeID " + prototypeID + " in createTileInstance. Using default tile 0.");
             prototypeID = 0;
             if (tileImage[prototypeID] == null) { // Fallback jika prototype 0 juga null
                 Tile errorTile = new Tile("Error Tile", false);
                 try {
+
                     errorTile.Image = new BufferedImage(gp.tileSize, gp.tileSize, BufferedImage.TYPE_INT_ARGB);
                     Graphics2D g = errorTile.Image.createGraphics();
                     g.setColor(java.awt.Color.MAGENTA);
                     g.fillRect(0,0,gp.tileSize, gp.tileSize);
                     g.dispose();
-                } catch (Exception e) { /* abaikan */ }
-                return errorTile;
+                 } catch (Exception e) { /* abaikan jika gagal buat gambar error */ }
+                 return errorTile;
             }
         }
 
+
         Tile prototype = tileImage[prototypeID];
+
         Tile newInstance;
 
-        // Gunakan copy constructor jika tersedia untuk state yang lebih kompleks
         if (prototype instanceof Soil) {
-            newInstance = new Soil((Soil) prototype);
-        } else if (prototype instanceof Bed) {
-            newInstance = new Bed((Bed) prototype);
-        }
-        // Tambahkan else if untuk kelas Tile kustom lainnya yang memiliki copy constructor
-        // else if (prototype instanceof YourCustomTile) {
-        //     newInstance = new YourCustomTile((YourCustomTile) prototype);
-        // }
-        else {
-            // Untuk Tile standar, buat instance baru dan copy properti dasar
-            newInstance = new Tile(prototype.getTileName(), prototype.isWalkable());
-            newInstance.Image = prototype.Image; // Berbagi gambar dari prototype itu OK untuk Tile sederhana
-            // Jika Tile memiliki state lain yang perlu di-copy, lakukan di sini atau buat copy constructor di Tile.java
+            newInstance = new Soil((Soil) prototype); 
+        // } else if (prototype instanceof Building) { 
+        //     newInstance = new Building((Building) prototype); 
+        } else {
+            newInstance = new Tile(prototype); 
         }
         return newInstance;
     }
 
-    private void loadFreshMapFromFile(String mapFilePath, int mapIdToLoad) {
+    private void loadMapByPath(String mapFilePath) {
         try {
             InputStream is = getClass().getResourceAsStream(mapFilePath);
             if (is == null) {
                 System.err.println("FATAL ERROR: File " + mapFilePath + " tidak ditemukan!");
-                createEmptyMapAsCurrent(gp.maxScreenCol, gp.maxScreenRow, mapIdToLoad); // Buat peta kosong jika file tidak ada
+                createEmptyMap(gp.maxScreenCol, gp.maxScreenRow);
                 return;
             }
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -309,130 +387,76 @@ public class Map {
 
             if (lines.isEmpty()) {
                 System.err.println("Map file is empty: " + mapFilePath);
-                createEmptyMapAsCurrent(gp.maxScreenCol, gp.maxScreenRow, mapIdToLoad);
+                createEmptyMap(gp.maxScreenCol, gp.maxScreenRow);
                 return;
             }
 
-            int rows = lines.size();
-            int cols = 0;
-            if (rows > 0 && !lines.get(0).isEmpty()) {
-                cols = lines.get(0).split("\\s+").length;
+            this.currentMapWorldRow = lines.size();
+            if (this.currentMapWorldRow > 0 && !lines.get(0).isEmpty()) {
+                this.currentMapWorldCol = lines.get(0).split("\\s+").length; // Split by one or more spaces
             } else {
+                this.currentMapWorldCol = 0;
                 System.err.println("Map file has empty lines or zero rows: " + mapFilePath);
-                createEmptyMapAsCurrent(gp.maxScreenCol, gp.maxScreenRow, mapIdToLoad);
+                createEmptyMap(gp.maxScreenCol, gp.maxScreenRow);
                 return;
             }
 
-            Tile[][] newMapTiles = new Tile[cols][rows];
+            this.tiles = new Tile[this.currentMapWorldCol][this.currentMapWorldRow]; // Inisialisasi dengan tipe Tile[][]
 
-            for (int row = 0; row < rows; row++) {
+            for (int row = 0; row < this.currentMapWorldRow; row++) {
                 String lineData = lines.get(row);
-                String[] numbers = lineData.split("\\s+");
-                if (numbers.length < cols) {
-                    System.err.println("Warning: Map file " + mapFilePath + " row " + (row+1) + " has fewer columns (" + numbers.length +") than expected (" + cols + "). Padding with default tiles.");
+                String[] numbers = lineData.split("\\s+"); // Split by one or more spaces
+                if (numbers.length < this.currentMapWorldCol) {
+                    System.err.println("Warning: Map file " + mapFilePath + " row " + (row+1) + " has fewer columns (" + numbers.length +") than expected (" + this.currentMapWorldCol + "). Padding with default tiles.");
                 }
-                for (int col = 0; col < cols; col++) {
+                for (int col = 0; col < this.currentMapWorldCol; col++) {
                     if (col < numbers.length && !numbers[col].isEmpty()) {
                         try {
                             int tilePrototypeID = Integer.parseInt(numbers[col]);
-                            newMapTiles[col][row] = createTileInstance(tilePrototypeID);
+                            tiles[col][row] = createTileInstance(tilePrototypeID);
                         } catch (NumberFormatException e) {
                             System.err.println("Error parsing number in " + mapFilePath + " at row " + (row + 1) + ", col " + (col + 1) + ". Val: '" + numbers[col] + "'. Using default.");
-                            newMapTiles[col][row] = createTileInstance(0);
+                            tiles[col][row] = createTileInstance(0);
                         }
                     } else {
-                        newMapTiles[col][row] = createTileInstance(0);
+                        tiles[col][row] = createTileInstance(0); // Default jika data kurang atau string kosong
                     }
                 }
             }
-
-            this.currentMapTiles = newMapTiles;
-            this.currentMapWorldCol = cols;
-            this.currentMapWorldRow = rows;
-            this.currentMapID = mapIdToLoad;
-
-            // Simpan state peta yang baru dimuat ke cache
-            loadedMapStates.put(mapIdToLoad, new MapState(newMapTiles, cols, rows));
-            System.out.println("Map loaded from file and cached: " + mapFilePath + " (ID: " + mapIdToLoad + ") Dimensions: " + cols + "x" + rows);
+            System.out.println("Map loaded: " + mapFilePath + " Dimensions: " + this.currentMapWorldCol + "x" + this.currentMapWorldRow);
 
         } catch (IOException e) {
             System.err.println("IOException loading map " + mapFilePath + ": " + e.getMessage());
-            createEmptyMapAsCurrent(gp.maxScreenCol, gp.maxScreenRow, mapIdToLoad);
+            createEmptyMap(gp.maxScreenCol, gp.maxScreenRow);
         } catch (Exception e) {
             System.err.println("Unexpected error loading map " + mapFilePath + ": " + e.getMessage());
             e.printStackTrace();
-            createEmptyMapAsCurrent(gp.maxScreenCol, gp.maxScreenRow, mapIdToLoad);
+            createEmptyMap(gp.maxScreenCol, gp.maxScreenRow);
         }
     }
-
-
-    public boolean loadMapByID(int mapID) {
-        if (mapID < 0 || mapID >= mapFilePaths.length || mapFilePaths[mapID] == null) {
-            System.err.println("Error: Invalid mapID (" + mapID + ") or map file path not configured.");
-            // Coba load peta default jika ada, jika tidak, jangan lakukan apa-apa atau buat peta kosong
-            if (currentMapID == -1 && mapFilePaths.length > 0 && mapFilePaths[0] != null) { // Hanya jika belum ada peta yang dimuat
-                 return loadMapByID(0); // Rekursif panggil dengan ID 0
-            } else if (currentMapID == -1) { // Jika benar-benar tidak ada peta default
-                createEmptyMapAsCurrent(gp.maxScreenCol, gp.maxScreenRow, 0); // Buat peta kosong sebagai ID 0
-            }
-            return false; // Gagal memuat mapID yang diminta
-        }
-
-        if (loadedMapStates.containsKey(mapID)) {
-            // Peta sudah ada di cache, muat dari cache
-            MapState cachedState = loadedMapStates.get(mapID);
-            this.currentMapTiles = cachedState.tiles;
-            this.currentMapWorldCol = cachedState.worldCol;
-            this.currentMapWorldRow = cachedState.worldRow;
-            this.currentMapID = mapID;
-            System.out.println("Map loaded from cache. ID: " + mapID + ". World size: " + currentMapWorldCol + "x" + currentMapWorldRow);
-            return true;
-        } else {
-            // Peta belum ada di cache, muat dari file
-            loadFreshMapFromFile(mapFilePaths[mapID], mapID);
-            // currentMapID, currentMapTiles, dll sudah diatur di dalam loadFreshMapFromFile
-            return true; // Asumsi loadFreshMapFromFile berhasil atau menangani errornya sendiri
-        }
-    }
-
-    // Digunakan sebagai fallback jika file peta tidak ditemukan atau error saat load awal
-    private void createEmptyMapAsCurrent(int cols, int rows, int mapIdForCache) {
-        this.currentMapWorldCol = cols;
-        this.currentMapWorldRow = rows;
-        this.currentMapTiles = new Tile[cols][rows];
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                this.currentMapTiles[c][r] = createTileInstance(0); // Isi dengan instance tile default
-            }
-        }
-        this.currentMapID = mapIdForCache; // Tetapkan ID untuk peta kosong ini
-        // Simpan peta kosong ini ke cache juga agar tidak dibuat ulang terus menerus jika ada masalah
-        loadedMapStates.put(mapIdForCache, new MapState(this.currentMapTiles, cols, rows));
-        System.out.println("Created/Reverted to empty map (ID: " + mapIdForCache + ") (" + cols + "x" + rows + ") and cached.");
-    }
-
 
     public void draw(Graphics2D g2) {
-        if (currentMapTiles == null) return;
+        if (tiles == null) return; // Jika peta belum dimuat
 
         int worldCol = 0;
         int worldRow = 0;
 
-        while (worldRow < currentMapWorldRow) {
+        while (worldRow < currentMapWorldRow) { // Loop per baris dulu
             worldCol = 0;
             while (worldCol < currentMapWorldCol) {
-                Tile currentTile = currentMapTiles[worldCol][worldRow];
+                Tile currentTile = tiles[worldCol][worldRow];
 
-                if (currentTile != null && currentTile.Image != null) {
+                if (currentTile != null && currentTile.Image != null) { // Gunakan .Image sesuai Tile.java Anda
                     int worldX = worldCol * gp.tileSize;
                     int worldY = worldRow * gp.tileSize;
                     int screenX = worldX - gp.player.x + gp.player.screenX;
                     int screenY = worldY - gp.player.y + gp.player.screenY;
 
                     if (worldX + gp.tileSize > gp.player.x - gp.player.screenX &&
-                        worldX - gp.tileSize < gp.player.x + gp.player.screenX && // Sedikit toleransi agar tile di tepi tetap tergambar
+                        worldX < gp.player.x + gp.player.screenX + gp.tileSize && // Perbaikan batas kanan
                         worldY + gp.tileSize > gp.player.y - gp.player.screenY &&
-                        worldY - gp.tileSize < gp.player.y + gp.player.screenY) {
+                        worldY < gp.player.y + gp.player.screenY + gp.tileSize) { // Perbaikan batas bawah
+                        
                         g2.drawImage(currentTile.Image, screenX, screenY, gp.tileSize, gp.tileSize, null);
                     }
                 }
@@ -443,54 +467,66 @@ public class Map {
     }
 
     public void updateTiles() {
-        if (currentMapTiles == null) return;
+        if (tiles == null) return;
         for (int r = 0; r < currentMapWorldRow; r++) {
             for (int c = 0; c < currentMapWorldCol; c++) {
-                if (currentMapTiles[c][r] != null) { // Cek null untuk keamanan
-                    // Panggil update generik dari Tile, yang bisa di-override oleh subclass
-                    currentMapTiles[c][r].update();
-
-                    // Logika spesifik Soil untuk update gambar berdasarkan state
-                    if (currentMapTiles[c][r] instanceof Soil) {
-                        Soil soilTile = (Soil) currentMapTiles[c][r];
-                        if (soilTile.getSeedPlanted() != null ) { // Hanya update gambar jika ada perubahan relevan
-                            soilTile.updateImageBasedOnState(gp);
-                        }
+                if (tiles[c][r] != null && tiles[c][r] instanceof Soil) {
+                    tiles[c][r].update(gp); 
+                    Soil wet = (Soil) tiles[c][r];
+                    if (wet.getSeedPlanted() != null) {
+                        wet.updateImageBasedOnState(gp);
                     }
-                    // Anda bisa menambahkan logika update spesifik untuk tile lain di sini jika perlu
+                    // Panggil update() dari Tile. Soil akan override jika perlu logika khusus.
+                                          // Jika update di Soil butuh GamePanel: tiles[c][r].update(gp);
+                                          // Maka Tile.update() juga harus terima GamePanel gp.
                 }
             }
         }
     }
-    
-    public void advanceDay() {
-        System.out.println("Map: Advancing to a new day.");
-        // Iterasi semua map yang ada di cache
-        for (MapState mapState : loadedMapStates.values()) {
-            if (mapState != null && mapState.tiles != null) {
-                for (int r = 0; r < mapState.worldRow; r++) {
-                    for (int c = 0; c < mapState.worldCol; c++) {
-                        Tile tile = mapState.tiles[c][r];
-                        if (tile instanceof Soil) {
-                            Soil soilTile = (Soil) tile;
-                            // soilTile.advanceDay(gp); // Panggil method advanceDay pada setiap Soil tile
-                        }
-                        // Anda bisa menambahkan logika advanceDay untuk tile lain di sini
-                    }
-                }
+
+    public boolean loadMapByID(int mapID) {
+        if (mapID >= 0 && mapID < mapFilePaths.length && mapFilePaths[mapID] != null) {
+            loadMapByPath(mapFilePaths[mapID]);
+            this.currentMapID = mapID;
+            // Penting: Update dimensi dunia di GamePanel jika komponen lain menggunakannya
+            // gp.worldCol = this.currentMapWorldCol;
+            // gp.worldRow = this.currentMapWorldRow;
+            System.out.println("Successfully switched to map ID: " + mapID + ". World size: " + currentMapWorldCol + "x" + currentMapWorldRow);
+            return true;
+        } else {
+            System.err.println("Error: Invalid mapID (" + mapID + ") or map file path not configured.");
+            if (mapFilePaths.length > 0 && mapFilePaths[0] != null) {
+                loadMapByPath(mapFilePaths[0]); // Coba load peta default
+                this.currentMapID = 0;
+                // gp.worldCol = this.currentMapWorldCol;
+                // gp.worldRow = this.currentMapWorldRow;
+            } else {
+                createEmptyMap(gp.maxScreenCol, gp.maxScreenRow); // Fallback ke peta kosong
             }
+            return false;
         }
-        // Pastikan peta yang sedang aktif juga terupdate gambarnya jika ada perubahan state
-        updateTiles(); // Ini akan memanggil updateImageBasedOnState untuk soil di peta aktif
     }
 
+    private void createEmptyMap(int cols, int rows) {
+        this.currentMapWorldCol = cols;
+        this.currentMapWorldRow = rows;
+        this.tiles = new Tile[this.currentMapWorldCol][this.currentMapWorldRow]; // Tipe Tile[][]
+        for (int r = 0; r < this.currentMapWorldRow; r++) {
+            for (int c = 0; c < this.currentMapWorldCol; c++) {
+                this.tiles[c][r] = createTileInstance(0); // Isi dengan instance tile default
+            }
+        }
+        // gp.worldCol = this.currentMapWorldCol;
+        // gp.worldRow = this.currentMapWorldRow;
+        System.out.println("Created/Reverted to empty map (" + cols + "x" + rows + ") with Tile instances.");
+    }
 
     public Tile getTile(int worldX, int worldY) {
         int col = worldX / gp.tileSize;
         int row = worldY / gp.tileSize;
 
-        if (currentMapTiles != null && col >= 0 && col < currentMapWorldCol && row >= 0 && row < currentMapWorldRow) {
-            return currentMapTiles[col][row];
+        if (tiles != null && col >= 0 && col < currentMapWorldCol && row >= 0 && row < currentMapWorldRow) {
+            return tiles[col][row]; // Kembalikan instance Tile
         }
         return null;
     }
@@ -499,20 +535,19 @@ public class Map {
         int col = worldX / gp.tileSize;
         int row = worldY / gp.tileSize;
 
-        if (currentMapTiles != null && col >= 0 && col < currentMapWorldCol && row >= 0 && row < currentMapWorldRow) {
-            currentMapTiles[col][row] = createTileInstance(newTilePrototypeID);
-            // Tidak perlu update cache di sini karena currentMapTiles adalah referensi ke tiles di dalam MapState yang ada di cache.
-            // Perubahan pada currentMapTiles[c][r] akan langsung tercermin di cache.
+        if (tiles != null && col >= 0 && col < currentMapWorldCol && row >= 0 && row < currentMapWorldRow) {
+            tiles[col][row] = createTileInstance(newTilePrototypeID);
         }
     }
 
     public void plantSeedAtTile(int worldX, int worldY, Seeds seedToPlant) {
-        Tile targetTile = getTile(worldX, worldY); // Menggunakan currentMapTiles
+        Tile targetTile = getTile(worldX, worldY);
 
         if (targetTile instanceof Soil) {
             Soil soilTile = (Soil) targetTile;
             if (soilTile.canPlant()) {
-                soilTile.plantSeed(seedToPlant, gp);
+                soilTile.plantSeed(seedToPlant, gp); // Soil akan mengurus perubahan state & gambar
+                // Pesan sudah ada di dalam soilTile.plantSeed jika berhasil
             } else {
                 String plantedInfo = "is already planted";
                 if (soilTile.getSeedPlanted() != null) {
@@ -525,16 +560,14 @@ public class Map {
             System.out.println("Cannot plant at ("+ (worldX/gp.tileSize) + "," + (worldY/gp.tileSize) +"): Tile is not Soil. It is " + tileType);
         }
     }
-
     public void harvestSeedAtTile(int worldX, int worldY) {
-        Tile targetTile = getTile(worldX, worldY); // Menggunakan currentMapTiles
+        Tile targetTile = getTile(worldX, worldY);
 
         if (targetTile instanceof Soil) {
             Soil soilTile = (Soil) targetTile;
-            // Logika panen sudah ada di Soil.harvest(), panggil saja itu
-            soilTile.harvest(gp, gp.player);
-        } else {
-            System.out.println("Cannot harvest at ("+ (worldX/gp.tileSize) + "," + (worldY/gp.tileSize) +"): Not a soil tile or nothing to harvest.");
-        }
+            if (!soilTile.canPlant()) {
+                soilTile.harvest(gp, gp.player); 
+            } 
+        } 
     }
 }
