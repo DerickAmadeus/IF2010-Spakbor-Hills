@@ -3,7 +3,6 @@ package main;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import Items.Equipment;
 import Items.*;
 
 import java.awt.Graphics2D;
@@ -22,6 +21,9 @@ public class GamePanel extends JPanel implements Runnable {
     public final int inventoryState = 3;
     public final int itemOptionState = 4;
     public int gameState = playState;
+    private long lastMapUpdateTime = 0;
+    private static final long MAP_UPDATE_INTERVAL = 10_000; // 10 detik dalam milidetik
+
 
     final int originalTileSize = 16; // Original tile size in pixels
     final int scale = 3; // Scale factor
@@ -102,6 +104,11 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update() {
         player.update();
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastMapUpdateTime >= MAP_UPDATE_INTERVAL) {
+            map.updateTiles();
+            lastMapUpdateTime = currentTime; 
+        }
         // Potentially update other game entities or systems here
         // e.g., map.update(), npcs.update(), etc.
 
@@ -123,6 +130,8 @@ public class GamePanel extends JPanel implements Runnable {
             player.tiling();
             player.recoverLand();
             player.planting();
+            player.watering();
+            player.harvesting();
         }
         if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(
@@ -175,6 +184,13 @@ public class GamePanel extends JPanel implements Runnable {
                             } else {
                                 player.equipItem(eq);
                             }
+                            gameState = inventoryState;
+                        } else if (player.getInventory().optionCommandNum == 1) {
+                            gameState = inventoryState; // Cancel
+                        }
+                    } else if (selected instanceof Fish eq) {
+                        if (player.getInventory().optionCommandNum == 0) {
+                            player.eating();
                             gameState = inventoryState;
                         } else if (player.getInventory().optionCommandNum == 1) {
                             gameState = inventoryState; // Cancel

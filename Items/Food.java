@@ -1,4 +1,5 @@
 package Items;
+import player.Player;
 
 public class Food extends Item implements Sellable, Buyable, Edible{
     private int energyGain;
@@ -20,7 +21,9 @@ public class Food extends Item implements Sellable, Buyable, Edible{
         System.out.println("Sold " + getName() + " for " + getHargaJual());
     }
 
-    public void eat() {
+    public void eat(Player player, Item get) {
+        player.getInventory().removeItem(get, 1);
+        player.setEnergy(player.getEnergy() + energyGain);
         System.out.println("Eating " + getName() + " restores " + getEnergyGain());
     }
 }
