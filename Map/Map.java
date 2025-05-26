@@ -25,6 +25,7 @@ public class Map {
             "/Map/maps/farm_map.txt",
             "/Map/maps/forest_map.txt",
             "/Map/maps/mountain_lake_map.txt",
+            "/Map/maps/house_map.txt"
             // ... tambahkan semua path file peta kamu di sini
     };
 
@@ -64,6 +65,31 @@ public class Map {
             tileimage[46].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grassbawahair.png"));
             tileimage[47] = new Tile("grass_kiri_air", true);
             tileimage[47].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiriair.png"));
+            tileimage[48] = new Tile("grass_kanan_air", true);
+            tileimage[48].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananair.png"));
+            tileimage[49] = new Tile("floor", true);
+
+
+            // HOUSE
+            tileimage[49].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/floor.png"));
+            tileimage[50] = new Tile("wallkiriatas", false);
+            tileimage[50].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallkiriatas.png"));
+            tileimage[51] = new Tile("wallatas", false);
+            tileimage[51].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallatas.png"));
+            tileimage[52] = new Tile("wallkananatas", false);
+            tileimage[52].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallkananatas.png"));
+            tileimage[53] = new Tile("wall", false);
+            tileimage[53].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wall.png"));
+            tileimage[54] = new Tile("wallbawah", false);
+            tileimage[54].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallbawah.png"));
+            tileimage[55] = new Tile("wallkiribawah", false);
+            tileimage[55].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallkiribawah.png"));
+            tileimage[56] = new Tile("wallkananbawah", false);
+            tileimage[56].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallkananbawah.png"));
+            tileimage[57] = new Tile("door", true);
+            tileimage[57].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/door.png")); // Gambar pintu
+            tileimage[58] = new Tile("window", false);
+            tileimage[58].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/window.png")); // Gambar jendela
 
             // WATER
             tileimage[9] = new Tile("Water", false); // walkable = false
