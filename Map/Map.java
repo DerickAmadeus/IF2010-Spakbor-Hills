@@ -60,10 +60,10 @@ public class Map {
             tileimage[8].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananbawah.png"));
             tileimage[11] = new Tile("grass_atas_air", true);
             tileimage[11].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grassatasair.png"));
-            tileimage[25] = new Tile("grass_bawah_air", true);
-            tileimage[25].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grassbawahair.png"));
-            tileimage[26] = new Tile("grass_kiri_air", true);
-            tileimage[26].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiriair.png"));
+            tileimage[46] = new Tile("grass_bawah_air", true);
+            tileimage[46].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grassbawahair.png"));
+            tileimage[47] = new Tile("grass_kiri_air", true);
+            tileimage[47].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiriair.png"));
 
             // WATER
             tileimage[9] = new Tile("Water", false); // walkable = false
