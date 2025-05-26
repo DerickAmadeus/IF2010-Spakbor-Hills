@@ -89,7 +89,7 @@ public class GamePanel extends JPanel implements Runnable {
         // Dari Farm Map (ID 0) ke Forest Map (ID 1)
         // Area pemicu di Farm Map: kolom 0, baris 10 sampai 12 (lebar 1 tile, tinggi 3 tiles)
         // Pemain muncul di Forest Map pada tile (15, 10) (misalnya, di sisi kanan forest map)
-        transitions.add(new TransitionData(0, 0, 10, 1, 3, 1, 13, 11, false, tileSize));
+        transitions.add(new TransitionData(0, 0, 10, 1, 3, 1, 12, 11, false, tileSize));
 
         // Dari Forest Map (ID 1) kembali ke Farm Map (ID 0)
         // Area pemicu di Forest Map: kolom 16 (misal), baris 10 sampai 12
@@ -104,7 +104,7 @@ public class GamePanel extends JPanel implements Runnable {
         // Dari Mountain Lake Map (ID 2) kembali ke Farm Map (ID 0)
         // Area pemicu di Mountain Lake Map: kolom 10-12, baris 16
         // Muncul di Farm Map pada tile (16, 1)
-        transitions.add(new TransitionData(2, 10, 16, 3, 1, 0, 16, 1, false, tileSize));
+        transitions.add(new TransitionData(2, 10, 10, 3, 1, 0, 16, 1, false, tileSize));
 
 
         // Tambahkan transisi lain sesuai kebutuhan Anda
@@ -137,6 +137,7 @@ public class GamePanel extends JPanel implements Runnable {
 
                     // Reset status penting pemain jika perlu
                     player.collisionOn = false; 
+                    player.direction = "down"; // Atur arah default
                     // player.isActuallyMoving = false; // Jika Anda memiliki variabel ini di Player
 
                     transition.startCooldown(); // Mulai cooldown untuk transisi yang baru saja digunakan

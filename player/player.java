@@ -242,6 +242,10 @@ public class Player {
 
 
     public void update() {
+        // System.out.println("Player Update Start - Keys: U=" + keyH.upPressed + " D=" + keyH.downPressed + " L=" + keyH.leftPressed + " R=" + keyH.rightPressed +
+        //            " | collisionOn: " + collisionOn + " | direction: " + direction + " | lastMoveDirection: " + lastMoveDirection);
+        // System.out.println("Current GameState in Player: " + gp.gameState + " | playState is: " + gp.playState);
+
         String prevAnimationState = direction;
         isActuallyMoving = false;
 
@@ -259,8 +263,7 @@ public class Player {
             else if (keyH.rightPressed) { direction = "right"; lastMoveDirection = "right"; }
 
 
-            collisionOn = false;
-            gp.cChecker.checkTile(this);
+
 
             if (!collisionOn) {
                 switch (direction) {
@@ -270,6 +273,11 @@ public class Player {
                     case "right": x += speed; isActuallyMoving = true; break;
                 }
             }
+
+            collisionOn = false;
+            gp.cChecker.checkTile(this);
+
+            System.out.println("Collision after checkTile: " + collisionOn);
         }
 
         // Terapkan batas dunia menggunakan dimensi peta saat ini
