@@ -42,17 +42,19 @@ public class Player {
     private Item equippedItem;
     private int energy;
     private static final int MAX_ENERGY = 100; 
+    private String farmName;
     private Tile tile; 
 
 
     // Cooldown for interaction to prevent multiple interactions from a single long key press
     private int interactionCooldown = 0;
 
-    public Player(GamePanel gp, KeyHandler keyH) {
+    public Player(GamePanel gp, KeyHandler keyH, String farmName) {
         this.gp = gp;
         this.keyH = keyH;
         this.energy = MAX_ENERGY;
         this.inventory = new Inventory<>(gp);
+        this.farmName = farmName;
         loadInitialEquipment();
         loadInitialFish();
         loadInitialSeeds();
@@ -581,6 +583,14 @@ public class Player {
         System.out.println("Equipped: " + item.getName());
     }
 
+    public String getFarmName() {
+        return farmName;
+    }
+
+    public void setFarmName(String farmName) {
+        this.farmName = farmName;
+    }
+
     public int getEnergy() {
         return energy;
     }
@@ -706,7 +716,7 @@ public class Player {
                 Food eaten = (Food) get;
                 eaten.eat(this, get);
             }
-            g2.addMinutes(60);
+            g2.addMinutes(1440);
         }
     }
 }
