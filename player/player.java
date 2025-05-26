@@ -175,6 +175,15 @@ public class Player {
         inventory.addItem(fishingRod, 1);
     }
 
+    public void showCoordinates() {
+        System.out.println("Player Coordinates: (" + x + ", " + y + ")");
+        System.out.println("Screen Coordinates: (" + screenX + ", " + screenY + ")");
+        System.out.println("Direction: " + direction);
+        System.out.println("Last Move Direction: " + lastMoveDirection);
+        System.out.println("Energy: " + energy);
+
+    }
+
 //test
 
     public void setDefaultValues() {
@@ -251,6 +260,10 @@ public class Player {
 
 
     public void update() {
+        // System.out.println("Player Update Start - Keys: U=" + keyH.upPressed + " D=" + keyH.downPressed + " L=" + keyH.leftPressed + " R=" + keyH.rightPressed +
+        //            " | collisionOn: " + collisionOn + " | direction: " + direction + " | lastMoveDirection: " + lastMoveDirection);
+        // System.out.println("Current GameState in Player: " + gp.gameState + " | playState is: " + gp.playState);
+
         String prevAnimationState = direction;
         isActuallyMoving = false;
 
@@ -261,86 +274,76 @@ public class Player {
         boolean isAttemptingMoveByKeyPress = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
 
         if (isAttemptingMoveByKeyPress && gp.gameState == gp.playState) {
-            if (keyH.upPressed) {
-                direction = "up"; lastMoveDirection = "up";
-            } else if (keyH.downPressed) {
-                direction = "down"; lastMoveDirection = "down";
-            } else if (keyH.leftPressed) {
-                direction = "left"; lastMoveDirection = "left";
-            } else if (keyH.rightPressed) {
-                direction = "right"; lastMoveDirection = "right";
-            }
+            // ... (logika pergerakan yang sudah ada)
+            if (keyH.upPressed) { direction = "up"; lastMoveDirection = "up"; }
+            else if (keyH.downPressed) { direction = "down"; lastMoveDirection = "down"; }
+            else if (keyH.leftPressed) { direction = "left"; lastMoveDirection = "left"; }
+            else if (keyH.rightPressed) { direction = "right"; lastMoveDirection = "right"; }
 
-            collisionOn = false;
-            gp.cChecker.checkTile(this); // Check for tile collisions based on 'direction'
+
+
 
             if (!collisionOn) {
-                switch (direction) { // Use 'direction' for actual movement
+                switch (direction) {
                     case "up":    y -= speed; isActuallyMoving = true; break;
                     case "down":  y += speed; isActuallyMoving = true; break;
                     case "left":  x -= speed; isActuallyMoving = true; break;
                     case "right": x += speed; isActuallyMoving = true; break;
                 }
             }
+
+            collisionOn = false;
+            gp.cChecker.checkTile(this);
+
+            System.out.println("Collision after checkTile: " + collisionOn);
         }
 
-        // Enforce world boundaries
-        int worldWidth = gp.worldCol * gp.tileSize;
-        int worldHeight = gp.worldRow * gp.tileSize;
-        if (x < 0) x = 0;
-        if (x > worldWidth - gp.tileSize) x = worldWidth - gp.tileSize; // Player's width is tileSize
-        if (y < 0) y = 0;
-        if (y > worldHeight - gp.tileSize) y = worldHeight - gp.tileSize; // Player's height is tileSize
+        // Terapkan batas dunia menggunakan dimensi peta saat ini
+        int worldPixelWidth = gp.map.currentMapWorldCol * gp.tileSize;
+        int worldPixelHeight = gp.map.currentMapWorldRow * gp.tileSize;
 
-        // Update interaction area to be the tile in front of the player
-        // Player's current tile (center point for calculation)
-        int playerCurrentTileCol = (x + gp.tileSize / 2) / gp.tileSize;
-        int playerCurrentTileRow = (y + gp.tileSize / 2) / gp.tileSize;
+        if (x < 0) x = 0;
+        if (x + gp.tileSize > worldPixelWidth) x = worldPixelWidth - gp.tileSize; // Kanan
+        if (y < 0) y = 0;
+        if (y + gp.tileSize > worldPixelHeight) y = worldPixelHeight - gp.tileSize; // Bawah
+
+
+        // ... (sisa logika update pemain, termasuk interactionArea, animasi, dll.)
+         // Update interaction area
+        int playerCurrentTileCol = (x + solidArea.x + solidArea.width / 2) / gp.tileSize; // Pusat solid area
+        int playerCurrentTileRow = (y + solidArea.y + solidArea.height / 2) / gp.tileSize; // Pusat solid area
 
         int targetTileCol = playerCurrentTileCol;
         int targetTileRow = playerCurrentTileRow;
 
-        switch (lastMoveDirection) { // Use lastMoveDirection to determine where the player is "facing"
-            case "up":
-                targetTileRow = playerCurrentTileRow - 1;
-                break;
-            case "down":
-                targetTileRow = playerCurrentTileRow + 1;
-                break;
-            case "left":
-                targetTileCol = playerCurrentTileCol - 1;
-                break;
-            case "right":
-                targetTileCol = playerCurrentTileCol + 1;
-                break;
+        switch (lastMoveDirection) {
+            case "up": targetTileRow--; break;
+            case "down": targetTileRow++; break;
+            case "left": targetTileCol--; break;
+            case "right": targetTileCol++; break;
         }
 
-        // Set interactionArea to the world coordinates and size of the target tile
         interactionArea.x = targetTileCol * gp.tileSize;
         interactionArea.y = targetTileRow * gp.tileSize;
-        interactionArea.width = gp.tileSize;  // Ensure it's exactly one tile wide
-        interactionArea.height = gp.tileSize; // Ensure it's exactly one tile high
+        // interactionArea.width dan height sudah gp.tileSize
 
 
-        // Handle Interaction Key Press
         if (keyH.interactPressed && interactionCooldown == 0) {
             interact();
             keyH.interactPressed = false;
-        } 
+            interactionCooldown = 15; // Cooldown kecil setelah interaksi tombol E
+        }
 
 
-
-        // Determine final animation state
         if (isAttemptingMoveByKeyPress && !collisionOn && isActuallyMoving) {
-            // 'direction' is already "up", "down", etc. for walking animations
+            // 'direction' sudah diatur untuk animasi berjalan
         } else {
-            // Not moving or collided, switch to idle animation based on lastMoveDirection
             switch (lastMoveDirection) {
                 case "up":    direction = "idleUp";    break;
                 case "down":  direction = "idleDown";  break;
                 case "left":  direction = "idleLeft";  break;
                 case "right": direction = "idleRight"; break;
-                default:      direction = "idleDown";  break; // Fallback idle state
+                default:      direction = "idleDown";  break;
             }
         }
 
@@ -349,17 +352,16 @@ public class Player {
             spriteCounter = 0;
         }
 
-        // Animate sprite
         spriteCounter++;
         if (spriteCounter > ANIMATION_SPEED) {
             spriteNum++;
             BufferedImage[] currentFrames = getCurrentAnimationFrames();
             if (currentFrames != null && currentFrames.length > 0) {
                 if (spriteNum >= currentFrames.length) {
-                    spriteNum = 0; // Loop animation
+                    spriteNum = 0;
                 }
             } else {
-                spriteNum = 0; // Fallback if frames are null or empty
+                spriteNum = 0;
             }
             spriteCounter = 0;
         }

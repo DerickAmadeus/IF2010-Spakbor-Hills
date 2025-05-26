@@ -2,8 +2,8 @@ package Furniture;
 
 public class Bed extends Furniture{
     private String bedType;
-    public Bed(String name, int width, int height, char symbol, String bedType){
-        super(name, width, height, symbol);
+    public Bed(String name, boolean isWalkable, String bedType) {
+        super(name, isWalkable);
         this.bedType = bedType;
     }
     public String getBedType(){
