@@ -56,6 +56,7 @@ public class Player {
         loadInitialEquipment();
         loadInitialFish();
         loadInitialSeeds();
+        loadInitialFood();
 
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
@@ -122,6 +123,34 @@ public class Player {
         inventory.addItem(pumpkin, 2);
         inventory.addItem(grape, 2);
     }*/
+
+    public void loadInitialFood() {
+        Food fishChips = new Food("Fish n' Chips", "Makanan goreng yang gurih", 135, 150, 50);
+        Food baguette = new Food("Baguette", "Roti khas Prancis", 80, 100, 25);
+        Food sashimi = new Food("Sashimi", "Irisan ikan mentah segar", 275, 300, 70);
+        Food fugu = new Food("Fugu", "Ikan buntal beracun namun lezat", 135, 0, 50);
+        Food wine = new Food("Wine", "Minuman hasil fermentasi anggur", 90, 100, 20);
+        Food pumpkinPie = new Food("Pumpkin Pie", "Pai labu manis dan lembut", 100, 120, 35);
+        Food veggieSoup = new Food("Veggie Soup", "Sup sehat dari sayuran", 120, 140, 40);
+        Food fishStew = new Food("Fish Stew", "Semur ikan hangat", 260, 280, 70);
+        Food spakborSalad = new Food("Spakbor Salad", "Salad legendaris dari sayuran terbaik", 250, 0, 70);
+        Food fishSandwich = new Food("Fish Sandwich", "Sandwich isi ikan", 180, 200, 50);
+        Food legendSpakbor = new Food("The Legends of Spakbor", "Mitos yang bisa dimakan", 2000, 0, 100);
+        Food pigHead = new Food("Cooked Pig's Head", "Kepala babi panggang spesial", 0, 1000, 100);
+
+        inventory.addItem(fishChips, 2);
+        inventory.addItem(baguette, 3);
+        inventory.addItem(sashimi, 1);
+        inventory.addItem(fugu, 1);
+        inventory.addItem(wine, 2);
+        inventory.addItem(pumpkinPie, 2);
+        inventory.addItem(veggieSoup, 2);
+        inventory.addItem(fishStew, 1);
+        inventory.addItem(spakborSalad, 1);
+        inventory.addItem(fishSandwich, 1);
+        inventory.addItem(legendSpakbor, 1);
+        inventory.addItem(pigHead, 1);
+    }
 
     public void loadInitialEquipment() {
         Equipment wateringCan = new Equipment("Watering Can", "Untuk menyiram tanaman.", 10, 10);
@@ -665,6 +694,9 @@ public class Player {
                 eaten.eat(this, eaten);
             } else if (get instanceof Crops) {
                 Crops eaten = (Crops) get;
+                eaten.eat(this, get);
+            } else if (get instanceof Food) {
+                Food eaten = (Food) get;
                 eaten.eat(this, get);
             }
         }

@@ -169,7 +169,7 @@ public class Inventory<T extends Item> {
             options = new String[]{"Equip/Unequip", "Cancel"};
         } else if (item instanceof Seeds) {
             options = new String[]{"Hold/Put Out", "Cancel"};
-        } else if (item instanceof Fish){
+        } else if (item instanceof Fish || item instanceof Crops || item instanceof Food){
             options = new String[]{"Eat", "Cancel"};
         } else {
             options = new String[]{"damn"};

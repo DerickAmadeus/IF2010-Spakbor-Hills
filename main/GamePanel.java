@@ -215,8 +215,7 @@ public class GamePanel extends JPanel implements Runnable {
                         } else if (player.getInventory().optionCommandNum == 1) {
                             gameState = inventoryState; // Cancel
                         }
-                    } else if (selected instanceof Fish) {
-                        Fish eq = (Fish) selected;
+                    } else if (selected instanceof Fish || selected instanceof Crops || selected instanceof Food) {
                         if (player.getInventory().optionCommandNum == 0) {
                             player.eating();
                             gameState = inventoryState;

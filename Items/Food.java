@@ -26,4 +26,19 @@ public class Food extends Item implements Sellable, Buyable, Edible{
         player.setEnergy(player.getEnergy() + energyGain);
         System.out.println("Eating " + getName() + " restores " + getEnergyGain());
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Food food = (Food) o;
+
+        return this.getName().equals(food.getName()); // Atau sesuaikan dengan ID unik yang kamu punya
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getName().hashCode(); // Atau kombinasi field yang unik
+    }
 }

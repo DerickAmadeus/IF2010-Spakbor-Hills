@@ -60,4 +60,5 @@ public abstract class Item {
     public void setHargaBeli(int harga) {
         this.hargaBeli = Math.max(0, harga);
     }
+
 }
