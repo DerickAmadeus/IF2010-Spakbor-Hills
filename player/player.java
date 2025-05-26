@@ -6,8 +6,13 @@ import Map.Tile;
 import Map.Soil;
 import java.awt.image.BufferedImage;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.BasicStroke;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javax.imageio.ImageIO;
 
 import Items.*;
@@ -42,19 +47,20 @@ public class Player {
     private Item equippedItem;
     private int energy;
     private static final int MAX_ENERGY = 100; 
+    private String farmName;
     private Tile tile; 
 
 
     // Cooldown for interaction to prevent multiple interactions from a single long key press
     private int interactionCooldown = 0;
 
-    public Player(GamePanel gp, KeyHandler keyH) {
+    public Player(GamePanel gp, KeyHandler keyH, String farmName) {
         this.gp = gp;
         this.keyH = keyH;
         this.energy = MAX_ENERGY;
         this.inventory = new Inventory<>(gp);
+        this.farmName = farmName;
         loadInitialEquipment();
-        loadInitialFish();
         loadInitialSeeds();
         loadInitialFood();
 
@@ -71,19 +77,24 @@ public class Player {
     }
 
     public void loadInitialSeeds() {
-        Seeds parsnip = new Seeds("Parsnip Seeds", "Grows quickly in Spring", 10, 20, 1, "Spring", 13);
-        Seeds cauliflower = new Seeds("Cauliflower Seeds", "Takes time but valuable", 40, 80, 5, "Spring", 14);
-        Seeds potato = new Seeds("Potato Seeds", "Produces multiple potatoes", 25, 50, 3, "Spring", 15);
-        Seeds wheat = new Seeds("Wheat Seeds", "Spring wheat crop", 30, 60, 1, "Spring", 16);
+        ArrayList<String> spring = new ArrayList<>(Arrays.asList("Spring"));
+        ArrayList<String> summer = new ArrayList<>(Arrays.asList("Summer"));
+        ArrayList<String> fall = new ArrayList<>(Arrays.asList("Fall"));
+        ArrayList<String> wheatSeason = new ArrayList<>(Arrays.asList("Spring", "Fall"));
 
-        Seeds blueberry = new Seeds("Blueberry Seeds", "Produces blueberries", 40, 80, 7, "Summer", 17);
-        Seeds tomato = new Seeds("Tomato Seeds", "Popular summer crop", 25, 50, 3, "Summer", 18);
-        Seeds hotPepper = new Seeds("Hot Pepper Seeds", "Grows quickly", 20, 40, 1, "Summer", 19);
-        Seeds melon = new Seeds("Melon Seeds", "Large summer fruit", 40, 80, 4, "Summer", 20);
+        Seeds parsnip = new Seeds("Parsnip Seeds", "Grows quickly in Spring", 10, 20, 1, spring, 13);
+        Seeds cauliflower = new Seeds("Cauliflower Seeds", "Takes time but valuable", 40, 80, 5, spring, 14);
+        Seeds potato = new Seeds("Potato Seeds", "Produces multiple potatoes", 25, 50, 3, spring, 15);
+        Seeds wheat = new Seeds("Wheat Seeds", "Spring wheat crop", 30, 60, 1, wheatSeason, 16);
 
-        Seeds cranberry = new Seeds("Cranberry Seeds", "Multiple harvests", 50, 100, 2, "Fall", 21);
-        Seeds pumpkin = new Seeds("Pumpkin Seeds", "Big and valuable", 75, 150, 7, "Fall", 22);
-        Seeds grape = new Seeds("Grape Seeds", "Climbing vine fruit", 30, 60, 3, "Fall", 23);
+        Seeds blueberry = new Seeds("Blueberry Seeds", "Produces blueberries", 40, 80, 7, summer, 17);
+        Seeds tomato = new Seeds("Tomato Seeds", "Popular summer crop", 25, 50, 3, summer, 18);
+        Seeds hotPepper = new Seeds("Hot Pepper Seeds", "Grows quickly", 20, 40, 1, summer, 19);
+        Seeds melon = new Seeds("Melon Seeds", "Large summer fruit", 40, 80, 4, summer, 20);
+
+        Seeds cranberry = new Seeds("Cranberry Seeds", "Multiple harvests", 50, 100, 2, fall, 21);
+        Seeds pumpkin = new Seeds("Pumpkin Seeds", "Big and valuable", 75, 150, 7, fall, 22);
+        Seeds grape = new Seeds("Grape Seeds", "Climbing vine fruit", 30, 60, 3, fall, 23);
 
         inventory.addItem(parsnip, 5);
         inventory.addItem(cauliflower, 2);
@@ -172,51 +183,6 @@ public class Player {
         System.out.println("Energy: " + energy);
 
     }
-
-    public void loadInitialFish() {
-        Fish bullhead = new Fish("Bullhead", "Ikan Bullhead, mudah ditemukan.", 50, 50, "Any", "Any", "Mountain Lake", "Common");
-        Fish carp = new Fish("Carp", "Ini Carp.", 50, 50, "Any", "Any", "Pond", "Common");
-        Fish chub = new Fish("Chub", "Ikan Chub, cukup umum.", 50, 50, "Any", "Any", "Forest River", "Common");
-        Fish largemouthBass = new Fish("Largemouth Bass", "Ikan besar dari danau pegunungan.", 100, 100, "Any", "Any", "Mountain Lake", "Uncommon");
-        Fish rainbowTrout = new Fish("Rainbow Trout", "Ikan berwarna pelangi yang muncul saat cuaca cerah.", 120, 120, "Summer", "Sunny", "Forest River", "Uncommon");
-        Fish sturgeon = new Fish("Sturgeon", "Ikan langka dari danau pegunungan.", 200, 200, "Summer", "Any", "Mountain Lake", "Rare");
-        Fish midnightCarp = new Fish("Midnight Carp", "Ikan malam dari danau atau kolam.", 150, 150, "Fall", "Any", "Mountain Lake", "Uncommon");
-        Fish flounder = new Fish("Flounder", "Ikan pipih dari laut.", 90, 90, "Spring", "Any", "Ocean", "Common");
-        Fish halibut = new Fish("Halibut", "Ikan laut besar aktif pagi dan malam.", 110, 110, "Any", "Any", "Ocean", "Uncommon");
-        Fish octopus = new Fish("Octopus", "Gurita laut yang aktif siang hari.", 180, 180, "Summer", "Any", "Ocean", "Rare");
-        Fish pufferfish = new Fish("Pufferfish", "Ikan buntal beracun saat cuaca cerah.", 160, 160, "Summer", "Sunny", "Ocean", "Uncommon");
-        Fish sardine = new Fish("Sardine", "Ikan kecil dari laut.", 40, 40, "Any", "Any", "Ocean", "Common");
-        Fish superCucumber = new Fish("Super Cucumber", "Ikan misterius aktif malam hari.", 250, 250, "Summer", "Any", "Ocean", "Rare");
-        Fish catfish = new Fish("Catfish", "Ikan lele liar saat hujan.", 130, 130, "Spring", "Rainy", "Forest River", "Uncommon");
-        Fish salmon = new Fish("Salmon", "Ikan migrasi dari sungai.", 120, 120, "Fall", "Any", "Forest River", "Uncommon");
-        Fish angler = new Fish("Angler", "Ikan legendaris yang hanya muncul di musim gugur.", 1000, 1000, "Fall", "Any", "Pond", "Legendary");
-        Fish crimsonfish = new Fish("Crimsonfish", "Ikan legendaris dari laut tropis.", 1000, 1000, "Summer", "Any", "Ocean", "Legendary");
-        Fish glacierfish = new Fish("Glacierfish", "Ikan legendaris dari sungai beku.", 1000, 1000, "Winter", "Any", "Forest River", "Legendary");
-        Fish legend = new Fish("Legend", "Ikan legendaris tertinggi di danau gunung saat hujan.", 1200, 1200, "Spring", "Rainy", "Mountain Lake", "Legendary");
-
-
-        // Tambahkan ke inventory
-        inventory.addItem(bullhead, 13);
-        inventory.addItem(carp, 3); // Misalnya ingin 3
-        inventory.addItem(chub, 121);
-        inventory.addItem(largemouthBass, 91);
-        inventory.addItem(rainbowTrout, 51);
-        inventory.addItem(sturgeon, 13);
-        inventory.addItem(midnightCarp, 12);
-        inventory.addItem(flounder, 10);
-        inventory.addItem(halibut, 11);
-        inventory.addItem(octopus, 34);
-        inventory.addItem(pufferfish, 96);
-        inventory.addItem(sardine, 16);
-        inventory.addItem(superCucumber, 100);
-        inventory.addItem(catfish, 1000);
-        inventory.addItem(salmon, 112);
-        inventory.addItem(angler, 1);
-        inventory.addItem(crimsonfish, 1);
-        inventory.addItem(glacierfish, 1);
-        inventory.addItem(legend, 1);
-    }
-
 
 //test
 
@@ -510,6 +476,37 @@ public class Player {
         int textY = barY + barHeight - 8;
         g2.drawString(energyText, textX, textY);
     }
+    public void drawNotification(Graphics2D g2, String message, int x, int y) {
+        // Ukuran padding dan margin
+        int paddingX = 15;
+        int paddingY = 10;
+
+        // Set font notifikasi
+        g2.setFont(new Font("Arial", Font.PLAIN, 20));
+        FontMetrics fm = g2.getFontMetrics();
+        int textWidth = fm.stringWidth(message);
+        int textHeight = fm.getHeight();
+
+        // Hitung ukuran box berdasarkan teks
+        int boxWidth = textWidth + paddingX * 2;
+        int boxHeight = textHeight + paddingY * 2;
+
+        // Gambar background semi-transparan
+        Color backgroundColor = new Color(0, 0, 0, 180); // Transparansi lebih ringan
+        g2.setColor(backgroundColor);
+        g2.fillRoundRect(x, y, boxWidth, boxHeight, 20, 20);
+
+        // Gambar border putih
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(x, y, boxWidth, boxHeight, 20, 20);
+
+        // Gambar teks di dalam box (dengan posisi teks disesuaikan)
+        g2.setColor(Color.WHITE);
+        int textX = x + paddingX;
+        int textY = y + paddingY + fm.getAscent();
+        g2.drawString(message, textX, textY);
+    }
 
 
     // Getters
@@ -544,6 +541,8 @@ public class Player {
                 System.out.println("Tile index:" + (soilTile.getSeedPlanted().getTileIndex() - 13) + "Wet Index:" + soilTile.getSeedPlanted().getWetIndex());
                 System.out.println("wet cooldown: " + soilTile.getWetCooldown());
                 System.out.println("days: " + soilTile.getDaysToHarvest());
+                System.out.println(String.format("day planted/changed: %d, at %d:%d", soilTile.timestampDay, soilTile.timestampHour, soilTile.timestampMinute));
+                System.out.println(String.format("day watered/changed: %d, at %d:%d", soilTile.waterTimestampDay, soilTile.waterTimestampHour, soilTile.waterTimestampMinute));
             } else {
                 System.out.println("Player: Tanah ini kosong (tidak ada bibit).");
             }
@@ -581,6 +580,14 @@ public class Player {
         System.out.println("Equipped: " + item.getName());
     }
 
+    public String getFarmName() {
+        return farmName;
+    }
+
+    public void setFarmName(String farmName) {
+        this.farmName = farmName;
+    }
+
     public int getEnergy() {
         return energy;
     }
@@ -608,6 +615,7 @@ public class Player {
             if (tileToTill != null && tileToTill.getTileName().equals("grass")) { // Pastikan nama "grass" konsisten
                 gp.map.setTileType(interactionArea.x, interactionArea.y, 10); // ID 10 adalah Soil kosong
                 setEnergy(getEnergy() - 5);
+                gp.addMinutes(5);
                 System.out.println("Player: Tilled grass at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
             } else if (tileToTill != null) {
                 System.out.println("Player: Cannot till " + tileToTill.getTileName());
@@ -624,6 +632,7 @@ public class Player {
                 if (recoverable.canPlant()) {
                     gp.map.setTileType(interactionArea.x, interactionArea.y, 0); // ID 10 adalah Soil kosong
                     setEnergy(getEnergy() - 5);
+                    gp.addMinutes(5);
                     System.out.println("Player: Ubah ke soil at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
                 }
             } else if (tileToTill != null) {
@@ -641,20 +650,25 @@ public class Player {
 
             if (tileToPlantOn instanceof Soil) {
                 Soil soilTile = (Soil) tileToPlantOn;
-                if (soilTile.canPlant()) {
+                Seeds seedToPlant = (Seeds) equippedItem;
+                if (soilTile.canPlant() && seedToPlant.getSeason().contains(gp.currentSeason)) {
                     if (inventory.getItemCount(equippedItem) == 1) {
                         isLast = true;
                     }
-                    Seeds seedToPlant = (Seeds) equippedItem;
                     gp.map.plantSeedAtTile(interactionArea.x, interactionArea.y, seedToPlant);
                     inventory.removeItem(equippedItem, 1);
                     setEnergy(getEnergy() - 5);
+                    gp.addMinutes(5);
                     // Pesan sudah ada di Map.plantSeedAtTile atau Soil.plantSeed
                     if (isLast) {
                         equipItem(null);
                     }
                 } else {
-                     System.out.println("Player: Cannot plant, soil already has a seed or not suitable.");
+                    if (!soilTile.canPlant()) {
+                        System.out.println("Player: Cannot plant, soil already has a seed or not suitable.");
+                    } else {
+                        System.out.println("Player: Cannot plant, season not suitable.");
+                    }
                 }
             } else if (tileToPlantOn != null) {
                 System.out.println("Player: Cannot plant " + ((Seeds)equippedItem).getName() + " on " + tileToPlantOn.getTileName());
@@ -670,6 +684,7 @@ public class Player {
                 if (!watered.canPlant() && watered.canWater()) {
                     watered.water(gp);
                     setEnergy(getEnergy() - 5);
+                    gp.addMinutes(5);
                 }
             }
         }
@@ -683,6 +698,7 @@ public class Player {
                 if (!harvest.canPlant() && harvest.getDaysToHarvest() == 0 && harvest.getWetCooldown() > 0) {
                     gp.map.harvestSeedAtTile(interactionArea.x, interactionArea.y);
                     setEnergy(getEnergy() - 5);
+                    gp.addMinutes(5);
                 }
             }
         }
@@ -701,6 +717,21 @@ public class Player {
                 Food eaten = (Food) get;
                 eaten.eat(this, get);
             }
+            gp.addMinutes(1440);
         }
     }
+    /*public void fishing() {
+        if (equippedItem != null && equippedItem.getName().equals("Fishing Rod") && 
+            energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
+            Tile tileToFish = gp.map.getTile(interactionArea.x, interactionArea.y);
+            if (tileToFish != null && tileToFish.getTileName().equals("water")) { 
+                //implementasi memancing
+                setEnergy(getEnergy() - 5);
+                gp.addMinutes(5);
+                System.out.println("Player: Tilled grass at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
+            } else if (tileToFish != null) {
+                System.out.println("Player: Cannot till " + tileToFish.getTileName());
+            }
+        }
+    }*/
 }

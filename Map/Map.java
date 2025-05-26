@@ -391,7 +391,7 @@ public class Map {
         for (int r = 0; r < currentMapWorldRow; r++) {
             for (int c = 0; c < currentMapWorldCol; c++) {
                 if (tiles[c][r] != null && tiles[c][r] instanceof Soil) {
-                    tiles[c][r].update(); 
+                    tiles[c][r].update(gp); 
                     Soil wet = (Soil) tiles[c][r];
                     if (wet.getSeedPlanted() != null) {
                         wet.updateImageBasedOnState(gp);

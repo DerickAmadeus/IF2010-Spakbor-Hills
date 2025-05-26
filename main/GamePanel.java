@@ -30,8 +30,20 @@ public class GamePanel extends JPanel implements Runnable {
     public final int inventoryState = 3;
     public final int itemOptionState = 4;
     public int gameState = titleState;
-    private long lastMapUpdateTime = 0;
-    private static final long MAP_UPDATE_INTERVAL = 10_000; // 10 detik dalam milidetik
+    public String[] initialSeason = {"Spring", "Summer", "Fall", "Winter"};
+    public int currentSeasonIndex = 0;
+    public String currentSeason = initialSeason[currentSeasonIndex];
+    // Game Time
+    public int gameHour = 6; // Mulai dari jam 6 pagi
+    public int gameMinute = 0;
+    public int gameDay = 1;
+    public int daysPlayed = 0;
+    public int lastUpdateMinute = -1;
+
+
+
+    private long lastRealTime = System.currentTimeMillis();
+    private static final int REAL_TIME_INTERVAL = 1000; // 1 detik
 
     final int originalTileSize = 16; // Original tile size in pixels
     final int scale = 3; // Scale factor
@@ -78,7 +90,7 @@ public class GamePanel extends JPanel implements Runnable {
         
         gameState = titleState; // start dari title dulu
 
-        this.player = new Player(this, keyHandler); // Initialize player object
+        this.player = new Player(this, keyHandler, "initial"); // Initialize player object
         initializeTransitions(); // Panggil setelah tileSize dan player siap
 
         try {
@@ -197,6 +209,24 @@ public class GamePanel extends JPanel implements Runnable {
         gameThread.start(); // Start the game loop thread
     }
 
+    public void addMinutes(int minutesToAdd) {
+        for (int i = 0; i < minutesToAdd; i += 5) {
+            gameMinute += 5;
+            if (gameMinute >= 60) {
+                gameMinute -= 60;
+                gameHour++;
+                if (gameHour >= 24) {
+                    gameHour = 0;
+                    gameDay++;
+                    daysPlayed++;
+                }
+            }
+            map.updateTiles(); // hanya update tiap 5 menit, sesuai
+        }
+    }
+
+
+
     @Override
     public void run() {
         // Game loop logic here
@@ -236,11 +266,10 @@ public class GamePanel extends JPanel implements Runnable {
         }   
         
         player.update();
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastMapUpdateTime >= MAP_UPDATE_INTERVAL) {
-            map.updateTiles();
-            lastMapUpdateTime = currentTime; 
-        }
+
+        // Potentially update other game entities or systems here
+        // e.g., map.update(), npcs.update(), etc.
+
 
         if (keyHandler.f1Pressed) { // Assuming you add f1Pressed to KeyHandler
             debugMode = !debugMode;
@@ -333,6 +362,27 @@ public class GamePanel extends JPanel implements Runnable {
             }
 
         }
+        long now = System.currentTimeMillis();
+        if (now - lastRealTime >= REAL_TIME_INTERVAL) {
+            gameMinute += 5;
+            if (gameMinute >= 60) {
+                gameMinute = 0;
+                gameHour++;
+                if (gameHour >= 24) {
+                    gameHour = 0;
+                    gameDay++;
+                    daysPlayed++;
+                }
+            }
+            map.updateTiles();
+            lastRealTime = now;
+        }
+
+        if (gameDay > 10) {
+            currentSeasonIndex = (currentSeasonIndex + 1) % 4;
+            currentSeason = initialSeason[currentSeasonIndex];
+            gameDay %= 10;
+        }
 
     }
 
@@ -368,7 +418,13 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
 
-        map.draw(g2);
+        map.draw(g2); // Draw the map
+        g2.setColor(java.awt.Color.white);
+        g2.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20));
+        String timeString = String.format("Day %d - %02d:%02d", gameDay, gameHour, gameMinute);
+        g2.drawString(timeString, 500, 30);
+        g2.drawString(currentSeason, 500, 50);
+
 
 
         player.drawPlayer(g2);

@@ -1,15 +1,17 @@
 package Items;
 
+import java.util.ArrayList;
+
 //Time nya belum
 import player.Player;
 
 public class Fish extends Item implements Sellable, Edible{
-    private String season;
+    private ArrayList<String> season;
     private String weather;
     private String location;
     private String rarity;
 
-    public Fish(String name, String description, int hargaJual, int hargaBeli, String season, String weather, String location, String rarity){
+    public Fish(String name, String description, int hargaJual, int hargaBeli,  ArrayList<String> season, String weather, String location, String rarity){
         super(name, description, hargaJual, hargaBeli);
         this.season = season;
         this.weather = weather;
@@ -20,7 +22,7 @@ public class Fish extends Item implements Sellable, Edible{
     //Test
 
     //Getter
-    public String getSeason(){
+    public  ArrayList<String> getSeason(){
         return season;
     }
 
