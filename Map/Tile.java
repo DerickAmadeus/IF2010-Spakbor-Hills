@@ -2,6 +2,9 @@ package Map;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+
+import main.GamePanel;
+
 import java.io.IOException;
 
 public class Tile {
@@ -36,10 +39,10 @@ public class Tile {
         return isWalkable;
     }
 
-    public void update() {
+    public void update(GamePanel gp) {
         if (this instanceof Soil) {
             Soil update = (Soil) this;
-            update.update();
+            update.update(gp);
         }
     }
 

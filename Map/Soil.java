@@ -11,11 +11,16 @@ import Items.Crops;
 public class Soil extends Tile {
     private Seeds seedPlanted;
     private int wetCooldown;
-    private  final int MAX_COOLDOWN = 5;
+    private  final int MAX_COOLDOWN = 3;
     private String emptySoilImagePath; // Path to the image for empty soil
     private int dayHarvest;
-
-
+    public int timestampMinute = 0;
+    public int timestampHour = 0;
+    public int timestampDay = 0;
+    public int waterTimestampMinute = 0;
+    public int waterTimestampHour = 0;
+    public int waterTimestampDay = 0;
+    
 
     public Soil(String name, boolean isWalkable, String emptySoilImagePath) {
         super(name, isWalkable);
@@ -61,14 +66,23 @@ public class Soil extends Tile {
     public void plantSeed(Seeds seed, GamePanel gp) {
         if (canPlant()) {
             this.seedPlanted = seed;
-            this.wetCooldown = 3; // Set the wet cooldown based on the seed
+            this.wetCooldown = 2; // Set the wet cooldown based on the seed
             this.dayHarvest = seed.getDaysToHarvest();
+            this.timestampMinute = gp.gameMinute;
+            this.timestampHour = gp.gameHour;
+            this.timestampDay = gp.gameDay;
+            this.waterTimestampMinute = gp.gameMinute;
+            this.waterTimestampHour = gp.gameHour;
+            this.waterTimestampDay = gp.gameDay;
             updateImageBasedOnState(gp);
         }
     }
 
     public void water(GamePanel gp) {
         this.wetCooldown = MAX_COOLDOWN;
+        this.waterTimestampMinute = gp.gameMinute;
+        this.waterTimestampHour = gp.gameHour;
+        this.waterTimestampDay = gp.gameDay;
         updateImageBasedOnState(gp);
     }
 
@@ -100,13 +114,16 @@ public class Soil extends Tile {
             int visualID = seedPlanted.getTileIndex(); 
             if (gp != null && visualID != -1 && visualID < gp.map.tileimage.length && gp.map.tileimage[visualID] != null) {
                 if (dayHarvest > 0) {
-                    if (wetCooldown == 5) {
+                    if (wetCooldown == MAX_COOLDOWN) {
                         this.Image = gp.map.tileimage[visualID + Seeds.getTotalSeeds()].Image; // Gunakan image dari prototype visual
-                    } else {
+                    } else if (wetCooldown > 0) {
                         this.Image = gp.map.tileimage[visualID].Image; // Gunakan image dari prototype visual
+                    } else {
+                        seedPlanted = null;
+                        loadImage(this.emptySoilImagePath);
                     }
                 } else {
-                    if (wetCooldown > 0) {
+                    if (wetCooldown >= 0) {
                         wetCooldown = MAX_COOLDOWN;
                         this.Image = gp.map.tileimage[visualID + Seeds.getTotalSeeds() * 2].Image;
                     }
@@ -122,14 +139,16 @@ public class Soil extends Tile {
     }
 
     @Override
-    public void update() {
-        if (wetCooldown > 0 && dayHarvest > 0) {
+    public void update(GamePanel gp) {
+        if (wetCooldown > 0 && dayHarvest > 0 && gp.gameMinute >= this.waterTimestampMinute && gp.gameHour >= this.waterTimestampHour && gp.gameDay >= this.waterTimestampDay + 1) {
             wetCooldown--;
+            this.waterTimestampDay++;
         }
 
         if (seedPlanted != null) {
-            if (dayHarvest > 0) {
+            if (dayHarvest > 0 && gp.gameMinute >= this.timestampMinute && gp.gameHour >= this.timestampHour && gp.gameDay >= this.timestampDay + 1) {
                 dayHarvest--;
+                this.timestampDay++;
             }
         }
     }

@@ -23,8 +23,16 @@ public class GamePanel extends JPanel implements Runnable {
     public final int inventoryState = 3;
     public final int itemOptionState = 4;
     public int gameState = titleState;
-    private long lastMapUpdateTime = 0;
-    private static final long MAP_UPDATE_INTERVAL = 10_000; // 10 detik dalam milidetik
+    // Game Time
+    public int gameHour = 6; // Mulai dari jam 6 pagi
+    public int gameMinute = 0;
+    public int gameDay = 0;
+    public int lastUpdateMinute = -1;
+
+
+
+    private long lastRealTime = System.currentTimeMillis();
+    private static final int REAL_TIME_INTERVAL = 1000; // 1 detik
 
     final int originalTileSize = 16; // Original tile size in pixels
     final int scale = 3; // Scale factor
@@ -89,6 +97,19 @@ public class GamePanel extends JPanel implements Runnable {
         gameThread = new Thread(this); // Create a new thread for the game loop
         gameThread.start(); // Start the game loop thread
     }
+    public void addMinutes(int minutesToAdd) {
+        gameMinute += minutesToAdd;
+        while (gameMinute >= 60) {
+            gameMinute -= 60;
+            gameHour += 1;
+            if (gameHour >= 24) {
+                gameHour = 0;
+                gameDay += 1;
+            }
+        }
+        map.updateTiles();
+    }
+
 
     @Override
     public void run() {
@@ -129,11 +150,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
         
         player.update();
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastMapUpdateTime >= MAP_UPDATE_INTERVAL) {
-            map.updateTiles();
-            lastMapUpdateTime = currentTime; 
-        }
+
         // Potentially update other game entities or systems here
         // e.g., map.update(), npcs.update(), etc.
 
@@ -152,11 +169,11 @@ public class GamePanel extends JPanel implements Runnable {
             keyHandler.invPressed = false;
         }
         if (gameState == playState) {
-            player.tiling();
-            player.recoverLand();
-            player.planting();
-            player.watering();
-            player.harvesting();
+            player.tiling(this);
+            player.recoverLand(this);
+            player.planting(this);
+            player.watering(this);
+            player.harvesting(this);
         }
         if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(
@@ -217,7 +234,7 @@ public class GamePanel extends JPanel implements Runnable {
                         }
                     } else if (selected instanceof Fish || selected instanceof Crops || selected instanceof Food) {
                         if (player.getInventory().optionCommandNum == 0) {
-                            player.eating();
+                            player.eating(this);
                             gameState = inventoryState;
                         } else if (player.getInventory().optionCommandNum == 1) {
                             gameState = inventoryState; // Cancel
@@ -227,6 +244,20 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
+        }
+        long now = System.currentTimeMillis();
+        if (now - lastRealTime >= REAL_TIME_INTERVAL) {
+            gameMinute += 5;
+            if (gameMinute >= 60) {
+                gameMinute = 0;
+                gameHour++;
+                if (gameHour >= 24) {
+                    gameHour = 0;
+                    gameDay++;
+                }
+            }
+            map.updateTiles();
+            lastRealTime = now;
         }
 
     }
@@ -261,6 +292,10 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         map.draw(g2); // Draw the map
+        g2.setColor(java.awt.Color.white);
+        g2.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20));
+        String timeString = String.format("Day %d - %02d:%02d", gameDay, gameHour, gameMinute);
+        g2.drawString(timeString, 500, 30);
 
 
         player.drawPlayer(g2);

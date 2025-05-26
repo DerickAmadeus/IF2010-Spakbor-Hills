@@ -542,6 +542,8 @@ public class Player {
                 System.out.println("Tile index:" + (soilTile.getSeedPlanted().getTileIndex() - 13) + "Wet Index:" + soilTile.getSeedPlanted().getWetIndex());
                 System.out.println("wet cooldown: " + soilTile.getWetCooldown());
                 System.out.println("days: " + soilTile.getDaysToHarvest());
+                System.out.println(String.format("day planted/changed: %d, at %d:%d", soilTile.timestampDay, soilTile.timestampHour, soilTile.timestampMinute));
+                System.out.println(String.format("day watered/changed: %d, at %d:%d", soilTile.waterTimestampDay, soilTile.waterTimestampHour, soilTile.waterTimestampMinute));
             } else {
                 System.out.println("Player: Tanah ini kosong (tidak ada bibit).");
             }
@@ -599,13 +601,14 @@ public class Player {
         }
     }
 
-    public void tiling() {
+    public void tiling(GamePanel g2) {
         if (equippedItem != null && equippedItem.getName().equals("Hoe") && 
             energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
             Tile tileToTill = gp.map.getTile(interactionArea.x, interactionArea.y);
             if (tileToTill != null && tileToTill.getTileName().equals("grass")) { // Pastikan nama "grass" konsisten
                 gp.map.setTileType(interactionArea.x, interactionArea.y, 10); // ID 10 adalah Soil kosong
                 setEnergy(getEnergy() - 5);
+                g2.addMinutes(5);
                 System.out.println("Player: Tilled grass at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
             } else if (tileToTill != null) {
                 System.out.println("Player: Cannot till " + tileToTill.getTileName());
@@ -613,7 +616,7 @@ public class Player {
         }
     }
 
-    public void recoverLand() {
+    public void recoverLand(GamePanel g2) {
         if (equippedItem != null && equippedItem.getName().equals("Pickaxe") && 
             energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
             Tile tileToTill = gp.map.getTile(interactionArea.x, interactionArea.y);
@@ -622,6 +625,7 @@ public class Player {
                 if (recoverable.canPlant()) {
                     gp.map.setTileType(interactionArea.x, interactionArea.y, 0); // ID 10 adalah Soil kosong
                     setEnergy(getEnergy() - 5);
+                    g2.addMinutes(5);
                     System.out.println("Player: Ubah ke soil at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
                 }
             } else if (tileToTill != null) {
@@ -630,7 +634,7 @@ public class Player {
         }
     }
 
-    public void planting() {
+    public void planting(GamePanel g2) {
         if (equippedItem != null && equippedItem instanceof Seeds && 
             energy >= -15 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState == gp.playState) {
             
@@ -647,6 +651,7 @@ public class Player {
                     gp.map.plantSeedAtTile(interactionArea.x, interactionArea.y, seedToPlant);
                     inventory.removeItem(equippedItem, 1);
                     setEnergy(getEnergy() - 5);
+                    g2.addMinutes(5);
                     // Pesan sudah ada di Map.plantSeedAtTile atau Soil.plantSeed
                     if (isLast) {
                         equipItem(null);
@@ -659,7 +664,7 @@ public class Player {
             }
         }
     }
-    public void watering() {
+    public void watering(GamePanel g2) {
         if (equippedItem != null && equippedItem.getName().equals("Watering Can") && 
             energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
             Tile tileToWater = gp.map.getTile(interactionArea.x, interactionArea.y);
@@ -668,12 +673,13 @@ public class Player {
                 if (!watered.canPlant() && watered.canWater()) {
                     watered.water(gp);
                     setEnergy(getEnergy() - 5);
+                    g2.addMinutes(5);
                 }
             }
         }
     }
 
-    public void harvesting() {
+    public void harvesting(GamePanel g2) {
         if (equippedItem == null && energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
             Tile tileToHarvest = gp.map.getTile(interactionArea.x, interactionArea.y);
             if (tileToHarvest != null && tileToHarvest instanceof Soil) {
@@ -681,12 +687,13 @@ public class Player {
                 if (!harvest.canPlant() && harvest.getDaysToHarvest() == 0 && harvest.getWetCooldown() > 0) {
                     gp.map.harvestSeedAtTile(interactionArea.x, interactionArea.y);
                     setEnergy(getEnergy() - 5);
+                    g2.addMinutes(5);
                 }
             }
         }
     }
 
-    public void eating() {
+    public void eating(GamePanel g2) {
         Item get = inventory.getSelectedItem();
         if ((get instanceof Fish || get instanceof Crops || get instanceof Food) && energy < MAX_ENERGY && keyH.enterPressed && interactionCooldown == 0) {
             if (get instanceof Fish) {
@@ -699,6 +706,7 @@ public class Player {
                 Food eaten = (Food) get;
                 eaten.eat(this, get);
             }
+            g2.addMinutes(60);
         }
     }
 }
