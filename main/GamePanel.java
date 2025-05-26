@@ -191,7 +191,8 @@ public class GamePanel extends JPanel implements Runnable {
             if (gameState == itemOptionState) {
                 if (keyHandler.enterPressed) {
                     Item selected = player.getInventory().getSelectedItem();
-                    if (selected instanceof Equipment eq) {
+                    if (selected instanceof Equipment) {
+                        Equipment eq = (Equipment) selected;
                         if (player.getInventory().optionCommandNum == 0) {
                             if (player.getEquippedItem() == eq) {
                                 player.equipItem(null);
@@ -202,7 +203,8 @@ public class GamePanel extends JPanel implements Runnable {
                         } else if (player.getInventory().optionCommandNum == 1) {
                             gameState = inventoryState; // Cancel
                         }
-                    }  else if (selected instanceof Seeds eq) {
+                    }  else if (selected instanceof Seeds) {
+                        Seeds eq = (Seeds) selected;
                         if (player.getInventory().optionCommandNum == 0) {
                             if (player.getEquippedItem() == eq) {
                                 player.equipItem(null);
@@ -213,7 +215,8 @@ public class GamePanel extends JPanel implements Runnable {
                         } else if (player.getInventory().optionCommandNum == 1) {
                             gameState = inventoryState; // Cancel
                         }
-                    } else if (selected instanceof Fish eq) {
+                    } else if (selected instanceof Fish) {
+                        Fish eq = (Fish) selected;
                         if (player.getInventory().optionCommandNum == 0) {
                             player.eating();
                             gameState = inventoryState;
