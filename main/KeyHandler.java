@@ -5,9 +5,12 @@ import java.awt.event.KeyEvent;
 
 public class KeyHandler implements KeyListener{
 
-    public boolean upPressed, downPressed, leftPressed, rightPressed, interactPressed, f1Pressed, invPressed; // Boolean flags for key states
+    public boolean enterPressed, upPressed, downPressed, leftPressed, rightPressed, interactPressed, f1Pressed, invPressed; // Boolean flags for key states
     GamePanel gp; // Reference to the GamePanel
 
+    public KeyHandler(GamePanel gp){
+        this.gp = gp;
+    }
     @Override
     public void keyTyped(KeyEvent e) {
         // Handle key typed event
@@ -16,6 +19,19 @@ public class KeyHandler implements KeyListener{
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
+        // Input Title State
+        if (gp.gameState == gp.titleState){
+            if (code == KeyEvent.VK_W || code == KeyEvent.VK_UP){
+                gp.titlePage.commandNumber--;
+                if (gp.titlePage.commandNumber < 0) gp.titlePage.commandNumber = 2;
+            } else if (code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN){
+                gp.titlePage.commandNumber++;
+                if (gp.titlePage.commandNumber > 2) gp.titlePage.commandNumber = 0;
+            } else if (code == KeyEvent.VK_ENTER){
+                enterPressed = true;         // diproses di GamePanel.update()
+            }
+            return;                          // abaikan input lain saat title
+        }
 
         if (code == KeyEvent.VK_W) {
             upPressed = true; // Set upPressed to true when W key is pressed
@@ -35,6 +51,8 @@ public class KeyHandler implements KeyListener{
             f1Pressed = true; // Set f1Pressed to true when F1 key is pressed
         } else if (code == KeyEvent.VK_I) {
             invPressed = true;
+        } else if (code == KeyEvent.VK_ENTER){
+            enterPressed = true;
         }
     }
     
@@ -52,6 +70,8 @@ public class KeyHandler implements KeyListener{
             rightPressed = false; // Set rightPressed to false when D key is released
         } else if (code == KeyEvent.VK_I) {
             invPressed = false;
+        } else if (code == KeyEvent.VK_ENTER){
+
         }
     }
 }
