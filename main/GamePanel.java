@@ -1,23 +1,19 @@
 package main;
 
-import javax.imageio.ImageIO;
-import javax.swing.JPanel;
-
 import Items.*;
-
-import java.awt.Graphics2D;
-import java.awt.Rectangle; // Tambahkan import ini
-import java.io.IOException;
-import java.awt.image.BufferedImage;
-
-import player.Player; // Importing player class from player package
-import Map.Map; // Importing map class from Map package
-
-import java.util.ArrayList; // Tambahkan import ini
-import java.util.List;    // Tambahkan import ini
-import java.awt.Color;    // Tambahkan import ini
-
+import Map.Map;
+import NPC.NPC;
+import java.awt.Color;
 import java.awt.Font; // Tambahkan import ini
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage; // Importing player class from player package
+import java.io.IOException; // Importing map class from Map package
+import java.util.ArrayList;
+import java.util.List; // Tambahkan import ini
+import javax.imageio.ImageIO;    // Tambahkan import ini
+import javax.swing.JPanel;    // Tambahkan import ini
+import player.Player; // Tambahkan import ini
 
 public class GamePanel extends JPanel implements Runnable {
     
@@ -51,6 +47,8 @@ public class GamePanel extends JPanel implements Runnable {
 
     public List<TransitionData> transitions;
 
+    public List<NPC> npcs = new ArrayList<>();
+
 
     public Map map = new Map(this);
     public KeyHandler keyHandler = new KeyHandler(this); // Key handler for keyboard input 
@@ -80,6 +78,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         this.player = new Player(this, keyHandler); // Initialize player object
         initializeTransitions(); // Panggil setelah tileSize dan player siap
+        initializeNpcs();
 
         try {
             backgroundImage = ImageIO.read(getClass().getResourceAsStream("/main/cloud.png"));
@@ -89,6 +88,16 @@ public class GamePanel extends JPanel implements Runnable {
             e.printStackTrace();
             backgroundImage = null; // Atur ke null jika gagal, paintComponent akan menangani ini
         }
+    }
+
+    private void initializeNpcs() {
+        // Example NPC positions (adjust coordinates as needed)
+        npcs.add(new NPC("Mayor",  15 * tileSize, 15 * tileSize, 
+                        "male", 50, new ArrayList<>(), new ArrayList<>(), 
+                        new ArrayList<>(), "neutral"));
+        npcs.add(new NPC("Caroline", 16 * tileSize, 15 * tileSize, 
+                        "female", 50, new ArrayList<>(), new ArrayList<>(), 
+                        new ArrayList<>(), "friendly"));
     }
 
     private void initializeTransitions() {
@@ -373,6 +382,10 @@ public class GamePanel extends JPanel implements Runnable {
 
         player.drawPlayer(g2);
         player.drawEnergyBar(g2);
+
+        for(NPC npc : npcs) {
+            npc.draw(g2, this);
+        }
 
         if (debugMode) {
             for (TransitionData transition : transitions) {

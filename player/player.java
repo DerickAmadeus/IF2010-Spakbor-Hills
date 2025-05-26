@@ -1,19 +1,18 @@
 package player;
 
-import main.GamePanel;
-import main.KeyHandler;
-import Map.Tile;
+import Items.*;
 import Map.Soil;
-import java.awt.image.BufferedImage;
+import Map.Tile;
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
-
-import Items.*;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import main.GamePanel;
+import main.KeyHandler;
 
 //error jir
 
@@ -331,6 +330,8 @@ public class Player {
 
             System.out.println("Collision after checkTile: " + collisionOn);
         }
+
+        gp.cChecker.checkNPC(this, gp.npcs);
 
         // Terapkan batas dunia menggunakan dimensi peta saat ini
         int worldPixelWidth = gp.map.currentMapWorldCol * gp.tileSize;

@@ -1,7 +1,10 @@
 package main;
 
-import player.Player;
 import Map.Tile;
+import NPC.NPC;
+import java.awt.Rectangle;
+import java.util.List;
+import player.Player;
 
 public class CollisionChecker {
 
@@ -12,7 +15,7 @@ public class CollisionChecker {
     }
 
     public void checkTile(Player player) {
-
+        player.collisionOn = false;
         // Get the pixel coordinates of the player's solid area edges
         int playerLeftX = player.getX() + player.solidArea.x;
         int playerRightX = player.getX() + player.solidArea.x + player.solidArea.width;
@@ -109,6 +112,31 @@ public class CollisionChecker {
                     }
                 }
                 break;
+        }
+    }
+
+    public void checkNPC(Player player, List<NPC> npcs) {
+        player.collisionOn = false; // Reset before checking
+        
+        Rectangle playerSolidArea = new Rectangle(
+            player.x + player.solidArea.x,
+            player.y + player.solidArea.y,
+            player.solidArea.width,
+            player.solidArea.height
+        );
+
+        for(NPC npc : npcs) {
+            Rectangle npcSolidArea = new Rectangle(
+                npc.worldX + npc.solidArea.x,
+                npc.worldY + npc.solidArea.y,
+                npc.solidArea.width,
+                npc.solidArea.height
+            );
+
+            if(playerSolidArea.intersects(npcSolidArea)) {
+                player.collisionOn = true;
+                break; // Exit loop after first collision
+            }
         }
     }
 }
