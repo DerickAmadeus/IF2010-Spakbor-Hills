@@ -1,6 +1,7 @@
 package main;
-import java.awt.event.KeyListener;
+// import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 
 public class KeyHandler implements KeyListener{
@@ -28,32 +29,40 @@ public class KeyHandler implements KeyListener{
                 gp.titlePage.commandNumber++;
                 if (gp.titlePage.commandNumber > 2) gp.titlePage.commandNumber = 0;
             } else if (code == KeyEvent.VK_ENTER){
-                enterPressed = true;         // diproses di GamePanel.update()
+                if (gp.titlePage.commandNumber==0){        // NEW GAME
+                    gp.gameState = gp.farmNameInputState;        // diproses di GamePanel.update()
             }
             return;                          // abaikan input lain saat title
+            }
         }
 
-        if (code == KeyEvent.VK_W) {
-            upPressed = true; // Set upPressed to true when W key is pressed
-            
-            System.out.println("W key pressed"); // Move up
-        } else if (code == KeyEvent.VK_A) {
-            leftPressed = true; // Set leftPressed to true when A key is pressed
-            System.out.println("A key pressed"); // Move left
-        } else if (code == KeyEvent.VK_S) {
-            downPressed = true; // Set downPressed to true when S key is pressed
-            System.out.println("S key pressed"); // Move down
-        } else if (code == KeyEvent.VK_D) {
-            rightPressed = true; // Set rightPressed to true when D key is pressed
-            System.out.println("D key pressed"); // Move right
-        } else if (code == KeyEvent.VK_E) {
-            interactPressed = true; // Set interactPressed to true when E key is pressed
-        } else if (code == KeyEvent.VK_F1) {
-            f1Pressed = true; // Set f1Pressed to true when F1 key is pressed
-        } else if (code == KeyEvent.VK_I) {
-            invPressed = true;
-        } else if (code == KeyEvent.VK_ENTER) {
-            enterPressed = true;
+        if (gp.gameState == gp.farmNameInputState){
+            gp.farmName.keyPressed(e);
+            return;
+        }
+
+        if (gp.gameState == gp.playState){
+            if (code == KeyEvent.VK_W) {
+                upPressed = true; // Set upPressed to true when W key is pressed
+                System.out.println("W key pressed"); // Move up
+            } else if (code == KeyEvent.VK_A) {
+                leftPressed = true; // Set leftPressed to true when A key is pressed
+                System.out.println("A key pressed"); // Move left
+            } else if (code == KeyEvent.VK_S) {
+                downPressed = true; // Set downPressed to true when S key is pressed
+                System.out.println("S key pressed"); // Move down
+            } else if (code == KeyEvent.VK_D) {
+                rightPressed = true; // Set rightPressed to true when D key is pressed
+                System.out.println("D key pressed"); // Move right
+            } else if (code == KeyEvent.VK_E) {
+                interactPressed = true; // Set interactPressed to true when E key is pressed
+            } else if (code == KeyEvent.VK_F1) {
+                f1Pressed = true; // Set f1Pressed to true when F1 key is pressed
+            } else if (code == KeyEvent.VK_I) {
+                invPressed = true;
+            } else if (code == KeyEvent.VK_ENTER) {
+                enterPressed = true;
+            }
         }
     }
     

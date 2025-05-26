@@ -5,19 +5,19 @@ import javax.swing.JPanel;
 
 import Items.*;
 
+// import java.awt.*;
 import java.awt.Graphics2D;
-import java.awt.Rectangle; // Tambahkan import ini
+import java.awt.Rectangle; 
 import java.io.IOException;
 import java.awt.image.BufferedImage;
 
 import player.Player; // Importing player class from player package
 import Map.Map; // Importing map class from Map package
 
-import java.util.ArrayList; // Tambahkan import ini
-import java.util.List;    // Tambahkan import ini
-import java.awt.Color;    // Tambahkan import ini
-
-import java.awt.Font; // Tambahkan import ini
+import java.util.ArrayList; 
+import java.util.List;    
+import java.awt.Color;   
+import java.awt.Font;
 
 public class GamePanel extends JPanel implements Runnable {
     
@@ -55,19 +55,20 @@ public class GamePanel extends JPanel implements Runnable {
     public Map map = new Map(this);
     public KeyHandler keyHandler = new KeyHandler(this); // Key handler for keyboard input 
     public final TitlePage  titlePage  = new TitlePage(this);
-    Thread gameThread; // Thread for the game loop
+    public final FarmName  farmName  = new FarmName(this);
     public CollisionChecker cChecker = new CollisionChecker(this); // Collision checker for player movement
     public Player player; // Player object
     private BufferedImage backgroundImage; // Background image for the game\
-
+    
     public boolean debugMode = false;
-
-
+    
+    
     int playerX = 100; // Player's X position
     int playerY = 100; // Player's Y position
     int playerSpeed = 4; // Player's speed
-
     
+    
+    Thread gameThread; // Thread for the game loop
 
     public GamePanel() {
         this.setPreferredSize(new java.awt.Dimension(screenWidth, screenHeight));
@@ -78,7 +79,7 @@ public class GamePanel extends JPanel implements Runnable {
         
         gameState = titleState; // start dari title dulu
 
-        this.player = new Player(this, keyHandler); // Initialize player object
+        this.player = new Player(this, keyHandler, ""); // Initialize player object
         initializeTransitions(); // Panggil setelah tileSize dan player siap
 
         try {
@@ -221,11 +222,11 @@ public class GamePanel extends JPanel implements Runnable {
                 keyHandler.enterPressed = false;
             }
         }
-        else if (gameState == farmNameInputState){
-            if(keyHandler.enterPressed){
-              gameState = playState;
-            }
-        }
+        // else if (gameState == farmNameInputState){
+        //     if(keyHandler.enterPressed){
+        //       gameState = playState;
+        //     }
+        
         
         player.update();
         long currentTime = System.currentTimeMillis();
@@ -343,12 +344,7 @@ public class GamePanel extends JPanel implements Runnable {
             g2.dispose();
             return;
         } else if (gameState == farmNameInputState){
-            // Untuk testing, beri latar hitam dengan tulisan "Farm Name Input"
-            g2.setColor(java.awt.Color.black);
-            g2.fillRect(0, 0, screenWidth, screenHeight);
-            g2.setColor(java.awt.Color.white);
-            g2.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 30));
-            g2.drawString("Farm Name Input State", 100, screenHeight / 2);
+            farmName.draw(g2);
             g2.dispose();
             return;
         }
