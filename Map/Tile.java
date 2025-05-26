@@ -1,37 +1,46 @@
 package Map;
 
 import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.IOException;
+
 public class Tile {
-    private String tilename;
-    private char tileSymbol;
+    private String name;
     private boolean isWalkable;
     public BufferedImage Image; // Assuming you have an Image class for tile images
 
-    public Tile(String tilename, char tileSymbol, boolean isWalkable) {
-        this.tilename = tilename;
-        this.tileSymbol = tileSymbol;
+    public Tile(String tilename, boolean isWalkable) {
+        this.name = tilename;
         this.isWalkable = isWalkable;
     }
+
+    public Tile(Tile other) {
+        this.name = other.name;
+        this.isWalkable = other.isWalkable;
+        this.Image = other.Image;
+    }
+
+    public void loadImage(String imagePath) {
+        try {
+            this.Image = ImageIO.read(getClass().getResourceAsStream(imagePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public String getTileName() {
-        return tilename;
+        return name;
     }
-    public void setTilename(String tilename) {
-        this.tilename = tilename;
-    }
-    public char getTileSymbol() {
-        return tileSymbol;
-    }
-    public void setTileSymbol(char tileSymbol) {
-        this.tileSymbol = tileSymbol;
-    }
+
     public boolean isWalkable() {
         return isWalkable;
     }
-    public void setWalkable(boolean isWalkable) {
-        this.isWalkable = isWalkable;
+
+    public void update() {
+        if (this instanceof Soil) {
+            Soil update = (Soil) this;
+            update.update();
+        }
     }
 
-
-
-    
 }

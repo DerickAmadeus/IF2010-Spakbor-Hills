@@ -2,18 +2,30 @@ package main;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+
+import Items.*;
+
 import java.awt.Graphics2D;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
 
 import player.Player; // Importing player class from player package
 import Map.Map; // Importing map class from Map package
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import player.Inventory;
 
 public class GamePanel extends JPanel implements Runnable {
-    //Game Window
+    
+    //Game State
+    public final int titleState = -2;
+    public final int farmNameInputState = -1;
+    public final int playState = 0;
+    public final int pauseState = 1;
+    public final int dialogState = 2;
+    public final int inventoryState = 3;
+    public final int itemOptionState = 4;
+    public int gameState = titleState;
+    private long lastMapUpdateTime = 0;
+    private static final long MAP_UPDATE_INTERVAL = 10_000; // 10 detik dalam milidetik
+
     final int originalTileSize = 16; // Original tile size in pixels
     final int scale = 3; // Scale factor
 
@@ -23,10 +35,6 @@ public class GamePanel extends JPanel implements Runnable {
     public final int screenWidth = tileSize * maxScreenCol; // Screen width in pixels
     public final int screenHeight = tileSize * maxScreenRow; // Screen height in pixels
 
-    //Game State
-    public int gameState;
-    public final int titleState = 0;
-    public final int farmNameInputState = 1;
 
     //WorldMap Parameters
     public final int worldCol = 32; // Number of columns in the world map
@@ -114,7 +122,18 @@ public class GamePanel extends JPanel implements Runnable {
                 keyHandler.enterPressed = false;
             }
         }
+        else if (gameState == farmNameInputState){
+            if(keyHandler.enterPressed){
+              gameState = playState;
+            }
+        }
+        
         player.update();
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastMapUpdateTime >= MAP_UPDATE_INTERVAL) {
+            map.updateTiles();
+            lastMapUpdateTime = currentTime; 
+        }
         // Potentially update other game entities or systems here
         // e.g., map.update(), npcs.update(), etc.
 
@@ -124,6 +143,90 @@ public class GamePanel extends JPanel implements Runnable {
             keyHandler.f1Pressed = false; // Consume the press to avoid rapid toggling
             System.out.println("Debug mode: " + (debugMode ? "ON" : "OFF"));
         }
+        if (keyHandler.invPressed) {
+            if (gameState == playState) {
+                gameState = inventoryState;
+            } else if (gameState == inventoryState || gameState == itemOptionState) {
+                gameState = playState;
+            }
+            keyHandler.invPressed = false;
+        }
+        if (gameState == playState) {
+            player.tiling();
+            player.recoverLand();
+            player.planting();
+            player.watering();
+            player.harvesting();
+        }
+        if (gameState == inventoryState) {
+            player.getInventory().updateInventoryCursor(
+                keyHandler.upPressed,
+                keyHandler.downPressed,
+                keyHandler.leftPressed,
+                keyHandler.rightPressed
+            );
+
+            // Reset arah tombol agar tidak repeat terus
+            keyHandler.upPressed = false;
+            keyHandler.downPressed = false;
+            keyHandler.leftPressed = false;
+            keyHandler.rightPressed = false;
+
+            // Saat tekan Enter, buka opsi untuk item yang dipilih
+            if (keyHandler.enterPressed) {
+                player.getInventory().selectCurrentItem();
+                keyHandler.enterPressed = false;
+            }
+        }
+        else if (gameState == itemOptionState) {
+            if (keyHandler.upPressed) {
+                player.getInventory().optionCommandNum = (player.getInventory().optionCommandNum - 1 + 3) % 3;
+                keyHandler.upPressed = false;
+            }
+            if (keyHandler.downPressed) {
+                player.getInventory().optionCommandNum = (player.getInventory().optionCommandNum + 1) % 3;
+                keyHandler.downPressed = false;
+            }
+
+            if (gameState == itemOptionState) {
+                if (keyHandler.enterPressed) {
+                    Item selected = player.getInventory().getSelectedItem();
+                    if (selected instanceof Equipment eq) {
+                        if (player.getInventory().optionCommandNum == 0) {
+                            if (player.getEquippedItem() == eq) {
+                                player.equipItem(null);
+                            } else {
+                                player.equipItem(eq);
+                            }
+                            gameState = inventoryState;
+                        } else if (player.getInventory().optionCommandNum == 1) {
+                            gameState = inventoryState; // Cancel
+                        }
+                    }  else if (selected instanceof Seeds eq) {
+                        if (player.getInventory().optionCommandNum == 0) {
+                            if (player.getEquippedItem() == eq) {
+                                player.equipItem(null);
+                            } else {
+                                player.equipItem(eq);
+                            }
+                            gameState = inventoryState;
+                        } else if (player.getInventory().optionCommandNum == 1) {
+                            gameState = inventoryState; // Cancel
+                        }
+                    } else if (selected instanceof Fish eq) {
+                        if (player.getInventory().optionCommandNum == 0) {
+                            player.eating();
+                            gameState = inventoryState;
+                        } else if (player.getInventory().optionCommandNum == 1) {
+                            gameState = inventoryState; // Cancel
+                        }
+                    }
+                    keyHandler.enterPressed = false;
+                }
+            }
+
+        }
+
     }
 
     public void paintComponent(java.awt.Graphics g) {
@@ -159,8 +262,13 @@ public class GamePanel extends JPanel implements Runnable {
 
 
         player.drawPlayer(g2);
-        if(player.getInventoryOpen()) {
-             player.getInventory().draw(g2);
+        player.drawEnergyBar(g2);
+
+        if(gameState == inventoryState) {
+             player.openInventory(g2);
+        }
+        if (gameState == itemOptionState) {
+            player.getInventory().drawItemOptionWindow(g2);
         }
 
         g2.dispose();

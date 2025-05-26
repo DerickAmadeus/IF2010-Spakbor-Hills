@@ -1,6 +1,7 @@
 package Items;
 
 //Time nya belum
+import player.Player;
 
 public class Fish extends Item implements Sellable, Edible{
     private String season;
@@ -15,6 +16,8 @@ public class Fish extends Item implements Sellable, Edible{
         this.location = location;
         this.rarity = rarity;
     }    
+
+    //Test
 
     //Getter
     public String getSeason(){
@@ -39,7 +42,9 @@ public class Fish extends Item implements Sellable, Edible{
         System.out.println("Sold " + getName() + " for " + getHargaJual());
     }
 
-    public void eat() {
+    public void eat(Player player, Item get) {
+        player.getInventory().removeItem(get, 1);
+        player.setEnergy(player.getEnergy() + 1);
         System.out.println("Eating " + getName() + " restores 1 energy.");
     }
 }
