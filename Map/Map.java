@@ -19,7 +19,7 @@ import java.util.HashMap; // Untuk menyimpan state peta
 
 public class Map {
     GamePanel gp;
-    public Tile[] tilePrototypes; // Array untuk PROTOTYPE tile (diganti nama dari tileimage)
+    public Tile[] tileImage; // Array untuk PROTOTYPE tile (diganti nama dari tileimage)
     public Tile[][] currentMapTiles;  // Array 2D untuk INSTANCE tile di peta AKTIF
 
     // Struktur data untuk menyimpan tile dan dimensi setiap peta yang telah dimuat
@@ -49,7 +49,7 @@ public class Map {
 
     public Map(GamePanel gp) {
         this.gp = gp;
-        this.tilePrototypes = new Tile[100];
+        this.tileImage = new Tile[100];
         this.loadedMapStates = new HashMap<>();
         getTileImagePrototypes();
         loadMapByID(0); // Memuat peta default (misalnya ID 0)
@@ -58,192 +58,192 @@ public class Map {
     public void getTileImagePrototypes() {
         try {
             // GRASS
-            tilePrototypes[0] = new Tile("grass", true);
-            tilePrototypes[0].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grass.png"));
-            tilePrototypes[1] = new Tile("grass_kiri_atas", true);
-            tilePrototypes[1].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiriatas.png"));
-            tilePrototypes[2] = new Tile("grass_atas", true);
-            tilePrototypes[2].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grassatas.png"));
-            tilePrototypes[3] = new Tile("grass_kiri", true);
-            tilePrototypes[3].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiri.png"));
-            tilePrototypes[4] = new Tile("grass_kiri_bawah", true);
-            tilePrototypes[4].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiribawah.png"));
-            tilePrototypes[5] = new Tile("grass_bawah", true);
-            tilePrototypes[5].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grassbawah.png"));
-            tilePrototypes[6] = new Tile("grass_kanan", true);
-            tilePrototypes[6].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskanan.png"));
-            tilePrototypes[7] = new Tile("grass_kanan_atas", true);
-            tilePrototypes[7].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananatas.png"));
-            tilePrototypes[8] = new Tile("grass_kanan_bawah", true);
-            tilePrototypes[8].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananbawah.png"));
-            tilePrototypes[11] = new Tile("grass_atas_air", true);
-            tilePrototypes[11].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grassatasair.png"));
-            tilePrototypes[46] = new Tile("grass_bawah_air", true);
-            tilePrototypes[46].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grassbawahair.png"));
-            tilePrototypes[47] = new Tile("grass_kiri_air", true);
-            tilePrototypes[47].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiriair.png"));
-            tilePrototypes[48] = new Tile("grass_kanan_air", true);
-            tilePrototypes[48].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananair.png"));
+            tileImage[0] = new Tile("grass", true);
+            tileImage[0].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grass.png"));
+            tileImage[1] = new Tile("grass_kiri_atas", true);
+            tileImage[1].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiriatas.png"));
+            tileImage[2] = new Tile("grass_atas", true);
+            tileImage[2].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grassatas.png"));
+            tileImage[3] = new Tile("grass_kiri", true);
+            tileImage[3].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiri.png"));
+            tileImage[4] = new Tile("grass_kiri_bawah", true);
+            tileImage[4].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiribawah.png"));
+            tileImage[5] = new Tile("grass_bawah", true);
+            tileImage[5].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grassbawah.png"));
+            tileImage[6] = new Tile("grass_kanan", true);
+            tileImage[6].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskanan.png"));
+            tileImage[7] = new Tile("grass_kanan_atas", true);
+            tileImage[7].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananatas.png"));
+            tileImage[8] = new Tile("grass_kanan_bawah", true);
+            tileImage[8].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananbawah.png"));
+            tileImage[11] = new Tile("grass_atas_air", true);
+            tileImage[11].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grassatasair.png"));
+            tileImage[46] = new Tile("grass_bawah_air", true);
+            tileImage[46].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grassbawahair.png"));
+            tileImage[47] = new Tile("grass_kiri_air", true);
+            tileImage[47].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiriair.png"));
+            tileImage[48] = new Tile("grass_kanan_air", true);
+            tileImage[48].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananair.png"));
 
             // HOUSE & FLOOR
-            tilePrototypes[49] = new Tile("floor", true);
-            tilePrototypes[49].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/floor.png"));
-            tilePrototypes[50] = new Tile("wallkiriatas", false);
-            tilePrototypes[50].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallkiriatas.png"));
-            tilePrototypes[51] = new Tile("wallatas", false);
-            tilePrototypes[51].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallatas.png"));
-            tilePrototypes[52] = new Tile("wallkananatas", false);
-            tilePrototypes[52].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallkananatas.png"));
-            tilePrototypes[53] = new Tile("wall", false);
-            tilePrototypes[53].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wall.png"));
-            tilePrototypes[54] = new Tile("opendoor", true);
-            tilePrototypes[54].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/opendoor.png"));
-            tilePrototypes[55] = new Tile("wallkiribawah", false);
-            tilePrototypes[55].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallkiribawah.png"));
-            tilePrototypes[56] = new Tile("wallkananbawah", false);
-            tilePrototypes[56].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallkananbawah.png"));
-            tilePrototypes[57] = new Tile("door", true); // Asumsi 'door' adalah tile yang bisa ditransisikan, bukan actual door object
-            tilePrototypes[57].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/door.png"));
-            tilePrototypes[58] = new Tile("window", false);
-            tilePrototypes[58].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/window.png"));
-            tilePrototypes[59] = new Tile("pertigaan", false); // Asumsi ini adalah bagian dari dinding
-            tilePrototypes[59].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/pertigaan.png"));
-            tilePrototypes[60] = new Tile("mentokbawah", false); // Asumsi ini adalah bagian dari dinding
-            tilePrototypes[60].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/mentokbawah.png"));
+            tileImage[49] = new Tile("floor", true);
+            tileImage[49].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/floor.png"));
+            tileImage[50] = new Tile("wallkiriatas", false);
+            tileImage[50].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallkiriatas.png"));
+            tileImage[51] = new Tile("wallatas", false);
+            tileImage[51].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallatas.png"));
+            tileImage[52] = new Tile("wallkananatas", false);
+            tileImage[52].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallkananatas.png"));
+            tileImage[53] = new Tile("wall", false);
+            tileImage[53].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wall.png"));
+            tileImage[54] = new Tile("opendoor", true);
+            tileImage[54].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/opendoor.png"));
+            tileImage[55] = new Tile("wallkiribawah", false);
+            tileImage[55].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallkiribawah.png"));
+            tileImage[56] = new Tile("wallkananbawah", false);
+            tileImage[56].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallkananbawah.png"));
+            tileImage[57] = new Tile("door", true); // Asumsi 'door' adalah tile yang bisa ditransisikan, bukan actual door object
+            tileImage[57].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/door.png"));
+            tileImage[58] = new Tile("window", false);
+            tileImage[58].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/window.png"));
+            tileImage[59] = new Tile("pertigaan", false); // Asumsi ini adalah bagian dari dinding
+            tileImage[59].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/pertigaan.png"));
+            tileImage[60] = new Tile("mentokbawah", false); // Asumsi ini adalah bagian dari dinding
+            tileImage[60].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/mentokbawah.png"));
 
             // Carpet
-            tilePrototypes[61] = new Tile("karpetpojokkiri", true);
-            tilePrototypes[61].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetpojokkiri.png"));
-            tilePrototypes[62] = new Tile("karpetkiri", true);
-            tilePrototypes[62].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetkiri.png"));
-            tilePrototypes[63] = new Tile("karpetatas", true);
-            tilePrototypes[63].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetatas.png"));
-            tilePrototypes[64] = new Tile("karpetpojokkanan", true);
-            tilePrototypes[64].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetpojokkanan.png"));
-            tilePrototypes[65] = new Tile("karpetkanan", true);
-            tilePrototypes[65].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetkanan.png"));
-            tilePrototypes[66] = new Tile("belokkanan", true); // Nama tile mungkin perlu disesuaikan
-            tilePrototypes[66].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/belokkanan.png"));
-            tilePrototypes[67] = new Tile("karpetmentok", true);
-            tilePrototypes[67].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetmentok.png"));
-            tilePrototypes[68] = new Tile("karpetbawah", true);
-            tilePrototypes[68].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetbawah.png"));
-            tilePrototypes[69] = new Tile("karpetpojokiribawah", true);
-            tilePrototypes[69].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetpojokiribawah.png"));
-            tilePrototypes[70] = new Tile("belokhehe", true); // Nama tile mungkin perlu disesuaikan
-            tilePrototypes[70].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/belokhehe.png"));
-            tilePrototypes[71] = new Tile("karpet", true);
-            tilePrototypes[71].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpet.png"));
+            tileImage[61] = new Tile("karpetpojokkiri", true);
+            tileImage[61].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetpojokkiri.png"));
+            tileImage[62] = new Tile("karpetkiri", true);
+            tileImage[62].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetkiri.png"));
+            tileImage[63] = new Tile("karpetatas", true);
+            tileImage[63].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetatas.png"));
+            tileImage[64] = new Tile("karpetpojokkanan", true);
+            tileImage[64].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetpojokkanan.png"));
+            tileImage[65] = new Tile("karpetkanan", true);
+            tileImage[65].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetkanan.png"));
+            tileImage[66] = new Tile("belokkanan", true); // Nama tile mungkin perlu disesuaikan
+            tileImage[66].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/belokkanan.png"));
+            tileImage[67] = new Tile("karpetmentok", true);
+            tileImage[67].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetmentok.png"));
+            tileImage[68] = new Tile("karpetbawah", true);
+            tileImage[68].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetbawah.png"));
+            tileImage[69] = new Tile("karpetpojokiribawah", true);
+            tileImage[69].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetpojokiribawah.png"));
+            tileImage[70] = new Tile("belokhehe", true); // Nama tile mungkin perlu disesuaikan
+            tileImage[70].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/belokhehe.png"));
+            tileImage[71] = new Tile("karpet", true);
+            tileImage[71].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpet.png"));
 
             // Furnitures (sebagai Tile khusus)
-            tilePrototypes[72] = new Bed("Bed Part 1", false, "king_ul"); // Nama unik untuk tiap bagian
-            tilePrototypes[72].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed1.png"));
-            tilePrototypes[73] = new Bed("Bed Part 2", false, "king_um");
-            tilePrototypes[73].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed2.png"));
-            tilePrototypes[74] = new Bed("Bed Part 3", false, "king_ur");
-            tilePrototypes[74].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed3.png"));
-            tilePrototypes[75] = new Bed("Bed Part 4", false, "king_ml");
-            tilePrototypes[75].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed4.png"));
-            tilePrototypes[76] = new Bed("Bed Part 5 (Interact)", true, "king_mm"); // Bagian interaksi bisa walkable true jika interactionArea di atasnya
-            tilePrototypes[76].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed5.png"));
-            tilePrototypes[77] = new Bed("Bed Part 6", false, "king_mr");
-            tilePrototypes[77].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed6.png"));
-            tilePrototypes[78] = new Bed("Bed Part 7", false, "king_bl");
-            tilePrototypes[78].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed7.png"));
-            tilePrototypes[79] = new Bed("Bed Part 8", false, "king_bm");
-            tilePrototypes[79].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed8.png"));
-            tilePrototypes[80] = new Bed("Bed Part 9", false, "king_br");
-            tilePrototypes[80].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed9.png"));
+            tileImage[72] = new Bed("Bed Part 1", false, "king_ul"); // Nama unik untuk tiap bagian
+            tileImage[72].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed1.png"));
+            tileImage[73] = new Bed("Bed Part 2", false, "king_um");
+            tileImage[73].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed2.png"));
+            tileImage[74] = new Bed("Bed Part 3", false, "king_ur");
+            tileImage[74].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed3.png"));
+            tileImage[75] = new Bed("Bed Part 4", false, "king_ml");
+            tileImage[75].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed4.png"));
+            tileImage[76] = new Bed("Bed Part 5 (Interact)", true, "king_mm"); // Bagian interaksi bisa walkable true jika interactionArea di atasnya
+            tileImage[76].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed5.png"));
+            tileImage[77] = new Bed("Bed Part 6", false, "king_mr");
+            tileImage[77].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed6.png"));
+            tileImage[78] = new Bed("Bed Part 7", false, "king_bl");
+            tileImage[78].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed7.png"));
+            tileImage[79] = new Bed("Bed Part 8", false, "king_bm");
+            tileImage[79].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed8.png"));
+            tileImage[80] = new Bed("Bed Part 9", false, "king_br");
+            tileImage[80].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed9.png"));
 
-            tilePrototypes[81] = new Stove("stove"); // walkable default false di Furniture
-            tilePrototypes[81].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/stove.png"));
-            tilePrototypes[82] = new TV("tv", false); // TV biasanya non-walkable
-            tilePrototypes[82].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/TV.png"));
+            tileImage[81] = new Stove("stove"); // walkable default false di Furniture
+            tileImage[81].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/stove.png"));
+            tileImage[82] = new TV("tv", false); // TV biasanya non-walkable
+            tileImage[82].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/TV.png"));
 
             // WATER
-            tilePrototypes[9] = new Tile("Water", false);
-            tilePrototypes[9].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/water.png"));
+            tileImage[9] = new Tile("Water", false);
+            tileImage[9].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/water.png"));
 
             // SOIL
-            tilePrototypes[10] = new Soil("soil", true, "/Map/tiles/dirt.png");
+            tileImage[10] = new Soil("soil", true, "/Map/tiles/dirt.png");
 
             // PLACEHOLDER untuk Building/Door jika belum ada kelasnya
-            tilePrototypes[12] = new Tile("Door Visual Placeholder", false); // Sebaiknya walkable true jika ini adalah tile di bawah pintu yang bisa dilewati
-            tilePrototypes[12].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/door.png")); // Gambar pintu
+            tileImage[12] = new Tile("Door Visual Placeholder", false); // Sebaiknya walkable true jika ini adalah tile di bawah pintu yang bisa dilewati
+            tileImage[12].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/door.png")); // Gambar pintu
 
             // VISUAL PROTOTYPES untuk Benih yang Ditanam
-            tilePrototypes[13] = new Tile("Planted Parsnip Visual", true);
-            tilePrototypes[13].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Parsnip Seeds.png"));
-            tilePrototypes[14] = new Tile("Planted Cauliflower Visual", true);
-            tilePrototypes[14].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Cauliflower Seeds.png"));
-            tilePrototypes[15] = new Tile("Planted Potato Visual", true);
-            tilePrototypes[15].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Potato Seeds.png"));
-            tilePrototypes[16] = new Tile("Planted Wheat Visual", true);
-            tilePrototypes[16].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Wheat Seeds.png"));
-            tilePrototypes[17] = new Tile("Planted Blueberry Visual", true);
-            tilePrototypes[17].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Blueberry Seeds.png"));
-            tilePrototypes[18] = new Tile("Planted Tomato Visual", true);
-            tilePrototypes[18].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Tomato Seeds.png"));
-            tilePrototypes[19] = new Tile("Planted Hot Pepper Visual", true);
-            tilePrototypes[19].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Hot Pepper Seeds.png"));
-            tilePrototypes[20] = new Tile("Planted Melon Visual", true);
-            tilePrototypes[20].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Melon Seeds.png"));
-            tilePrototypes[21] = new Tile("Planted Cranberry Visual", true);
-            tilePrototypes[21].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Cranberry Seeds.png"));
-            tilePrototypes[22] = new Tile("Planted Pumpkin Visual", true);
-            tilePrototypes[22].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Pumpkin Seeds.png"));
-            tilePrototypes[23] = new Tile("Planted Grape Visual", true);
-            tilePrototypes[23].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Grape Seeds.png"));
+            tileImage[13] = new Tile("Planted Parsnip Visual", true);
+            tileImage[13].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Parsnip Seeds.png"));
+            tileImage[14] = new Tile("Planted Cauliflower Visual", true);
+            tileImage[14].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Cauliflower Seeds.png"));
+            tileImage[15] = new Tile("Planted Potato Visual", true);
+            tileImage[15].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Potato Seeds.png"));
+            tileImage[16] = new Tile("Planted Wheat Visual", true);
+            tileImage[16].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Wheat Seeds.png"));
+            tileImage[17] = new Tile("Planted Blueberry Visual", true);
+            tileImage[17].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Blueberry Seeds.png"));
+            tileImage[18] = new Tile("Planted Tomato Visual", true);
+            tileImage[18].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Tomato Seeds.png"));
+            tileImage[19] = new Tile("Planted Hot Pepper Visual", true);
+            tileImage[19].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Hot Pepper Seeds.png"));
+            tileImage[20] = new Tile("Planted Melon Visual", true);
+            tileImage[20].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Melon Seeds.png"));
+            tileImage[21] = new Tile("Planted Cranberry Visual", true);
+            tileImage[21].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Cranberry Seeds.png"));
+            tileImage[22] = new Tile("Planted Pumpkin Visual", true);
+            tileImage[22].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Pumpkin Seeds.png"));
+            tileImage[23] = new Tile("Planted Grape Visual", true);
+            tileImage[23].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Grape Seeds.png"));
 
-            tilePrototypes[24] = new Tile("Wet Parsnip Visual", true);
-            tilePrototypes[24].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Parsnip Seeds.png"));
-            tilePrototypes[25] = new Tile("Wet Cauliflower Visual", true);
-            tilePrototypes[25].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Cauliflower Seeds.png"));
+            tileImage[24] = new Tile("Wet Parsnip Visual", true);
+            tileImage[24].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Parsnip Seeds.png"));
+            tileImage[25] = new Tile("Wet Cauliflower Visual", true);
+            tileImage[25].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Cauliflower Seeds.png"));
             // ... (lanjutkan untuk semua wet seeds)
-            tilePrototypes[26] = new Tile("Wet Potato Visual", true);
-            tilePrototypes[26].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Potato Seeds.png"));
-            tilePrototypes[27] = new Tile("Wet Wheat Visual", true);
-            tilePrototypes[27].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Wheat Seeds.png"));
-            tilePrototypes[28] = new Tile("Wet Blueberry Visual", true);
-            tilePrototypes[28].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Blueberry Seeds.png"));
-            tilePrototypes[29] = new Tile("Wet Tomato Visual", true);
-            tilePrototypes[29].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Tomato Seeds.png"));
-            tilePrototypes[30] = new Tile("Wet Hot Pepper Visual", true);
-            tilePrototypes[30].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Hot Pepper Seeds.png"));
-            tilePrototypes[31] = new Tile("Wet Melon Visual", true);
-            tilePrototypes[31].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Melon Seeds.png"));
-            tilePrototypes[32] = new Tile("Wet Cranberry Visual", true);
-            tilePrototypes[32].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Cranberry Seeds.png"));
-            tilePrototypes[33] = new Tile("Wet Pumpkin Visual", true);
-            tilePrototypes[33].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Pumpkin Seeds.png"));
-            tilePrototypes[34] = new Tile("Wet Grape Visual", true);
-            tilePrototypes[34].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Grape Seeds.png"));
+            tileImage[26] = new Tile("Wet Potato Visual", true);
+            tileImage[26].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Potato Seeds.png"));
+            tileImage[27] = new Tile("Wet Wheat Visual", true);
+            tileImage[27].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Wheat Seeds.png"));
+            tileImage[28] = new Tile("Wet Blueberry Visual", true);
+            tileImage[28].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Blueberry Seeds.png"));
+            tileImage[29] = new Tile("Wet Tomato Visual", true);
+            tileImage[29].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Tomato Seeds.png"));
+            tileImage[30] = new Tile("Wet Hot Pepper Visual", true);
+            tileImage[30].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Hot Pepper Seeds.png"));
+            tileImage[31] = new Tile("Wet Melon Visual", true);
+            tileImage[31].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Melon Seeds.png"));
+            tileImage[32] = new Tile("Wet Cranberry Visual", true);
+            tileImage[32].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Cranberry Seeds.png"));
+            tileImage[33] = new Tile("Wet Pumpkin Visual", true);
+            tileImage[33].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Pumpkin Seeds.png"));
+            tileImage[34] = new Tile("Wet Grape Visual", true);
+            tileImage[34].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Wet Grape Seeds.png"));
 
 
             // VISUAL PROTOTYPES untuk Tanaman Siap Panen
-            tilePrototypes[35] = new Tile("Harvestable Parsnip Visual", true);
-            tilePrototypes[35].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Parsnip.png"));
-            tilePrototypes[36] = new Tile("Harvestable Cauliflower Visual", true);
-            tilePrototypes[36].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Cauliflower.png"));
+            tileImage[35] = new Tile("Harvestable Parsnip Visual", true);
+            tileImage[35].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Parsnip.png"));
+            tileImage[36] = new Tile("Harvestable Cauliflower Visual", true);
+            tileImage[36].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Cauliflower.png"));
             // ... (lanjutkan untuk semua harvestable crops)
-            tilePrototypes[37] = new Tile("Harvestable Potato Visual", true);
-            tilePrototypes[37].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Potato.png"));
-            tilePrototypes[38] = new Tile("Harvestable Wheat Visual", true);
-            tilePrototypes[38].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Wheat.png"));
-            tilePrototypes[39] = new Tile("Harvestable Blueberry Visual", true);
-            tilePrototypes[39].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Blueberry.png"));
-            tilePrototypes[40] = new Tile("Harvestable Tomato Visual", true);
-            tilePrototypes[40].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Tomato.png"));
-            tilePrototypes[41] = new Tile("Harvestable Hot Pepper Visual", true);
-            tilePrototypes[41].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Hot Pepper.png"));
-            tilePrototypes[42] = new Tile("Harvestable Melon Visual", true);
-            tilePrototypes[42].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Melon.png"));
-            tilePrototypes[43] = new Tile("Harvestable Cranberry Visual", true);
-            tilePrototypes[43].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Cranberry.png"));
-            tilePrototypes[44] = new Tile("Harvestable Pumpkin Visual", true);
-            tilePrototypes[44].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Pumpkin.png"));
-            tilePrototypes[45] = new Tile("Harvestable Grape Visual", true);
-            tilePrototypes[45].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Grape.png"));
+            tileImage[37] = new Tile("Harvestable Potato Visual", true);
+            tileImage[37].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Potato.png"));
+            tileImage[38] = new Tile("Harvestable Wheat Visual", true);
+            tileImage[38].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Wheat.png"));
+            tileImage[39] = new Tile("Harvestable Blueberry Visual", true);
+            tileImage[39].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Blueberry.png"));
+            tileImage[40] = new Tile("Harvestable Tomato Visual", true);
+            tileImage[40].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Tomato.png"));
+            tileImage[41] = new Tile("Harvestable Hot Pepper Visual", true);
+            tileImage[41].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Hot Pepper.png"));
+            tileImage[42] = new Tile("Harvestable Melon Visual", true);
+            tileImage[42].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Melon.png"));
+            tileImage[43] = new Tile("Harvestable Cranberry Visual", true);
+            tileImage[43].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Cranberry.png"));
+            tileImage[44] = new Tile("Harvestable Pumpkin Visual", true);
+            tileImage[44].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Pumpkin.png"));
+            tileImage[45] = new Tile("Harvestable Grape Visual", true);
+            tileImage[45].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/crops/Harvestable Grape.png"));
 
         } catch (IOException e) {
             System.err.println("Error loading tile prototype images: " + e.getMessage());
@@ -255,10 +255,10 @@ public class Map {
     }
 
     private Tile createTileInstance(int prototypeID) {
-        if (prototypeID < 0 || prototypeID >= tilePrototypes.length || tilePrototypes[prototypeID] == null) {
+        if (prototypeID < 0 || prototypeID >= tileImage.length || tileImage[prototypeID] == null) {
             System.err.println("Warning: Invalid prototypeID " + prototypeID + " in createTileInstance. Using default tile 0.");
             prototypeID = 0;
-            if (tilePrototypes[prototypeID] == null) { // Fallback jika prototype 0 juga null
+            if (tileImage[prototypeID] == null) { // Fallback jika prototype 0 juga null
                 Tile errorTile = new Tile("Error Tile", false);
                 try {
                     errorTile.Image = new BufferedImage(gp.tileSize, gp.tileSize, BufferedImage.TYPE_INT_ARGB);
@@ -271,7 +271,7 @@ public class Map {
             }
         }
 
-        Tile prototype = tilePrototypes[prototypeID];
+        Tile prototype = tileImage[prototypeID];
         Tile newInstance;
 
         // Gunakan copy constructor jika tersedia untuk state yang lebih kompleks
