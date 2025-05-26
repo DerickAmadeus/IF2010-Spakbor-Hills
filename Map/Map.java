@@ -80,8 +80,8 @@ public class Map {
             tileimage[52].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallkananatas.png"));
             tileimage[53] = new Tile("wall", false);
             tileimage[53].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wall.png"));
-            tileimage[54] = new Tile("wallbawah", false);
-            tileimage[54].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallbawah.png"));
+            tileimage[54] = new Tile("opendoor", true);
+            tileimage[54].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/opendoor.png")); // Gambar pintu terbuka
             tileimage[55] = new Tile("wallkiribawah", false);
             tileimage[55].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/wallkiribawah.png"));
             tileimage[56] = new Tile("wallkananbawah", false);
@@ -90,6 +90,35 @@ public class Map {
             tileimage[57].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/door.png")); // Gambar pintu
             tileimage[58] = new Tile("window", false);
             tileimage[58].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/window.png")); // Gambar jendela
+            tileimage[59] = new Tile("pertigaan", false);
+            tileimage[59].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/pertigaan.png")); // Gambar pertigaan
+            tileimage[60] = new Tile("mentokbawah", false);
+            tileimage[60].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/mentokbawah.png")); // Gambar mentok bawah
+
+            // Carpet
+            tileimage[61] = new Tile("karpetpojokkiri", true); // walkable = true
+            tileimage[61].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetpojokkiri.png"));
+            tileimage[62] = new Tile("karpetkiri", true); // walkable = true
+            tileimage[62].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetkiri.png"));
+            tileimage[63] = new Tile("karpetatas", true); // walkable = true
+            tileimage[63].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetatas.png"));
+            tileimage[64] = new Tile("karpetpojokkanan", true); // walkable = true
+            tileimage[64].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetpojokkanan.png"));
+            tileimage[65] = new Tile("karpetkanan", true); // walkable = true
+            tileimage[65].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetkanan.png"));
+            tileimage[66] = new Tile("belokkanan", true); // walkable = true
+            tileimage[66].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/belokkanan.png"));
+            tileimage[67] = new Tile("karpetmentok", true); // walkable = true
+            tileimage[67].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetmentok.png"));
+            tileimage[68] = new Tile("karpetbawah", true); // walkable = true
+            tileimage[68].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetbawah.png"));
+            tileimage[69] = new Tile("karpetpojokiribawah", true); // walkable = true
+            tileimage[69].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpetpojokiribawah.png"));
+            tileimage[70] = new Tile("belokhehe", true); // walkable = true
+            tileimage[70].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/belokhehe.png"));
+            tileimage[71] = new Tile("karpet", true); // walkable = true
+            tileimage[71].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpet.png"));
+
 
             // WATER
             tileimage[9] = new Tile("Water", false); // walkable = false
