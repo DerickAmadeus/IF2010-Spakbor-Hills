@@ -121,12 +121,18 @@ public class Soil extends Tile {
                     } else {
                         seedPlanted = null;
                         loadImage(this.emptySoilImagePath);
+                        return;
                     }
                 } else {
                     if (wetCooldown >= 0) {
                         wetCooldown = MAX_COOLDOWN;
                         this.Image = gp.map.tileimage[visualID + Seeds.getTotalSeeds() * 2].Image;
                     }
+                }
+                if (!seedPlanted.getSeason().contains(gp.currentSeason)) {
+                    seedPlanted = null;
+                    loadImage(this.emptySoilImagePath);
+                    return;
                 }
             } else {
                 System.err.println("Failed to update image for planted seed: " + seedPlanted.getName());

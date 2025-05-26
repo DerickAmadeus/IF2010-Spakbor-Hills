@@ -178,11 +178,11 @@ public class GamePanel extends JPanel implements Runnable {
             keyHandler.invPressed = false;
         }
         if (gameState == playState) {
-            player.tiling(this);
-            player.recoverLand(this);
-            player.planting(this);
-            player.watering(this);
-            player.harvesting(this);
+            player.tiling();
+            player.recoverLand();
+            player.planting();
+            player.watering();
+            player.harvesting();
         }
         if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(
@@ -243,7 +243,7 @@ public class GamePanel extends JPanel implements Runnable {
                         }
                     } else if (selected instanceof Fish || selected instanceof Crops || selected instanceof Food) {
                         if (player.getInventory().optionCommandNum == 0) {
-                            player.eating(this);
+                            player.eating();
                             gameState = inventoryState;
                         } else if (player.getInventory().optionCommandNum == 1) {
                             gameState = inventoryState; // Cancel
