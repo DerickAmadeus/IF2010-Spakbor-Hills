@@ -468,8 +468,6 @@ public class Player {
             }
         } else if (tileToInteract instanceof Bed) { // Added Bed interaction
             System.out.println("Player: Interacting with a Bed tile: " + tileToInteract.getTileName());
-            // Assuming "Bed Part 5 (Interact)" is the specific tile to trigger sleep
-            // You could also add a method to your Bed class like `isSleepTrigger()`
             if (tileToInteract.getTileName().equals("Bed")) {
                 if (gp.gameState == gp.playState) {
                     System.out.println("Player: Time to sleep!");
@@ -480,10 +478,6 @@ public class Player {
             } else {
                 System.out.println("Player: This part of the bed is not for sleeping, or you need to face the right spot.");
             }
-        } else if (tileToInteract.getTileName().toLowerCase().contains("door")) {
-            System.out.println("Player: Interacting with a door.");
-            // Current door interaction is likely handled by map transitions if player walks into it.
-            // This could be for doors that require explicit interaction.
         } else if (tileToInteract.getTileName().toLowerCase().contains("building")) {
             System.out.println("Player: Interacting with building: " + tileToInteract.getTileName());
         } else {
