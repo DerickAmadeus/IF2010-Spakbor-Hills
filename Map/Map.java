@@ -394,6 +394,9 @@ public class Map {
                     tiles[c][r].update(gp); 
                     Soil wet = (Soil) tiles[c][r];
                     if (wet.getSeedPlanted() != null) {
+                        if (gp.currentWeather == gp.initialWeather[0]) {
+                            wet.water(gp);
+                        }
                         wet.updateImageBasedOnState(gp);
                     }
                     // Panggil update() dari Tile. Soil akan override jika perlu logika khusus.

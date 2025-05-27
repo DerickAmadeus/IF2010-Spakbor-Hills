@@ -48,7 +48,6 @@ public class Player {
     private int energy;
     private static final int MAX_ENERGY = 100; 
     private String farmName;
-    private Tile tile; 
 
 
     // Cooldown for interaction to prevent multiple interactions from a single long key press
@@ -556,6 +555,7 @@ public class Player {
             System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
             // setEnergy(getEnergy()+10); // Mungkin tidak perlu untuk interaksi umum
         }
+        gp.addMinutes(60);
         // Cooldown sudah diatur di metode update() setelah memanggil interact()
     }
 
@@ -756,11 +756,11 @@ public class Player {
             g2.setColor(Color.YELLOW);
             g2.drawString("Hint: " + gp.fishingHint, frameX + 20, debugY);
         }
-
-
-        g2.drawString("Target Code: " + gp.fishingTarget, frameX + 20, debugY + 25);
-
-        // Masked input (password)
+        if (gp.debugMode) {
+            if (gp.fishingTarget != -1) {
+                g2.drawString("Target Code: " + gp.fishingTarget, frameX + 20, debugY + 25);
+            }
+        }
         g2.drawString(gp.fishingInput, frameX + 20, frameY + 90);
     }
 
