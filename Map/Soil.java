@@ -115,7 +115,7 @@ public class Soil extends Tile {
             if (gp != null && visualID != -1 && visualID < gp.map.tileImage.length && gp.map.tileImage[visualID] != null) {
                 if (dayHarvest > 0) {
 
-                    if (wetCooldown == 5) {
+                    if (wetCooldown == 3) {
                         this.Image = gp.map.tileImage[visualID + Seeds.getTotalSeeds()].Image; // Gunakan image dari prototype visual
                     } else {
                         this.Image = gp.map.tileImage[visualID].Image; // Gunakan image dari prototype visual

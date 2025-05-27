@@ -541,7 +541,7 @@ public class Player {
                 gp.addMinutes(5);
                 System.out.println("Player: Tilled grass at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
             } else if (tileToTill != null) {
-                System.out.println("Player: Cannot till " + tileToTill.getTileName());
+                //aa
             }
         }
     }
@@ -642,7 +642,7 @@ public class Player {
             // The original gp.addMinutes(1440) was here. If eating takes time, it should be managed.
             // For now, I'm keeping it as it was, but 1440 minutes (24 hours) for eating seems excessive.
             // This might be a placeholder or a specific game mechanic you intended.
-            gp.addMinutes(1440);
+            gp.addMinutes(60);
         }
     }
 }

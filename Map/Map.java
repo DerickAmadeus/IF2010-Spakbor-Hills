@@ -464,9 +464,8 @@ public class Map {
                     tileToUpdate.update(gp); // Memanggil update(gp)
                     if (tileToUpdate instanceof Soil) {
                         Soil soilTile = (Soil) tileToUpdate;
-                        if (soilTile.getSeedPlanted() != null) { // Update gambar jika ada benih ATAU tanah basah
-                            soilTile.updateImageBasedOnState(gp);
-                        }
+                        soilTile.updateImageBasedOnState(gp);
+                        
                     }
                 }
             }
