@@ -555,7 +555,9 @@ public class Player {
             System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
             // setEnergy(getEnergy()+10); // Mungkin tidak perlu untuk interaksi umum
         }
-        gp.addMinutes(60);
+        for (int rainyDays : gp.rainDaysInSeason) {
+            System.out.println(rainyDays);
+        }
         // Cooldown sudah diatur di metode update() setelah memanggil interact()
     }
 

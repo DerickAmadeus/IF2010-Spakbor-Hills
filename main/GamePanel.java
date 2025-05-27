@@ -38,6 +38,7 @@ public class GamePanel extends JPanel implements Runnable {
     public String currentSeason = initialSeason[currentSeasonIndex];
     public String[] initialWeather = {"Rainy", "Sunny"};
     public String currentWeather = initialWeather[1];
+    public int[] rainDaysInSeason = new int[2]; // Menyimpan dua hari hujan dalam 1 musim
     List<RainDrop> rainDrops = new ArrayList<>();
     private final int RAIN_COUNT = 100;
 
@@ -220,6 +221,16 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
     }
+    private void setRainDaysForSeason() {
+        int day1 = 1 + (int)(Math.random() * 10);
+        int day2;
+        do {
+            day2 = 1 + (int)(Math.random() * 10);
+        } while (day2 == day1);
+
+        rainDaysInSeason[0] = day1;
+        rainDaysInSeason[1] = day2;
+    }
 
     public Fish[] loadInitialFish() {
         ArrayList<String> any = new ArrayList<>(Arrays.asList("Spring", "Summer", "Fall", "Winter"));
@@ -399,6 +410,7 @@ public class GamePanel extends JPanel implements Runnable {
         else if (gameState == farmNameInputState){
             if(keyHandler.enterPressed){
               gameState = playState;
+              setRainDaysForSeason();
             }
         }   
         
@@ -524,9 +536,11 @@ public class GamePanel extends JPanel implements Runnable {
             currentSeasonIndex = (currentSeasonIndex + 1) % 4;
             currentSeason = initialSeason[currentSeasonIndex];
             gameDay %= 10;
+            setRainDaysForSeason();
         }
-        if (gameDay == 4 || gameDay == 7) {
-            currentWeather = initialWeather[0];
+        
+        if (gameDay == rainDaysInSeason[0] || gameDay == rainDaysInSeason[1]) {
+            currentWeather = initialWeather[0]; // Hujan
         } else {
             currentWeather = initialWeather[1];
         }
