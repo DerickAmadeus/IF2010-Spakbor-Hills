@@ -2,6 +2,7 @@ package main;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import java.awt.event.KeyEvent; // ← Tambahkan ini
 
 import Items.*;
 
@@ -14,6 +15,7 @@ import player.Player; // Importing player class from player package
 import Map.Map; // Importing map class from Map package
 
 import java.util.ArrayList; // Tambahkan import ini
+import java.util.Arrays;
 import java.util.List;    // Tambahkan import ini
 import java.awt.Color;    // Tambahkan import ini
 
@@ -29,10 +31,19 @@ public class GamePanel extends JPanel implements Runnable {
     public final int dialogState = 2;
     public final int inventoryState = 3;
     public final int itemOptionState = 4;
+    public final int fishingState = 5;
     public int gameState = titleState;
     public String[] initialSeason = {"Spring", "Summer", "Fall", "Winter"};
     public int currentSeasonIndex = 0;
     public String currentSeason = initialSeason[currentSeasonIndex];
+    public Fish[] allFishes = loadInitialFish();
+    public Fish fishingTargetFish = null;
+    public int fishingTarget = -1;      // Angka yang harus ditebak
+    public int fishingAttempts = 0;     // Berapa kali user sudah mencoba
+    public int maxFishingAttempts = 0;  // Batas percobaan sesuai rarity
+    public String fishingHint = "";
+
+
     // Game Time
     public int gameHour = 6; // Mulai dari jam 6 pagi
     public int gameMinute = 0;
@@ -73,6 +84,9 @@ public class GamePanel extends JPanel implements Runnable {
     private BufferedImage backgroundImage; // Background image for the game\
 
     public boolean debugMode = false;
+    public String fishingInput = "";
+
+
 
 
     int playerX = 100; // Player's X position
@@ -196,6 +210,113 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    public Fish[] loadInitialFish() {
+        ArrayList<String> any = new ArrayList<>(Arrays.asList("Spring", "Summer", "Fall", "Winter"));
+        ArrayList<String> spring = new ArrayList<>(Arrays.asList("Spring"));
+        ArrayList<String> summer = new ArrayList<>(Arrays.asList("Summer"));
+        ArrayList<String> fall = new ArrayList<>(Arrays.asList("Fall"));
+        ArrayList<String> winter = new ArrayList<>(Arrays.asList("Winter"));
+        ArrayList<String> sturgeonSeason = new ArrayList<>(Arrays.asList("Summer", "Winter"));
+        ArrayList<String> midnightCarpSeason = new ArrayList<>(Arrays.asList("Fall", "Winter"));
+        ArrayList<String> flounderSeason = new ArrayList<>(Arrays.asList("Spring", "Summer"));
+        ArrayList<String> superCucumberSeason = new ArrayList<>(Arrays.asList("Summer", "Fall", "Winter"));
+        ArrayList<String> catfishSeason = new ArrayList<>(Arrays.asList("Spring", "Summer", "Fall"));
+
+        return new Fish[] {
+            new Fish("Bullhead", "Ikan Bullhead, mudah ditemukan.", 50, 50, any, "Any", "Mountain Lake", "Common"),
+            new Fish("Carp", "Ini Carp.", 50, 50, any, "Any", "Pond", "Common"),
+            new Fish("Chub", "Ikan Chub, cukup umum.", 50, 50, any, "Any", "Forest River", "Common"),
+            new Fish("Largemouth Bass", "Ikan besar dari danau pegunungan.", 100, 100, any, "Any", "Mountain Lake", "Regular"),
+            new Fish("Rainbow Trout", "Ikan berwarna pelangi yang muncul saat cuaca cerah.", 120, 120, summer, "Sunny", "Forest River", "Regular"),
+            new Fish("Sturgeon", "Ikan langka dari danau pegunungan.", 200, 200, sturgeonSeason, "Any", "Mountain Lake", "Regular"),
+            new Fish("Midnight Carp", "Ikan malam dari danau atau kolam.", 150, 150, midnightCarpSeason, "Any", "Mountain Lake", "Regular"),
+            new Fish("Flounder", "Ikan pipih dari laut.", 90, 90, flounderSeason, "Any", "Ocean", "Regular"),
+            new Fish("Halibut", "Ikan laut besar aktif pagi dan malam.", 110, 110, any, "Any", "Ocean", "Regular"),
+            new Fish("Octopus", "Gurita laut yang aktif siang hari.", 180, 180, summer, "Any", "Ocean", "Regular"),
+            new Fish("Pufferfish", "Ikan buntal beracun saat cuaca cerah.", 160, 160, summer, "Sunny", "Ocean", "Regular"),
+            new Fish("Sardine", "Ikan kecil dari laut.", 40, 40, any, "Any", "Ocean", "Common"),
+            new Fish("Super Cucumber", "Ikan misterius aktif malam hari.", 250, 250, superCucumberSeason, "Any", "Ocean", "Regular"),
+            new Fish("Catfish", "Ikan lele liar saat hujan.", 130, 130, catfishSeason, "Rainy", "Forest River", "Regular"),
+            new Fish("Salmon", "Ikan migrasi dari sungai.", 120, 120, fall, "Any", "Forest River", "Regular"),
+            new Fish("Angler", "Ikan legendaris yang hanya muncul di musim gugur.", 1000, 1000, fall, "Any", "Pond", "Legendary"),
+            new Fish("Crimsonfish", "Ikan legendaris dari laut tropis.", 1000, 1000, summer, "Any", "Ocean", "Legendary"),
+            new Fish("Glacierfish", "Ikan legendaris dari sungai beku.", 1000, 1000, winter, "Any", "Forest River", "Legendary"),
+            new Fish("Legend", "Ikan legendaris tertinggi di danau gunung saat hujan.", 1200, 1200, spring, "Rainy", "Mountain Lake", "Legendary")
+        };
+    }
+    public Fish[] filterFishesBySeason(String season) {
+        ArrayList<Fish> filtered = new ArrayList<>();
+        for (Fish fish : allFishes) {
+            if (fish.getSeason().contains(season)) {
+                filtered.add(fish);
+            }
+        }
+        return filtered.toArray(new Fish[0]);
+    }
+
+    public void handleFishingPasswordInput(int code) {
+        if (gameState != fishingState) return;
+
+        if (fishingTarget == -1) {
+            // Setikan ikan dan password saat pertama kali masuk ke fishingState
+            Fish[] currentFish = filterFishesBySeason(currentSeason);
+            if (currentFish.length == 0) return;
+
+            Fish prize = currentFish[(int)(Math.random() * currentFish.length)];
+            fishingTargetFish = prize; // Simpan untuk diberikan saat menang
+
+            int max = 10;
+            if (prize.getRarity().equals("Regular")) max = 100;
+            else if (prize.getRarity().equals("Legendary")) max = 500;
+
+            fishingTarget = (int) (Math.random() * max) + 1;
+            fishingAttempts = 0;
+            maxFishingAttempts = prize.getRarity().equals("Legendary") ? 7 : 10;
+
+            System.out.println("Tebak angka 1-" + max + " untuk menangkap " + prize.getName() + " (" + prize.getName() + ")");
+            fishingInput = "";
+            return;
+        }
+
+        // Input angka
+        if (code == KeyEvent.VK_BACK_SPACE && fishingInput.length() > 0) {
+            fishingInput = fishingInput.substring(0, fishingInput.length() - 1);
+        } else if (code >= KeyEvent.VK_0 && code <= KeyEvent.VK_9 && fishingInput.length() < 3) {
+            fishingInput += (char) code;
+        } else if (code == KeyEvent.VK_ENTER) {
+            if (fishingInput.equals(String.valueOf(fishingTarget))) {
+            player.getInventory().addItem(fishingTargetFish, 1);
+            resetFishing();
+        } else {
+            fishingAttempts++;
+            int inputVal = Integer.parseInt(fishingInput);
+            if (inputVal < fishingTarget) {
+                fishingHint = "Terlalu kecil!";
+            } else if (inputVal > fishingTarget) {
+                fishingHint = "Terlalu besar!";
+            }
+            fishingInput = ""; // reset input, bukan menutup window
+
+            if (fishingAttempts >= maxFishingAttempts) {
+                System.out.println("Kesempatan habis. Gagal memancing!");
+                resetFishing();
+            }
+        }
+        } else if (code == KeyEvent.VK_ESCAPE) {
+            System.out.println("Batal memancing.");
+            resetFishing();
+        }
+    }
+
+    private void resetFishing() {
+        fishingTarget = -1;
+        fishingInput = "";
+        fishingAttempts = 0;
+        maxFishingAttempts = 0;
+        fishingTargetFish = null;
+        gameState = playState;
+        fishingHint = "";
+    }
 
 
 
@@ -291,7 +412,7 @@ public class GamePanel extends JPanel implements Runnable {
             checkMapTransitions();
             player.watering();
             player.harvesting();
-
+            player.fishing();
         }
         if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(
@@ -360,10 +481,15 @@ public class GamePanel extends JPanel implements Runnable {
                     keyHandler.enterPressed = false;
                 }
             }
-
+        }
+        if (gameState == fishingState) {
+            if(keyHandler.enterPressed) {
+                gameState = playState;
+                keyHandler.enterPressed = false;
+            }
         }
         long now = System.currentTimeMillis();
-        if (now - lastRealTime >= REAL_TIME_INTERVAL) {
+        if (now - lastRealTime >= REAL_TIME_INTERVAL && gameState != fishingState) {
             gameMinute += 5;
             if (gameMinute >= 60) {
                 gameMinute = 0;
@@ -455,6 +581,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
         if (gameState == itemOptionState) {
             player.getInventory().drawItemOptionWindow(g2);
+        }
+        if (gameState == fishingState) {
+            player.drawFishingWindow(g2);
         }
     }
 }
