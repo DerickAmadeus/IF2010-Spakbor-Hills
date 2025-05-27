@@ -15,6 +15,7 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
+import Furniture.Bed;
 import Items.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -518,6 +519,7 @@ public class Player {
     public String getLastMoveDirection() { return lastMoveDirection; } // Last direction player moved or faced
     public Rectangle getInteractionArea() { return interactionArea; } // The tile-aligned interaction area
     public Inventory<Item> getInventory() { return inventory;}
+    public static int getMaxEnergy() { return MAX_ENERGY; }
 
 
     // Action method for interaction
@@ -550,12 +552,15 @@ public class Player {
         } else if (tileToInteract.getTileName().toLowerCase().contains("door")) { // Contoh interaksi dengan pintu
             System.out.println("Player: Interacting with a door.");
             // Logika pindah map atau masuk gedung
-        } else if (tileToInteract.getTileName().toLowerCase().contains("building")) { // Contoh
-            System.out.println("Player: Interacting with building: " + tileToInteract.getTileName());
-        } else {
+        } else if(tileToInteract.getTileName().toLowerCase().equals("bed")) {
+            System.out.println("Player : Interacting with a bed");
+            sleeping();
+        
+        }else {
             System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
             // setEnergy(getEnergy()+10); // Mungkin tidak perlu untuk interaksi umum
         }
+        
         // Cooldown sudah diatur di metode update() setelah memanggil interact()
     }
 
@@ -592,20 +597,37 @@ public class Player {
         return energy;
     }
 
-    public void setEnergy(int energy) {
-        if (energy > MAX_ENERGY) {
+    public void setEnergy(int newEnergyValue) {
+        int oldEnergy = this.energy; // Simpan energi saat ini sebelum diubah
+
+        // Terapkan nilai energi baru, dengan batasan MAX_ENERGY dan minimal -20
+        if (newEnergyValue > MAX_ENERGY) {
             this.energy = MAX_ENERGY;
-        } else if (energy < 0 && energy > -20) {
-            // masih print
-            System.out.println("Warning: Energy is low! Action can still be performed, but consider sleeping.");
-            this.energy = energy;
-        } else if (energy < -20) {
-            // msdih print
-            this.energy = -20;
-            System.out.println("Error: Energy is too low! sleeping rn...");
+        } else if (newEnergyValue < -20) { // Jika kalkulasi akan membuatnya jauh di bawah -20
+            this.energy = -20; // Batasi minimal di -20
         } else {
-            this.energy = energy;
+            this.energy = newEnergyValue;
         }
+
+        // Periksa kondisi auto-sleep jika energi baru saja turun ke/di bawah -20
+        // dan pemain sedang dalam kondisi bisa bermain (playState).
+        if (this.energy <= -20 && oldEnergy > -20) { // Hanya picu jika melewati ambang batas ke bawah
+            if (gp.gameState == gp.playState) { // Dan hanya jika sedang dalam state bermain aktif
+                System.out.println("Player: Too exhausted! Automatically going to sleep...");
+                // Penting: gp.startSleepingSequence() harus menangani transisi state dengan benar.
+                // Ini termasuk mengubah game state untuk mencegah aksi lebih lanjut
+                // dan pada akhirnya memulihkan energi (misalnya, saat hari baru dimulai).
+                gp.startSleepingSequence();
+                // Pemulihan energi (misalnya menjadi 10 atau MAX_ENERGY) idealnya ditangani sebagai bagian
+                // dari proses yang dimulai oleh startSleepingSequence().
+                energy = 10; // Atau bisa juga MAX_ENERGY, tergantung desain game Anda
+            }
+        } else if (this.energy < 0 && this.energy > -20) { // Kondisi energi rendah tapi belum pingsan
+             // Pesan peringatan ini dari kode asli Anda dipertahankan.
+            System.out.println("Warning: Energy is low! Action can still be performed, but consider sleeping.");
+        }
+        // Komentar "msdih print" dan "Error: Energy is too low! sleeping rn..."
+        // dari kode asli Anda kini digantikan dengan logika auto-sleep di atas.
     }
 
     public void tiling() {
@@ -615,7 +637,7 @@ public class Player {
             if (tileToTill != null && tileToTill.getTileName().equals("grass")) { // Pastikan nama "grass" konsisten
                 gp.map.setTileType(interactionArea.x, interactionArea.y, 10); // ID 10 adalah Soil kosong
                 setEnergy(getEnergy() - 5);
-                gp.addMinutes(5);
+                gp.addMinutes(1440);
                 System.out.println("Player: Tilled grass at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
             } else if (tileToTill != null) {
                 System.out.println("Player: Cannot till " + tileToTill.getTileName());
@@ -718,6 +740,28 @@ public class Player {
                 eaten.eat(this, get);
             }
             gp.addMinutes(1440);
+        }
+    }
+
+    public void sleeping() {
+        if (energy < MAX_ENERGY && keyH.interactPressed && interactionCooldown == 0) {
+            if (gp.gameState == gp.playState) {
+                System.out.println("Player: Time to sleep!");
+
+                gp.startSleepingSequence();
+                // Reset energy to full after sleeping
+                setEnergy(MAX_ENERGY);
+
+            } else {
+                System.out.println("Player: Can only sleep during play state.");
+            }
+        } else if (energy == -20) {
+            System.out.println("Player: Too exhausted to sleep! You need to recover first.");
+            gp.startSleepingSequence();
+            setEnergy(10);
+        } else {
+            System.out.println("Player: Energy is already full, no need to sleep.");
+
         }
     }
     /*public void fishing() {

@@ -138,24 +138,24 @@ public class Map {
             tileImage[71].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/karpet.png"));
 
             // Furnitures
-            tileImage[72] = new Bed("Bed Part 1", false, "king_ul");
+            tileImage[72] = new Bed("Bed", false, "king_ul");
             tileImage[72].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed1.png"));
-            tileImage[73] = new Bed("Bed Part 2", false, "king_um");
+            tileImage[73] = new Bed("Bed", false, "king_um");
             tileImage[73].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed2.png"));
             // ... (Lanjutkan untuk semua furniture prototypes)
-            tileImage[74] = new Bed("Bed Part 3", false, "king_ur");
+            tileImage[74] = new Bed("Bed", false, "king_ur");
             tileImage[74].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed3.png"));
-            tileImage[75] = new Bed("Bed Part 4", false, "king_ml");
+            tileImage[75] = new Bed("Bed", false, "king_ml");
             tileImage[75].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed4.png"));
-            tileImage[76] = new Bed("Bed Part 5 (Interact)", true, "king_mm");
+            tileImage[76] = new Bed("Bed", true, "king_mm");
             tileImage[76].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed5.png"));
-            tileImage[77] = new Bed("Bed Part 6", false, "king_mr");
+            tileImage[77] = new Bed("Bed", false, "king_mr");
             tileImage[77].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed6.png"));
-            tileImage[78] = new Bed("Bed Part 7", false, "king_bl");
+            tileImage[78] = new Bed("Bed", false, "king_bl");
             tileImage[78].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed7.png"));
-            tileImage[79] = new Bed("Bed Part 8", false, "king_bm");
+            tileImage[79] = new Bed("Bed", false, "king_bm");
             tileImage[79].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed8.png"));
-            tileImage[80] = new Bed("Bed Part 9", false, "king_br");
+            tileImage[80] = new Bed("Bed", false, "king_br");
             tileImage[80].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed9.png"));
             tileImage[81] = new Stove("stove");
             tileImage[81].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/stove.png"));
