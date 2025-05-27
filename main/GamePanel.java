@@ -75,7 +75,8 @@ public class GamePanel extends JPanel implements Runnable {
     int playerY = 100; // Player's Y position
     int playerSpeed = 4; // Player's speed
 
-    public NPC npc;
+    public NPC npc1;
+    public NPC npc2;
 
     
 
@@ -91,10 +92,15 @@ public class GamePanel extends JPanel implements Runnable {
         this.player = new Player(this, keyHandler, "initial"); // Initialize player object
         initializeTransitions(); // Panggil setelah tileSize dan player siap
 
-        int npcX = 10 * tileSize; // Convert tile to pixel coordinates
-        int npcY = 10 * tileSize;
-        List<Item> emptyList = new ArrayList<>();
-        npc = new NPC("Villager", "Male", 0, emptyList, emptyList, emptyList, "Neutral", npcX, npcY);
+        int npc1X = 15 * tileSize; // Convert tile to pixel coordinates
+        int npc1Y = 15 * tileSize;
+        List<Item> emptyList1 = new ArrayList<>();
+        npc1 = new NPC("Mayor Tadi", "Male", 0, emptyList1, emptyList1, emptyList1, "Neutral", npc1X, npc1Y);
+
+        int npc2X = 17 * tileSize; // Convert tile to pixel coordinates
+        int npc2Y = 15 * tileSize;
+        List<Item> emptyList2 = new ArrayList<>();
+        npc2 = new NPC("Caroline", "Female", 0, emptyList2, emptyList2, emptyList2, "Neutral", npc2X, npc2Y);
 
         try {
             backgroundImage = ImageIO.read(getClass().getResourceAsStream("/main/cloud.png"));
@@ -429,7 +435,8 @@ public class GamePanel extends JPanel implements Runnable {
         g2.drawString(currentSeason, 500, 50);
 
         if (gameState == playState) {
-            npc.draw(g2, player.x, player.y, player.screenX, player.screenY, tileSize);
+            npc1.draw(g2, player.x, player.y, player.screenX, player.screenY, tileSize);
+            npc2.draw(g2, player.x, player.y, player.screenX, player.screenY, tileSize);
         }
 
         player.drawPlayer(g2);

@@ -3,6 +3,7 @@ import Items.Item;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
@@ -47,11 +48,25 @@ public class NPC{
 
     private void loadImage() {
         try {
-            image = ImageIO.read(getClass().getResourceAsStream("/NPC/npcmttile.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-            image = null; // Handle missing image
+            String imagePath = getImagePathBasedOnName();
+            InputStream is = getClass().getResourceAsStream(imagePath);
+            
+            if(is != null) {
+                image = ImageIO.read(is);
+            } else {
+                throw new IOException("Image not found: " + imagePath);
+            }
+        } catch (IOException | IllegalArgumentException e) {
+            System.err.println("Error loading NPC image for " + name + ": " + e.getMessage());
         }
+    }
+
+    private String getImagePathBasedOnName() {
+        return switch (this.name.toLowerCase()) {
+            case "mayor tadi" -> "/NPC/npcmttile.png";
+            case "caroline" -> "/NPC/npcctile.png";
+            default -> "/NPC/npc_default.png";
+        };
     }
 
     public void draw(Graphics2D g2, int playerX, int playerY, int screenX, int screenY, int tileSize) {
