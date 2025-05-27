@@ -1,23 +1,19 @@
 package main;
 
-import javax.imageio.ImageIO;
-import javax.swing.JPanel;
-
 import Items.*;
-
-import java.awt.Graphics2D;
-import java.awt.Rectangle; // Tambahkan import ini
-import java.io.IOException;
-import java.awt.image.BufferedImage;
-
-import player.Player; // Importing player class from player package
-import Map.Map; // Importing map class from Map package
-
-import java.util.ArrayList; // Tambahkan import ini
-import java.util.List;    // Tambahkan import ini
-import java.awt.Color;    // Tambahkan import ini
-
+import Map.Map;
+import NPC.NPC;
+import java.awt.Color;
 import java.awt.Font; // Tambahkan import ini
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage; // Importing player class from player package
+import java.io.IOException; // Importing map class from Map package
+import java.util.ArrayList;
+import java.util.List; // Tambahkan import ini
+import javax.imageio.ImageIO;    // Tambahkan import ini
+import javax.swing.JPanel;    // Tambahkan import ini
+import player.Player; // Tambahkan import ini
 
 public class GamePanel extends JPanel implements Runnable {
     
@@ -79,6 +75,8 @@ public class GamePanel extends JPanel implements Runnable {
     int playerY = 100; // Player's Y position
     int playerSpeed = 4; // Player's speed
 
+    public NPC npc;
+
     
 
     public GamePanel() {
@@ -92,6 +90,11 @@ public class GamePanel extends JPanel implements Runnable {
 
         this.player = new Player(this, keyHandler, "initial"); // Initialize player object
         initializeTransitions(); // Panggil setelah tileSize dan player siap
+
+        int npcX = 10 * tileSize; // Convert tile to pixel coordinates
+        int npcY = 10 * tileSize;
+        List<Item> emptyList = new ArrayList<>();
+        npc = new NPC("Villager", "Male", 0, emptyList, emptyList, emptyList, "Neutral", npcX, npcY);
 
         try {
             backgroundImage = ImageIO.read(getClass().getResourceAsStream("/main/cloud.png"));
@@ -425,7 +428,9 @@ public class GamePanel extends JPanel implements Runnable {
         g2.drawString(timeString, 500, 30);
         g2.drawString(currentSeason, 500, 50);
 
-
+        if (gameState == playState) {
+            npc.draw(g2, player.x, player.y, player.screenX, player.screenY, tileSize);
+        }
 
         player.drawPlayer(g2);
         player.drawEnergyBar(g2);

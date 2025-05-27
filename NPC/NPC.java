@@ -1,8 +1,11 @@
 package NPC;
 import Items.Item;
-
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.imageio.ImageIO;
 
 public class NPC{
     private String name;
@@ -15,6 +18,9 @@ public class NPC{
 
     private String relationshipStatus;
 
+    private int x, y;
+    private BufferedImage image;
+
     /**
      * @param name               NPC name
      * @param gender             NPC gender
@@ -26,15 +32,38 @@ public class NPC{
      */
 
     //Constructor
-    public NPC(String name, String gender, int heartPoints, List<Item> lovedItems, List<Item> likedItems, List<Item> hatedItems, String relationshipStatus){
+    public NPC(String name, String gender, int heartPoints, List<Item> lovedItems, List<Item> likedItems, List<Item> hatedItems, String relationshipStatus, int x, int y){
         this.name = name;
         this.gender = gender;
         setHP(heartPoints);
-        this.lovedItems = lovedItems != null ? lovedItems : new ArrayList<>(); // not sure but semoga bener
-        this.likedItems = likedItems != null ? likedItems : new ArrayList<>();
-        this.hatedItems = hatedItems != null ? hatedItems : new ArrayList<>();
+        this.lovedItems = (lovedItems != null) ? lovedItems : new ArrayList<>();
+        this.likedItems = (likedItems != null) ? likedItems : new ArrayList<>();
+        this.hatedItems = (hatedItems != null) ? hatedItems : new ArrayList<>();
         this.relationshipStatus = relationshipStatus;
+        this.x = x;
+        this.y = y;
+        loadImage();
     }
+
+    private void loadImage() {
+        try {
+            image = ImageIO.read(getClass().getResourceAsStream("/NPC/npcmttile.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            image = null; // Handle missing image
+        }
+    }
+
+    public void draw(Graphics2D g2, int playerX, int playerY, int screenX, int screenY, int tileSize) {
+        if (image == null) return;
+        int screenXPos = x - playerX + screenX;
+        int screenYPos = y - playerY + screenY;
+        g2.drawImage(image, screenXPos, screenYPos, tileSize, tileSize, null);
+    }
+
+    // Getters for position
+    public int getX() { return x; }
+    public int getY() { return y; }
 
     //Getter
     public String getName(){
