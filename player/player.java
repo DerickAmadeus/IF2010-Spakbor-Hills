@@ -637,7 +637,7 @@ public class Player {
             if (tileToTill != null && tileToTill.getTileName().equals("grass")) { // Pastikan nama "grass" konsisten
                 gp.map.setTileType(interactionArea.x, interactionArea.y, 10); // ID 10 adalah Soil kosong
                 setEnergy(getEnergy() - 5);
-                gp.addMinutes(1440);
+                gp.addMinutes(5);
                 System.out.println("Player: Tilled grass at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
             } else if (tileToTill != null) {
                 System.out.println("Player: Cannot till " + tileToTill.getTileName());
