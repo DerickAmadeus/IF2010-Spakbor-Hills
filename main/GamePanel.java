@@ -24,6 +24,7 @@ public class GamePanel extends JPanel implements Runnable {
     //Game State
     public final int titleState = -2;
     public final int farmNameInputState = -1;
+    public final int helpState = -1;
     public final int playState = 0;
     public final int pauseState = 1;
     public final int dialogState = 2;
@@ -78,6 +79,8 @@ public class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true); // Make the panel focusable to receive key events
         
         gameState = titleState; // start dari title dulu
+
+        setFocusTraversalKeysEnabled(false);
 
         this.player = new Player(this, keyHandler, ""); // Initialize player object
         initializeTransitions(); // Panggil setelah tileSize dan player siap
@@ -213,11 +216,14 @@ public class GamePanel extends JPanel implements Runnable {
     public void update() {
         if (gameState == titleState){
             if(keyHandler.enterPressed){
-                if(titlePage.commandNumber == 0){
+                if (titlePage.commandNumber == 3){
+                    System.exit(0);
+                }
+                else if(titlePage.commandNumber == 0){
                     gameState = farmNameInputState;
                 }
-                else if (titlePage.commandNumber == 2){
-                    System.exit(0);
+                else if(titlePage.commandNumber == 2){
+                    gameState = helpState;
                 }
                 keyHandler.enterPressed = false;
             }

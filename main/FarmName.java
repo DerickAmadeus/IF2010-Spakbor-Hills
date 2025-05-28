@@ -8,7 +8,6 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
-import player.Player;
 
 public class FarmName {
     GamePanel gp;
@@ -17,6 +16,9 @@ public class FarmName {
     Font inputFarm;
     private final String farmMessage = "Enter your farm's name: ";
     private final int maxLength = 20;
+    private final String back = "BACK";
+
+    public int commandNumber = 0;
 
     BufferedImage farmInputBackground;
 
@@ -81,24 +83,54 @@ public class FarmName {
         x = getX(displayText, g2);
         y += gp.tileSize * 2;
         g2.drawString(displayText, x, y);
+
+        //back
+        g2.setFont(inputFarm.deriveFont(Font.BOLD, 30F));
+        g2.setColor(Color.white);
+        int margin = 20;
+        int backY  = gp.screenHeight - margin;
+        int backX  = margin + (commandNumber==1 ? gp.tileSize : 0);
+
+        // shadow
+        g2.setColor(Color.black);
+        g2.drawString(back, backX + 5, backY + 5);
+        g2.setColor(Color.white);
+        
+        if (commandNumber == 1){
+            g2.drawString(">", margin, backY);
+        }
+
+        g2.drawString(back, backX, backY);
     }
 
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
         char keyChar = e.getKeyChar();
 
-        if (keyCode == KeyEvent.VK_ENTER) {
-            if (!farmNameInput.trim().isEmpty()) {
+        if (keyCode == KeyEvent.VK_ESCAPE) { // ESC auto back
+            gp.gameState = gp.titleState; 
+            return;
+        }
+        else if (keyCode == KeyEvent.VK_ENTER) {
+            if (commandNumber == 0 && !farmNameInput.trim().isEmpty()) {
                 gp.player.setFarmName(farmNameInput.trim());
                 gp.gameState = gp.playState;
                 gp.keyHandler.enterPressed = false;
             }
+            else if(commandNumber == 1){
+                gp.gameState = gp.titleState;
+                gp.keyHandler.enterPressed = false;
+            }
+        } else if (keyCode == KeyEvent.VK_TAB){
+            commandNumber = (commandNumber == 0) ? 1 : 0;
+            gp.keyHandler.upPressed = false;
+            gp.keyHandler.downPressed = false;
         } else if (keyCode == KeyEvent.VK_BACK_SPACE) {
             if (!farmNameInput.isEmpty()) {
                 farmNameInput = farmNameInput.substring(0, farmNameInput.length() - 1);
             }
         } else {
-            if (farmNameInput.length() < maxLength) {
+            if (commandNumber == 0 && farmNameInput.length() < maxLength) {
                 if (Character.isLetterOrDigit(keyChar) || Character.isWhitespace(keyChar)) {
                     farmNameInput += keyChar;
                 }

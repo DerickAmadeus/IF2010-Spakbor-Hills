@@ -20,15 +20,15 @@ public class KeyHandler implements KeyListener{
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
-        // Input Title State
         if (gp.gameState == gp.titleState){
-            if (code == KeyEvent.VK_W || code == KeyEvent.VK_UP){
+            if (code == KeyEvent.VK_W){
                 gp.titlePage.commandNumber--;
                 if (gp.titlePage.commandNumber < 0) gp.titlePage.commandNumber = 2;
-            } else if (code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN){
+            } else if (code == KeyEvent.VK_S){
                 gp.titlePage.commandNumber++;
                 if (gp.titlePage.commandNumber > 2) gp.titlePage.commandNumber = 0;
             } else if (code == KeyEvent.VK_ENTER){
+                enterPressed = true;   
                 if (gp.titlePage.commandNumber==0){        // NEW GAME
                     gp.gameState = gp.farmNameInputState;        // diproses di GamePanel.update()
             }
@@ -37,8 +37,12 @@ public class KeyHandler implements KeyListener{
         }
 
         if (gp.gameState == gp.farmNameInputState){
+            if (code == KeyEvent.VK_TAB || code == KeyEvent.VK_ESCAPE) {
             gp.farmName.keyPressed(e);
             return;
+            }
+        gp.farmName.keyPressed(e);
+        return;
         }
 
         if (gp.gameState == gp.playState){
