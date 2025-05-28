@@ -489,6 +489,7 @@ public class Player {
         } else if(tileToInteract.getTileName().toLowerCase().equals("bed")) {
             System.out.println("Player : Interacting with a bed");
             sleeping();
+<<<<<<< HEAD
         }else if (tileToInteract.getTileName().equals("TV")){
             System.out.println("Player: Interacting with TV.");
             WatchTV();
@@ -496,6 +497,10 @@ public class Player {
 <<<<<<< HEAD
 
         } else {
+=======
+        
+        }else {
+>>>>>>> parent of bc053c9 (Adding)
             System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
             // setEnergy(getEnergy()+10); // Mungkin tidak perlu untuk interaksi umum
         }
@@ -773,6 +778,7 @@ public class Player {
 
         }
     }
+<<<<<<< HEAD
 
     public void WatchTV() {
         if (keyH.interactPressed && interactionCooldown == 0) {
@@ -786,6 +792,8 @@ public class Player {
             }
         }
     }
+=======
+>>>>>>> parent of bc053c9 (Adding)
     /*public void fishing() {
         if (equippedItem != null && equippedItem.getName().equals("Fishing Rod") && 
             energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {

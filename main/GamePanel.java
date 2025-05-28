@@ -227,6 +227,7 @@ public class GamePanel extends JPanel implements Runnable {
             player.watering();
             player.harvesting();
             player.sleeping();
+<<<<<<< HEAD
             player.WatchTV();
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -261,6 +262,9 @@ public class GamePanel extends JPanel implements Runnable {
 >>>>>>> fb525b28b82c427a37f31a1f9f1e0809b32dc757
 =======
 >>>>>>> fb525b28b82c427a37f31a1f9f1e0809b32dc757
+=======
+
+>>>>>>> parent of bc053c9 (Adding)
         }
         if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(
