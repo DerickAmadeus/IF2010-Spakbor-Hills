@@ -4,9 +4,9 @@ import Items.Misc;
 
 public class Stove extends Furniture{
     private Misc fuel;
-    public Stove(String name, int width, int height, char symbol, Misc fuel){
-        super(name, width, height, symbol);
-        this.fuel = fuel;
+    public Stove(String name) {
+        super(name, false);
+        this.fuel = null;
     }
     public Misc getFuel(){
         return fuel;

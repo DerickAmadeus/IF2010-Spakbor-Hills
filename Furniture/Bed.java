@@ -1,17 +1,48 @@
 package Furniture;
 
-public class Bed extends Furniture{
+import Map.Tile; // Pastikan import Tile jika Bed adalah subclassnya
+// Import lain yang mungkin diperlukan oleh Bed
+
+public class Bed extends Furniture { // Atau kelas parent lainnya jika bukan Tile
+
+    // Atribut-atribut spesifik Bed Anda (misalnya, bedType, dll.)
     private String bedType;
-    public Bed(String name, int width, int height, char symbol, String bedType){
-        super(name, width, height, symbol);
+    // ... atribut lain ...
+
+    // Konstruktor utama Anda (mungkin sudah ada)
+    public Bed(String name, boolean isWalkable, String bedType) {
+        super(name, isWalkable); // Panggil konstruktor superclass
         this.bedType = bedType;
+        // Inisialisasi atribut lain
+        // Mungkin juga load gambar di sini jika belum dari superclass
     }
-    public String getBedType(){
+
+    // === TAMBAHKAN COPY CONSTRUCTOR INI ===
+    public Bed(Bed other) {
+        super(other); // Panggil copy constructor dari superclass (Tile atau Furniture)
+        this.bedType = other.bedType;
+        // Copy atribut lain yang dimiliki Bed
+        // Contoh:
+        // this.someOtherBedSpecificProperty = other.someOtherBedSpecificProperty;
+
+        // Jika gambar tidak di-handle oleh super(other) dan perlu di-set ulang
+        // atau jika Bed memiliki gambar sendiri yang berbeda dari Tile standar
+        if (this.Image == null && other.Image != null) {
+            this.Image = other.Image; // Atau muat ulang berdasarkan tipe/path jika perlu
+        } else if (this.Image == null) {
+            // Logika fallback jika gambar masih null
+            // loadImageBasedOnType(this.bedType); // Contoh method
+        }
+    }
+
+    // ... method lain di kelas Bed ...
+
+    public String getBedType() {
         return bedType;
-        
     }
-    @Override
+
     public void Action() {
-        System.out.println("Bed is being slept on");
+        // Implementasi aksi spesifik untuk Bed
+        System.out.println("Bed is being used");
     }
 }

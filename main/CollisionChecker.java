@@ -13,12 +13,17 @@ public class CollisionChecker {
 
     public void checkTile(Player player) {
 
-        // Get the pixel coordinates of the player's solid area edges
+        // Pastikan peta dan tile-nya sudah dimuat
+        if (gp.map == null || gp.map.currentMapTiles == null) {
+            // System.err.println("CollisionChecker: Peta atau currentMapTiles belum dimuat!");
+            player.collisionOn = true; // Anggap ada collision jika peta tidak tersedia
+            return;
+        }
+
         int playerLeftX = player.getX() + player.solidArea.x;
         int playerRightX = player.getX() + player.solidArea.x + player.solidArea.width;
         int playerTopY = player.getY() + player.solidArea.y;
         int playerBottomY = player.getY() + player.solidArea.y + player.solidArea.height;
-
 
         int currentTileColLeft = playerLeftX / gp.tileSize;
         int currentTileColRight = playerRightX / gp.tileSize;
@@ -27,12 +32,17 @@ public class CollisionChecker {
 
         Tile tileNum1, tileNum2;
 
+        // Gunakan dimensi peta yang aktif dari Map.java
+        int numMapCols = gp.map.currentMapWorldCol;
+        int numMapRows = gp.map.currentMapWorldRow;
 
-        int numMapCols = gp.map.tiles.length;
-        int numMapRows = gp.map.tiles[0].length;
+        // Jika dimensi peta tidak valid (misalnya 0), anggap ada collision
+        if (numMapCols <= 0 || numMapRows <= 0) {
+            // System.err.println("CollisionChecker: Dimensi peta tidak valid!");
+            player.collisionOn = true;
+            return;
+        }
 
-        // These variables will store the calculated TARGET tile index
-        // for the edge of the player in the direction of movement.
         int targetTileRow;
         int targetTileCol;
 
@@ -40,70 +50,60 @@ public class CollisionChecker {
             case "up":
                 targetTileRow = (playerTopY - player.speed) / gp.tileSize;
 
-
-                if (targetTileRow < 0 ||
+                // Pengecekan batas yang lebih aman
+                if (targetTileRow < 0 || targetTileRow >= numMapRows ||
                     currentTileColLeft < 0 || currentTileColLeft >= numMapCols ||
                     currentTileColRight < 0 || currentTileColRight >= numMapCols) {
                     player.collisionOn = true;
                 } else {
-                    // If within bounds, check walkability of the two tiles the player's top edge would hit
-                    tileNum1 = gp.map.tiles[currentTileColLeft][targetTileRow];
-                    tileNum2 = gp.map.tiles[currentTileColRight][targetTileRow];
+                    // Akses tile menggunakan currentMapTiles
+                    tileNum1 = gp.map.currentMapTiles[currentTileColLeft][targetTileRow];
+                    tileNum2 = gp.map.currentMapTiles[currentTileColRight][targetTileRow];
                     if ((tileNum1 != null && !tileNum1.isWalkable()) || (tileNum2 != null && !tileNum2.isWalkable())) {
                         player.collisionOn = true;
                     }
                 }
                 break;
             case "down":
-                // Calculate the prospective tile row for the player's bottom edge after moving
                 targetTileRow = (playerBottomY + player.speed) / gp.tileSize;
 
-                if (targetTileRow >= numMapRows || // Fix: Check if target row is out of bounds (bottom)
+                if (targetTileRow >= numMapRows || targetTileRow < 0 ||
                     currentTileColLeft < 0 || currentTileColLeft >= numMapCols ||
                     currentTileColRight < 0 || currentTileColRight >= numMapCols) {
                     player.collisionOn = true;
                 } else {
-                    // If within bounds, check walkability of the two tiles the player's bottom edge would hit
-                    tileNum1 = gp.map.tiles[currentTileColLeft][targetTileRow]; // This was line 38
-                    tileNum2 = gp.map.tiles[currentTileColRight][targetTileRow];
+                    tileNum1 = gp.map.currentMapTiles[currentTileColLeft][targetTileRow];
+                    tileNum2 = gp.map.currentMapTiles[currentTileColRight][targetTileRow];
                     if ((tileNum1 != null && !tileNum1.isWalkable()) || (tileNum2 != null && !tileNum2.isWalkable())) {
                         player.collisionOn = true;
                     }
                 }
                 break;
             case "left":
-                // Calculate the prospective tile column for the player's left edge after moving
                 targetTileCol = (playerLeftX - player.speed) / gp.tileSize;
 
-
-                if (targetTileCol < 0 ||
+                if (targetTileCol < 0 || targetTileCol >= numMapCols ||
                     currentTileRowTop < 0 || currentTileRowTop >= numMapRows ||
                     currentTileRowBottom < 0 || currentTileRowBottom >= numMapRows) {
                     player.collisionOn = true;
                 } else {
-                    // If within bounds, check walkability of the two tiles the player's left edge would hit
-                    tileNum1 = gp.map.tiles[targetTileCol][currentTileRowTop];
-                    tileNum2 = gp.map.tiles[targetTileCol][currentTileRowBottom];
+                    tileNum1 = gp.map.currentMapTiles[targetTileCol][currentTileRowTop];
+                    tileNum2 = gp.map.currentMapTiles[targetTileCol][currentTileRowBottom];
                     if ((tileNum1 != null && !tileNum1.isWalkable()) || (tileNum2 != null && !tileNum2.isWalkable())) {
                         player.collisionOn = true;
                     }
                 }
                 break;
             case "right":
-                // Calculate the prospective tile column for the player's right edge after moving
                 targetTileCol = (playerRightX + player.speed) / gp.tileSize;
 
-                // Boundary checks:
-                // 1. Is the target column to the right of the map?
-                // 2. Are the current rows (top/bottom edges of player) valid?
-                if (targetTileCol >= numMapCols || // Fix: Check if target col is out of bounds (right)
+                if (targetTileCol >= numMapCols || targetTileCol < 0 ||
                     currentTileRowTop < 0 || currentTileRowTop >= numMapRows ||
                     currentTileRowBottom < 0 || currentTileRowBottom >= numMapRows) {
                     player.collisionOn = true;
                 } else {
-                    // If within bounds, check walkability of the two tiles the player's right edge would hit
-                    tileNum1 = gp.map.tiles[targetTileCol][currentTileRowTop];
-                    tileNum2 = gp.map.tiles[targetTileCol][currentTileRowBottom];
+                    tileNum1 = gp.map.currentMapTiles[targetTileCol][currentTileRowTop];
+                    tileNum2 = gp.map.currentMapTiles[targetTileCol][currentTileRowBottom];
                     if ((tileNum1 != null && !tileNum1.isWalkable()) || (tileNum2 != null && !tileNum2.isWalkable())) {
                         player.collisionOn = true;
                     }

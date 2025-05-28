@@ -2,7 +2,14 @@ package Map;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+import java.awt.*;
+
+import Items.Fish;
+import main.GamePanel;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Tile {
     private String name;
@@ -35,11 +42,11 @@ public class Tile {
     public boolean isWalkable() {
         return isWalkable;
     }
-
-    public void update() {
+    
+    public void update(GamePanel gp) {
         if (this instanceof Soil) {
             Soil update = (Soil) this;
-            update.update();
+            update.update(gp);
         }
     }
 
