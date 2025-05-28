@@ -55,7 +55,7 @@ public class KeyHandler implements KeyListener{
             return;
         }
 
-        if (gp.gameState == gp.playState){
+        if (gp.gameState != gp.titleState && gp.gameState != gp.helpState && gp.gameState != gp.farmNameInputState && gp.gameState != gp.fishingState){
             if (code == KeyEvent.VK_W) {
                 upPressed = true; // Set upPressed to true when W key is pressed
                 System.out.println("W key pressed"); // Move up

@@ -298,7 +298,7 @@ public class Player {
             collisionOn = false;
             gp.cChecker.checkTile(this);
 
-            System.out.println("Collision after checkTile: " + collisionOn);
+           // System.out.println("Collision after checkTile: " + collisionOn);
         }
 
         // Terapkan batas dunia menggunakan dimensi peta saat ini

@@ -474,7 +474,6 @@ public class GamePanel extends JPanel implements Runnable {
                 else if(titlePage.commandNumber == 2){
                     gameState = helpState;
                 }
-                keyHandler.enterPressed = false;
             }
         }
         else if (gameState == farmNameInputState){
