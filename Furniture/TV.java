@@ -2,7 +2,7 @@ package Furniture;
 
 public class TV extends Furniture{
     public TV(String name, Boolean isWalkable) {
-        super(name, true);
+        super(name, false);
     }
     @Override
     public void Action() {
