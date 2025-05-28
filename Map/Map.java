@@ -459,14 +459,14 @@ public class Map {
         if (currentMapTiles == null) return; // Menggunakan currentMapTiles
         for (int r = 0; r < currentMapWorldRow; r++) {
             for (int c = 0; c < currentMapWorldCol; c++) {
-                Tile tileToUpdate = currentMapTiles[c][r]; // Menggunakan currentMapTiles
-                if (tileToUpdate != null) { // Pastikan tile tidak null
-                    tileToUpdate.update(gp); // Memanggil update(gp)
-                    if (tileToUpdate instanceof Soil) {
-                        Soil soilTile = (Soil) tileToUpdate;
-                        if (soilTile.getSeedPlanted() != null) { // Update gambar jika ada benih ATAU tanah basah
-                            soilTile.updateImageBasedOnState(gp);
+                if (tiles[c][r] != null && tiles[c][r] instanceof Soil) {
+                    tiles[c][r].update(gp); 
+                    Soil wet = (Soil) tiles[c][r];
+                    if (wet.getSeedPlanted() != null) {
+                        if (gp.currentWeather == gp.initialWeather[0]) {
+                            wet.water(gp);
                         }
+                        wet.updateImageBasedOnState(gp);
                     }
                 }
             }

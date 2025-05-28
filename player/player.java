@@ -49,7 +49,6 @@ public class Player {
     private int energy;
     private static final int MAX_ENERGY = 100; 
     private String farmName;
-    private Tile tile; 
 
 
     // Cooldown for interaction to prevent multiple interactions from a single long key press
@@ -560,8 +559,15 @@ public class Player {
             System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
             // setEnergy(getEnergy()+10); // Mungkin tidak perlu untuk interaksi umum
         }
-        
+        for (int rainyDays : gp.rainDaysInSeason) {
+            System.out.println(rainyDays);
+        }
+        /*for (Fish f : gp.allFishes) {
+            System.out.println(f.getName() + ": " + f.getHargaJual());
+        }*/
+
         // Cooldown sudah diatur di metode update() setelah memanggil interact()
+        gp.addMinutes(60);
     }
 
 
@@ -739,10 +745,52 @@ public class Player {
                 Food eaten = (Food) get;
                 eaten.eat(this, get);
             }
-            gp.addMinutes(1440);
+            gp.addMinutes(5);
         }
     }
 
+    public void drawFishingWindow(Graphics2D g2) {
+        int frameX = gp.tileSize;
+        int frameY = gp.tileSize * 2;
+        int frameWidth = gp.tileSize * 6;
+        int frameHeight = gp.tileSize * 5;
+
+        Color backgroundColor = new Color(0, 0, 0, 210);
+        g2.setColor(backgroundColor);
+        g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
+
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(5));
+        g2.drawRoundRect(frameX + 5, frameY + 5, frameWidth - 10, frameHeight - 10, 25, 25);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.drawString("Fish Caught!", frameX + 20, frameY + 50);
+        int debugY = frameY + 130;
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
+
+        if (gp.fishingTargetFish != null) {
+            g2.drawString("Attempt: " + gp.fishingAttempts + " / " + gp.maxFishingAttempts, frameX + 20, debugY);
+            debugY += 25;
+            g2.drawString("Fish: " + gp.fishingTargetFish.getName() + " (" + gp.fishingTargetFish.getRarity() + ")", frameX + 20, debugY);
+            debugY += 25;
+        } else {
+            debugY += 25;
+            g2.drawString("Mulai Memancing!!!", frameX + 20, debugY);
+            debugY += 25;
+        }
+
+        // Hint berdasarkan tebakan
+        if (gp.fishingHint != null && !gp.fishingHint.isEmpty()) {
+            g2.setColor(Color.YELLOW);
+            g2.drawString("Hint: " + gp.fishingHint, frameX + 20, debugY);
+        }
+        if (gp.debugMode) {
+            if (gp.fishingTarget != -1) {
+                g2.drawString("Target Code: " + gp.fishingTarget, frameX + 20, debugY + 25);
+            }
+        }
+        g2.drawString(gp.fishingInput, frameX + 20, frameY + 90);
+    }
     public void sleeping() {
         if (energy < MAX_ENERGY && keyH.interactPressed && interactionCooldown == 0) {
             if (gp.gameState == gp.playState) {
@@ -764,18 +812,17 @@ public class Player {
 
         }
     }
-    /*public void fishing() {
+
+      public void fishing() {
         if (equippedItem != null && equippedItem.getName().equals("Fishing Rod") && 
-            energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
+            energy >= -15 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState != gp.fishingState) {
             Tile tileToFish = gp.map.getTile(interactionArea.x, interactionArea.y);
-            if (tileToFish != null && tileToFish.getTileName().equals("water")) { 
-                //implementasi memancing
+            if (tileToFish != null && tileToFish.getTileName().equals("Water")) {
+                gp.gameState = gp.fishingState; 
                 setEnergy(getEnergy() - 5);
-                gp.addMinutes(5);
-                System.out.println("Player: Tilled grass at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
-            } else if (tileToFish != null) {
-                System.out.println("Player: Cannot till " + tileToFish.getTileName());
-            }
+                gp.addMinutes(15);
+                keyH.enterPressed = false;
+            } 
         }
-    }*/
+    }
 }
