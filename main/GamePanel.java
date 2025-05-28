@@ -471,11 +471,11 @@ public class GamePanel extends JPanel implements Runnable {
                 keyHandler.enterPressed = false;
             }
         }
-        // else if (gameState == farmNameInputState){
-        //     // if(keyHandler.enterPressed){
+        else if (gameState == farmNameInputState){
+            setRainDaysForSeason();
+            //     // if(keyHandler.enterPressed){
         //     //   gameState = playState;
-        //     //   setRainDaysForSeason();
-        //     // }
+        }
         // }   
         
         player.update();
@@ -630,9 +630,8 @@ public class GamePanel extends JPanel implements Runnable {
             return;
         }
         else if (gameState == helpState) {
-
-        help.draw(g2);
-        g2.dispose();
+            help.draw(g2);
+            g2.dispose();
         return;
         }
 
