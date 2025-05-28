@@ -1,26 +1,20 @@
 package main;
 
+import Items.*;
+import Map.Map;
+import java.awt.Color; // ← Tambahkan ini
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException; // Importing player class from player package
+import java.util.ArrayList; // Importing map class from Map package
+import java.util.Arrays;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-import java.awt.event.KeyEvent; // ← Tambahkan ini
-
-import Items.*;
-
-// import java.awt.*;
-import java.awt.Graphics2D;
-import java.awt.Rectangle; 
-import java.io.IOException;
-import java.awt.image.BufferedImage;
-
-import player.Player; // Importing player class from player package
-import Map.Map; // Importing map class from Map package
-
-import java.util.ArrayList; 
-import java.util.Arrays;
-import java.util.List;   
-import java.awt.Color;   
-
-import java.awt.Font; 
+import player.Player; 
 
 public class GamePanel extends JPanel implements Runnable {
     
@@ -165,6 +159,18 @@ public class GamePanel extends JPanel implements Runnable {
         // No additional transitions needed here for background color change.
 
         transitions.add(new TransitionData(3, 7, 13, 1, 1, 0, 5, 11, false, tileSize));
+
+        //Farm Map ke NPC map and backwards
+        transitions.add(new TransitionData(0, 30, 30, 1, 3, 4, 4, 5, false, tileSize));
+        transitions.add(new TransitionData(4, 3, 5, 1, 3, 0, 29, 30, false, tileSize));
+
+        //NPC Map ke MT House Map and backwards
+        transitions.add(new TransitionData(4, 17, 3, 1, 1, 5, 7, 12, false, tileSize));
+        transitions.add(new TransitionData(5, 7, 13, 1, 1, 4, 17, 4, false, tileSize));
+
+        //NPC Map ke C House Map and backwards
+        transitions.add(new TransitionData(4, 26, 3, 1, 1, 6, 7, 12, false, tileSize));
+        transitions.add(new TransitionData(6, 7, 13, 1, 1, 4, 26, 4, false, tileSize));
 
 
         // Tambahkan transisi lain sesuai kebutuhan Anda
