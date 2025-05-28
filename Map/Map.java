@@ -48,6 +48,10 @@ public class Map {
             "/Map/maps/npc_map.txt",
             "/Map/maps/mthouse_map.txt",
             "/Map/maps/chouse_map.txt",
+            "/Map/maps/phouse_map.txt",
+            "/Map/maps/dhouse_map.txt",
+            "/Map/maps/ahouse_map.txt",
+            "/Map/maps/store_map.txt",
     };
 
     public Map(GamePanel gp) {
@@ -379,6 +383,68 @@ public class Map {
             tileImage[140].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/leftwalltop.png"));
             tileImage[141] = new Tile("Right Wall Top", false);
             tileImage[141].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/rightwalltop.png"));
+
+            // Abi House Tiles Exterior
+            tileImage[142] = new Tile("Top Right Corner Roof", false);
+            tileImage[142].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/righttopcornerroof.png"));
+            tileImage[143] = new Tile("Bottom Left Right Roof", false);
+            tileImage[143].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/rightbottomcornerroof.png"));
+            tileImage[144] = new Tile("Bottom Roof", false);
+            tileImage[144].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/bottomroof.png"));
+            tileImage[145] = new Tile("Top Left Corner Roof", false);
+            tileImage[145].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/lefttopcornerroof.png"));
+            tileImage[146] = new Tile("Bottom Left Corner Roof", false);
+            tileImage[146].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/leftbottomcornerroof.png"));
+            tileImage[147] = new Tile("MTHouse Wall Top", false);
+            tileImage[147].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/walltop.png"));
+            tileImage[148] = new Tile("MTHouse Left Corner", false);
+            tileImage[148].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/leftcorner.png"));
+            tileImage[149] = new Tile("MTHouse Right Corner", false);
+            tileImage[149].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/rightcorner.png"));
+            tileImage[150] = new Tile("MTHouse Left Window Bottom", false);
+            tileImage[150].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/leftwindowbottom.png"));
+            tileImage[151] = new Tile("MTHouse Right Window Bottom", false);
+            tileImage[151].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/rightwindowbottom.png"));
+            tileImage[152] = new Tile("MTHouse Left Window Top", false);
+            tileImage[152].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/lefttopwindow.png"));
+            tileImage[153] = new Tile("MTHouse Right Window Top", false);
+            tileImage[153].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/righttopwindow.png"));
+            tileImage[154] = new Tile("Left Wall Top", false);
+            tileImage[154].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/leftwalltop.png"));
+            tileImage[155] = new Tile("Right Wall Top", false);
+            tileImage[155].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/rightwalltop.png"));
+
+            // Store Tiles Exterior
+            tileImage[156] = new Tile("Top Right Corner Roof", false);
+            tileImage[156].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/righttopcornerroof.png"));
+            tileImage[157] = new Tile("Bottom Left Right Roof", false);
+            tileImage[157].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/rightbottomcornerroof.png"));
+            tileImage[158] = new Tile("Bottom Roof", false);
+            tileImage[158].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/bottomroof.png"));
+            tileImage[159] = new Tile("Top Left Corner Roof", false);
+            tileImage[159].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/lefttopcornerroof.png"));
+            tileImage[160] = new Tile("Bottom Left Corner Roof", false);
+            tileImage[160].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/leftbottomcornerroof.png"));
+            tileImage[161] = new Tile("MTHouse Wall Top", false);
+            tileImage[161].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/walltop.png"));
+            tileImage[162] = new Tile("MTHouse Left Corner", false);
+            tileImage[162].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/leftcorner.png"));
+            tileImage[163] = new Tile("MTHouse Right Corner", false);
+            tileImage[163].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/rightcorner.png"));
+            tileImage[164] = new Tile("MTHouse Left Window Bottom", false);
+            tileImage[164].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/leftwindowbottom.png"));
+            tileImage[165] = new Tile("MTHouse Right Window Bottom", false);
+            tileImage[165].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/rightwindowbottom.png"));
+            tileImage[166] = new Tile("MTHouse Left Window Top", false);
+            tileImage[166].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/lefttopwindow.png"));
+            tileImage[167] = new Tile("MTHouse Right Window Top", false);
+            tileImage[167].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/righttopwindow.png"));
+            tileImage[168] = new Tile("Left Wall Top", false);
+            tileImage[168].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/leftwalltop.png"));
+            tileImage[169] = new Tile("Right Wall Top", false);
+            tileImage[169].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/rightwalltop.png"));
+
+
 
         } catch (IOException e) {
             System.err.println("Error loading tile prototype images: " + e.getMessage());
