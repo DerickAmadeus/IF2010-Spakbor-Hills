@@ -79,10 +79,6 @@ public class Player {
         getPlayerImage();
     }
 
-    public void setFarmName(String farmName) {
-        this.farmName = farmName;
-    }
-
     public void loadInitialSeeds() {
         ArrayList<String> spring = new ArrayList<>(Arrays.asList("Spring"));
         ArrayList<String> summer = new ArrayList<>(Arrays.asList("Summer"));
