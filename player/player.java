@@ -558,7 +558,11 @@ public class Player {
         for (int rainyDays : gp.rainDaysInSeason) {
             System.out.println(rainyDays);
         }
+        for (Fish f : gp.allFishes) {
+            System.out.println(f.getName() + ": " + f.getHargaJual());
+        }
         // Cooldown sudah diatur di metode update() setelah memanggil interact()
+        gp.addMinutes(60);
     }
 
 

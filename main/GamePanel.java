@@ -244,51 +244,107 @@ public class GamePanel extends JPanel implements Runnable {
         ArrayList<String> superCucumberSeason = new ArrayList<>(Arrays.asList("Summer", "Fall", "Winter"));
         ArrayList<String> catfishSeason = new ArrayList<>(Arrays.asList("Spring", "Summer", "Fall"));
 
-        ArrayList<String> rainy = new ArrayList<>(Arrays.asList("Rainy"));
+        ArrayList<String> rainy = new ArrayList<>(Arrays.asList("Rainy")); 
         ArrayList<String> sunny = new ArrayList<>(Arrays.asList("Sunny"));
         ArrayList<String> both = new ArrayList<>(Arrays.asList("Rainy", "Sunny"));
 
-        return new Fish[] {
-            new Fish("Bullhead", "Ikan Bullhead, mudah ditemukan.", 50, 50, any, both, "Mountain Lake", "Common"),
-            new Fish("Carp", "Ini Carp.", 50, 50, any, both, "Pond", "Common"),
-            new Fish("Chub", "Ikan Chub, cukup umum.", 50, 50, any, both, "Forest River", "Common"),
-            new Fish("Largemouth Bass", "Ikan besar dari danau pegunungan.", 100, 100, any, both, "Mountain Lake", "Regular"),
-            new Fish("Rainbow Trout", "Ikan berwarna pelangi yang muncul saat cuaca cerah.", 120, 120, summer, sunny, "Forest River", "Regular"),
-            new Fish("Sturgeon", "Ikan langka dari danau pegunungan.", 200, 200, sturgeonSeason, both, "Mountain Lake", "Regular"),
-            new Fish("Midnight Carp", "Ikan malam dari danau atau kolam.", 150, 150, midnightCarpSeason, both, "Mountain Lake", "Regular"),
-            new Fish("Flounder", "Ikan pipih dari laut.", 90, 90, flounderSeason, both, "Ocean", "Regular"),
-            new Fish("Halibut", "Ikan laut besar aktif pagi dan malam.", 110, 110, any, both, "Ocean", "Regular"),
-            new Fish("Octopus", "Gurita laut yang aktif siang hari.", 180, 180, summer, both, "Ocean", "Regular"),
-            new Fish("Pufferfish", "Ikan buntal beracun saat cuaca cerah.", 160, 160, summer, sunny, "Ocean", "Regular"),
-            new Fish("Sardine", "Ikan kecil dari laut.", 40, 40, any, both, "Ocean", "Common"),
-            new Fish("Super Cucumber", "Ikan misterius aktif malam hari.", 250, 250, superCucumberSeason, both, "Ocean", "Regular"),
-            new Fish("Catfish", "Ikan lele liar saat hujan.", 130, 130, catfishSeason, rainy, "Forest River", "Regular"),
-            new Fish("Salmon", "Ikan migrasi dari sungai.", 120, 120, fall, both, "Forest River", "Regular"),
-            new Fish("Angler", "Ikan legendaris yang hanya muncul di musim gugur.", 1000, 1000, fall, both, "Pond", "Legendary"),
-            new Fish("Crimsonfish", "Ikan legendaris dari laut tropis.", 1000, 1000, summer, both, "Ocean", "Legendary"),
-            new Fish("Glacierfish", "Ikan legendaris dari sungai beku.", 1000, 1000, winter, both, "Forest River", "Legendary"),
-            new Fish("Legend", "Ikan legendaris tertinggi di danau gunung saat hujan.", 1200, 1200, spring, rainy, "Mountain Lake", "Legendary")
+        Fish[] fishlist = new Fish[]{
+            new Fish("Bullhead", "Ikan Bullhead, mudah ditemukan.", 50, 50, any, both, new ArrayList<>(Arrays.asList("Mountain Lake")), "Common", 
+                    new ArrayList<>(Arrays.asList(0)), new ArrayList<>(Arrays.asList(24))),
+            new Fish("Carp", "Ini Carp.", 50, 50, any, both, new ArrayList<>(Arrays.asList("Mountain Lake", "Pond")), "Common", 
+                    new ArrayList<>(Arrays.asList(0)), new ArrayList<>(Arrays.asList(24))),
+            new Fish("Chub", "Ikan Chub, cukup umum.", 50, 50, any, both, new ArrayList<>(Arrays.asList("Forest River", "Mountain Lake")), "Common", 
+                    new ArrayList<>(Arrays.asList(0)), new ArrayList<>(Arrays.asList(24))),
+            new Fish("Largemouth Bass", "Ikan besar dari danau pegunungan.", 100, 100, any, both, new ArrayList<>(Arrays.asList("Mountain Lake")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(18))),
+            new Fish("Rainbow Trout", "Ikan berwarna pelangi yang muncul saat cuaca cerah.", 120, 120, summer, sunny, new ArrayList<>(Arrays.asList("Forest River", "Mountain Lake")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(18))),
+            new Fish("Sturgeon", "Ikan langka dari danau pegunungan.", 200, 200, sturgeonSeason, both, new ArrayList<>(Arrays.asList("Mountain Lake")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(18))),
+            new Fish("Midnight Carp", "Ikan malam dari danau atau kolam.", 150, 150, midnightCarpSeason, both, new ArrayList<>(Arrays.asList("Mountain Lake", "Pond")), "Regular", 
+                    new ArrayList<>(Arrays.asList(20)), new ArrayList<>(Arrays.asList(2))),
+            new Fish("Flounder", "Ikan pipih dari laut.", 90, 90, flounderSeason, both, new ArrayList<>(Arrays.asList("Ocean")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(22))),
+            new Fish("Halibut", "Ikan laut besar aktif pagi dan malam.", 110, 110, any, both,  new ArrayList<>(Arrays.asList("Ocean")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6, 19)), new ArrayList<>(Arrays.asList(11, 2))),
+            new Fish("Octopus", "Gurita laut yang aktif siang hari.", 180, 180, summer, both,  new ArrayList<>(Arrays.asList("Ocean")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(22))),
+            new Fish("Pufferfish", "Ikan buntal beracun saat cuaca cerah.", 160, 160, summer, sunny,  new ArrayList<>(Arrays.asList("Ocean")), "Regular", 
+                    new ArrayList<>(Arrays.asList(0)), new ArrayList<>(Arrays.asList(16))),
+            new Fish("Sardine", "Ikan kecil dari laut.", 40, 40, any, both,  new ArrayList<>(Arrays.asList("Ocean")), "Common", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(18))),
+            new Fish("Super Cucumber", "Ikan misterius aktif malam hari.", 250, 250, superCucumberSeason, both,  new ArrayList<>(Arrays.asList("Ocean")), "Regular", 
+                    new ArrayList<>(Arrays.asList(18)), new ArrayList<>(Arrays.asList(2))),
+            new Fish("Catfish", "Ikan lele liar saat hujan.", 130, 130, catfishSeason, rainy,  new ArrayList<>(Arrays.asList("Forest River", "Pond")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(22))),
+            new Fish("Salmon", "Ikan migrasi dari sungai.", 120, 120, fall, both, new ArrayList<>(Arrays.asList("Forest River")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(18))),
+            new Fish("Angler", "Ikan legendaris yang hanya muncul di musim gugur.", 1000, 1000, fall, both,new ArrayList<>(Arrays.asList("Pond")), "Legendary", 
+                    new ArrayList<>(Arrays.asList(8)), new ArrayList<>(Arrays.asList(20))),
+            new Fish("Crimsonfish", "Ikan legendaris dari laut tropis.", 1000, 1000, summer, both, new ArrayList<>(Arrays.asList("Ocean")), "Legendary", 
+                    new ArrayList<>(Arrays.asList(8)), new ArrayList<>(Arrays.asList(20))),
+            new Fish("Glacierfish", "Ikan legendaris dari sungai beku.", 1000, 1000, winter, both, new ArrayList<>(Arrays.asList("Forest River")), "Legendary", 
+                    new ArrayList<>(Arrays.asList(8)), new ArrayList<>(Arrays.asList(20))),
+            new Fish("Legend", "Ikan legendaris tertinggi di danau gunung saat hujan.", 1200, 1200, spring, rainy, new ArrayList<>(Arrays.asList("Mountain Lake")), "Legendary", 
+                    new ArrayList<>(Arrays.asList(8)), new ArrayList<>(Arrays.asList(20)))
         };
+        for (Fish f : fishlist) {
+            int harga = f.calculateHargaJual();
+            f.setHargaJual(harga);  // pastikan kamu punya setter `setHargaJual()`
+        }
+
+        return fishlist;
     }
-    public Fish[] filterFishesBySeasonAndWeather(String season, String weather) {
+
+    public Fish[] filterFishesBySeasonAndWeather(String season, String weather, int gameHour) {
         ArrayList<Fish> filtered = new ArrayList<>();
+        int currentHour = gameHour;
+
         for (Fish fish : allFishes) {
-            if (fish.getSeason().contains(season) && fish.getWeather().contains(weather)) {
+            boolean seasonMatch = fish.getSeason().contains(season);
+            boolean weatherMatch = fish.getWeather().contains(weather);
+            boolean timeMatch = false;
+
+            ArrayList<Integer> appearTimes = fish.getAppearTime();
+            ArrayList<Integer> disappearTimes = fish.getDisappearTime();
+
+            for (int i = 0; i < appearTimes.size(); i++) {
+                int start = appearTimes.get(i);
+                int end = disappearTimes.get(i);
+
+                if (start <= end) {
+                    // Normal time range, e.g. 6 to 18
+                    if (currentHour >= start && currentHour < end) {
+                        timeMatch = true;
+                        break;
+                    }
+                } else {
+                    // Overnight time range, e.g. 20 to 2
+                    if (currentHour >= start || currentHour < end) {
+                        timeMatch = true;
+                        break;
+                    }
+                }
+            }
+
+            if (seasonMatch && weatherMatch && timeMatch) {
                 filtered.add(fish);
             }
         }
+
         return filtered.toArray(new Fish[0]);
     }
+
 
     public void handleFishingPasswordInput(int code) {
         if (gameState != fishingState) return;
 
         if (fishingTarget == -1) {
             // Setikan ikan dan password saat pertama kali masuk ke fishingState
-            Fish[] currentFish = filterFishesBySeasonAndWeather(currentSeason, currentWeather);
-            /*for (Fish fish : currentFish) {
+            Fish[] currentFish = filterFishesBySeasonAndWeather(currentSeason, currentWeather, gameHour);
+            for (Fish fish : currentFish) {
                 System.out.println(fish.getName());
-            }*/
+            }
             if (currentFish.length == 0) return;
 
             Fish prize = currentFish[(int)(Math.random() * currentFish.length)];
