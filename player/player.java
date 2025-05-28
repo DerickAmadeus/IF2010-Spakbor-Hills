@@ -79,10 +79,6 @@ public class Player {
         getPlayerImage();
     }
 
-    public void setFarmName(String farmName) {
-        this.farmName = farmName;
-    }
-
     public void loadInitialSeeds() {
         ArrayList<String> spring = new ArrayList<>(Arrays.asList("Spring"));
         ArrayList<String> summer = new ArrayList<>(Arrays.asList("Summer"));
@@ -302,7 +298,7 @@ public class Player {
             collisionOn = false;
             gp.cChecker.checkTile(this);
 
-            System.out.println("Collision after checkTile: " + collisionOn);
+           // System.out.println("Collision after checkTile: " + collisionOn);
         }
 
         // Terapkan batas dunia menggunakan dimensi peta saat ini
