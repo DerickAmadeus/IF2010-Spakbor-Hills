@@ -16,7 +16,6 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
-import Furniture.Bed;
 import Items.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -47,11 +46,9 @@ public class Player {
     private Inventory<Item> inventory;
     private Item equippedItem;
     private int energy;
-    private static final int MAX_ENERGY = 100; 
-
-    private Tile tile; 
+    public static final int MAX_ENERGY = 100;
     private String farmName;
-
+    // Removed 'private Tile tile;' as it seemed unused and uninitialized globally
 
     private int interactionCooldown = 0;
 
@@ -61,7 +58,6 @@ public class Player {
         this.energy = MAX_ENERGY;
         this.inventory = new Inventory<>(gp);
         this.farmName = farmName;
-
         loadInitialEquipment();
         loadInitialSeeds();
         loadInitialFood();
@@ -450,7 +446,6 @@ public class Player {
     public String getLastMoveDirection() { return lastMoveDirection; }
     public Rectangle getInteractionArea() { return interactionArea; }
     public Inventory<Item> getInventory() { return inventory;}
-    public static int getMaxEnergy() { return MAX_ENERGY; }
 
     public void interact() {
         Tile tileToInteract = gp.map.getTile(interactionArea.x, interactionArea.y);
@@ -473,7 +468,6 @@ public class Player {
             } else {
                 System.out.println("Player: Tanah ini kosong (tidak ada bibit).");
             }
-
         } else if (tileToInteract instanceof Bed) { // Added Bed interaction
             System.out.println("Player: Interacting with a Bed tile: " + tileToInteract.getTileName());
             if (tileToInteract.getTileName().equals("Bed")) {
@@ -488,6 +482,7 @@ public class Player {
             }
         } else if (tileToInteract.getTileName().toLowerCase().contains("building")) {
             System.out.println("Player: Interacting with building: " + tileToInteract.getTileName());
+<<<<<<< HEAD
         } else if (tileToInteract.getTileName().toLowerCase().contains("door")) { // Contoh interaksi dengan pintu
             System.out.println("Player: Interacting with a door.");
             // Logika pindah map atau masuk gedung
@@ -513,19 +508,11 @@ public class Player {
 =======
 >>>>>>> fb525b28b82c427a37f31a1f9f1e0809b32dc757
 
+=======
+>>>>>>> parent of d0d269f (Merge branch 'debug' into Derick2)
         } else {
             System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
         }
-
-        for (int rainyDays : gp.rainDaysInSeason) {
-            System.out.println(rainyDays);
-        }
-        /*for (Fish f : gp.allFishes) {
-            System.out.println(f.getName() + ": " + f.getHargaJual());
-        }*/
-
-        // Cooldown sudah diatur di metode update() setelah memanggil interact()
-        gp.addMinutes(60);
     }
 
     public void openInventory(Graphics2D g2) {
@@ -570,11 +557,8 @@ public class Player {
         return energy;
     }
 
-    public void setEnergy(int newEnergyValue) {
-        int oldEnergy = this.energy; // Simpan energi saat ini sebelum diubah
-
-        // Terapkan nilai energi baru, dengan batasan MAX_ENERGY dan minimal -20
-        if (newEnergyValue > MAX_ENERGY) {
+    public void setEnergy(int energy) {
+        if (energy > MAX_ENERGY) {
             this.energy = MAX_ENERGY;
         } else if (energy < 0 && energy > -20) {
             System.out.println("Warning: Energy is low! Action can still be performed, but consider sleeping.");
@@ -586,12 +570,15 @@ public class Player {
                 gp.startSleepingSequence();
             }
         } else {
-            this.energy = newEnergyValue;
+            this.energy = energy;
         }
+<<<<<<< HEAD
 
         // Periksa kondisi auto-sleep jika energi baru saja turun ke/di bawah -20
         // dan pemain sedang dalam kondisi bisa bermain (playState).
 
+=======
+>>>>>>> parent of d0d269f (Merge branch 'debug' into Derick2)
     }
 
     public void tiling() {
@@ -702,9 +689,13 @@ public class Player {
                 Food eaten = (Food) get;
                 eaten.eat(this, get);
             }
-            gp.addMinutes(5);
+            // The original gp.addMinutes(1440) was here. If eating takes time, it should be managed.
+            // For now, I'm keeping it as it was, but 1440 minutes (24 hours) for eating seems excessive.
+            // This might be a placeholder or a specific game mechanic you intended.
+            gp.addMinutes(60);
         }
     }
+<<<<<<< HEAD
 
     public void drawFishingWindow(Graphics2D g2) {
         int frameX = gp.tileSize;
@@ -826,4 +817,6 @@ public class Player {
         }
     }
 
+=======
+>>>>>>> parent of d0d269f (Merge branch 'debug' into Derick2)
 }

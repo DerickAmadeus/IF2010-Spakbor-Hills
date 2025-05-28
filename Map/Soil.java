@@ -114,14 +114,11 @@ public class Soil extends Tile {
             int visualID = seedPlanted.getTileIndex(); 
             if (gp != null && visualID != -1 && visualID < gp.map.tileImage.length && gp.map.tileImage[visualID] != null) {
                 if (dayHarvest > 0) {
+
                     if (wetCooldown == 3) {
                         this.Image = gp.map.tileImage[visualID + Seeds.getTotalSeeds()].Image; // Gunakan image dari prototype visual
-                    } else if (wetCooldown > 0) {
-                        this.Image = gp.map.tileImage[visualID].Image; // Gunakan image dari prototype visual
                     } else {
-                        seedPlanted = null; // Reset seed if not watered
-                        loadImage(this.emptySoilImagePath); // Load empty soil image
-                        return;
+                        this.Image = gp.map.tileImage[visualID].Image; // Gunakan image dari prototype visual
                     }
                 } else {
                     if (wetCooldown >= 0) {

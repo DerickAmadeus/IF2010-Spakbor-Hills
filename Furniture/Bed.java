@@ -3,7 +3,7 @@ package Furniture;
 import Map.Tile; // Pastikan import Tile jika Bed adalah subclassnya
 // Import lain yang mungkin diperlukan oleh Bed
 
-public class Bed extends Furniture { // Atau kelas parent lainnya jika bukan Tile
+public class Bed extends Tile { // Atau kelas parent lainnya jika bukan Tile
 
     // Atribut-atribut spesifik Bed Anda (misalnya, bedType, dll.)
     private String bedType;
@@ -19,7 +19,10 @@ public class Bed extends Furniture { // Atau kelas parent lainnya jika bukan Til
 
     // === TAMBAHKAN COPY CONSTRUCTOR INI ===
     public Bed(Bed other) {
-        super(other); // Panggil copy constructor dari superclass (Tile atau Furniture)
+        super(other); // Panggil copy constructor superclass (Tile)
+                      // Ini akan meng-copy 'name', 'walkable', 'Image', 'gp' jika ada di Tile's copy constructor
+
+        // Copy atribut-atribut spesifik dari kelas Bed
         this.bedType = other.bedType;
         // Copy atribut lain yang dimiliki Bed
         // Contoh:
@@ -39,10 +42,5 @@ public class Bed extends Furniture { // Atau kelas parent lainnya jika bukan Til
 
     public String getBedType() {
         return bedType;
-    }
-
-    public void Action() {
-        // Implementasi aksi spesifik untuk Bed
-        System.out.println("Bed is being used");
     }
 }

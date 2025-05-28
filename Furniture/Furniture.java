@@ -10,10 +10,6 @@ abstract class Furniture extends Tile {
         this.name = name;
         this.isWalkable = isWalkable;
     }
-
-    public Furniture(Furniture other) {
-        super(other);
-    }
     
     
     
