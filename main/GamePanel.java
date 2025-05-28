@@ -297,7 +297,7 @@ public class GamePanel extends JPanel implements Runnable {
             player.watering();
             player.harvesting();
             player.sleeping();
-
+            player.WatchTV();
         }
         if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(

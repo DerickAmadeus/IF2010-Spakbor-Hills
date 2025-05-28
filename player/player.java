@@ -557,8 +557,11 @@ public class Player {
         } else if(tileToInteract.getTileName().toLowerCase().equals("bed")) {
             System.out.println("Player : Interacting with a bed");
             sleeping();
-        
-        }else {
+        }else if (tileToInteract.getTileName().equals("TV")){
+            System.out.println("Player: Interacting with TV.");
+            WatchTV();
+
+        } else {
             System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
             // setEnergy(getEnergy()+10); // Mungkin tidak perlu untuk interaksi umum
         }
@@ -775,6 +778,17 @@ public class Player {
         } else {
             System.out.println("Player: Energy is already full, no need to sleep.");
 
+        }
+    }
+
+    public void WatchTV() {
+        if (keyH.interactPressed && interactionCooldown == 0) {
+            if (gp.gameState == gp.playState) {
+                System.out.println("Player: Watching TV!");
+                // Implementasi logika menonton TV
+                // Misalnya, menambah energi atau waktu
+                // gp.showWeatherNotification(gp.getCurrentWeather());
+            }
         }
     }
     /*public void fishing() {
