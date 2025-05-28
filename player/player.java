@@ -16,6 +16,7 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
+import Furniture.Bed;
 import Items.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -45,9 +46,11 @@ public class Player {
     private Inventory<Item> inventory;
     private Item equippedItem;
     private int energy;
-    public static final int MAX_ENERGY = 100;
+    private static final int MAX_ENERGY = 100; 
+
+    private Tile tile; 
     private String farmName;
-    // Removed 'private Tile tile;' as it seemed unused and uninitialized globally
+
 
     private int interactionCooldown = 0;
 
@@ -57,6 +60,7 @@ public class Player {
         this.energy = MAX_ENERGY;
         this.inventory = new Inventory<>(gp);
         this.farmName = farmName;
+
         loadInitialEquipment();
         loadInitialSeeds();
         loadInitialFood();
@@ -444,6 +448,7 @@ public class Player {
     public String getLastMoveDirection() { return lastMoveDirection; }
     public Rectangle getInteractionArea() { return interactionArea; }
     public Inventory<Item> getInventory() { return inventory;}
+    public static int getMaxEnergy() { return MAX_ENERGY; }
 
     public void interact() {
         Tile tileToInteract = gp.map.getTile(interactionArea.x, interactionArea.y);
@@ -466,6 +471,7 @@ public class Player {
             } else {
                 System.out.println("Player: Tanah ini kosong (tidak ada bibit).");
             }
+
         } else if (tileToInteract instanceof Bed) { // Added Bed interaction
             System.out.println("Player: Interacting with a Bed tile: " + tileToInteract.getTileName());
             if (tileToInteract.getTileName().equals("Bed")) {
@@ -480,9 +486,27 @@ public class Player {
             }
         } else if (tileToInteract.getTileName().toLowerCase().contains("building")) {
             System.out.println("Player: Interacting with building: " + tileToInteract.getTileName());
-        } else {
+        } else if (tileToInteract.getTileName().toLowerCase().contains("door")) { // Contoh interaksi dengan pintu
+            System.out.println("Player: Interacting with a door.");
+            // Logika pindah map atau masuk gedung
+        } else if(tileToInteract.getTileName().toLowerCase().equals("bed")) {
+            System.out.println("Player : Interacting with a bed");
+            sleeping();
+        
+        }else {
+
             System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
         }
+
+        for (int rainyDays : gp.rainDaysInSeason) {
+            System.out.println(rainyDays);
+        }
+        /*for (Fish f : gp.allFishes) {
+            System.out.println(f.getName() + ": " + f.getHargaJual());
+        }*/
+
+        // Cooldown sudah diatur di metode update() setelah memanggil interact()
+        gp.addMinutes(60);
     }
 
     public void openInventory(Graphics2D g2) {
@@ -514,8 +538,11 @@ public class Player {
         return energy;
     }
 
-    public void setEnergy(int energy) {
-        if (energy > MAX_ENERGY) {
+    public void setEnergy(int newEnergyValue) {
+        int oldEnergy = this.energy; // Simpan energi saat ini sebelum diubah
+
+        // Terapkan nilai energi baru, dengan batasan MAX_ENERGY dan minimal -20
+        if (newEnergyValue > MAX_ENERGY) {
             this.energy = MAX_ENERGY;
         } else if (energy < 0 && energy > -20) {
             System.out.println("Warning: Energy is low! Action can still be performed, but consider sleeping.");
@@ -527,8 +554,28 @@ public class Player {
                 gp.startSleepingSequence();
             }
         } else {
-            this.energy = energy;
+            this.energy = newEnergyValue;
         }
+
+        // Periksa kondisi auto-sleep jika energi baru saja turun ke/di bawah -20
+        // dan pemain sedang dalam kondisi bisa bermain (playState).
+        if (this.energy <= -20 && oldEnergy > -20) { // Hanya picu jika melewati ambang batas ke bawah
+            if (gp.gameState == gp.playState) { // Dan hanya jika sedang dalam state bermain aktif
+                System.out.println("Player: Too exhausted! Automatically going to sleep...");
+                // Penting: gp.startSleepingSequence() harus menangani transisi state dengan benar.
+                // Ini termasuk mengubah game state untuk mencegah aksi lebih lanjut
+                // dan pada akhirnya memulihkan energi (misalnya, saat hari baru dimulai).
+                gp.startSleepingSequence();
+                // Pemulihan energi (misalnya menjadi 10 atau MAX_ENERGY) idealnya ditangani sebagai bagian
+                // dari proses yang dimulai oleh startSleepingSequence().
+                energy = 10; // Atau bisa juga MAX_ENERGY, tergantung desain game Anda
+            }
+        } else if (this.energy < 0 && this.energy > -20) { // Kondisi energi rendah tapi belum pingsan
+             // Pesan peringatan ini dari kode asli Anda dipertahankan.
+            System.out.println("Warning: Energy is low! Action can still be performed, but consider sleeping.");
+        }
+        // Komentar "msdih print" dan "Error: Energy is too low! sleeping rn..."
+        // dari kode asli Anda kini digantikan dengan logika auto-sleep di atas.
     }
 
     public void tiling() {
@@ -639,10 +686,85 @@ public class Player {
                 Food eaten = (Food) get;
                 eaten.eat(this, get);
             }
-            // The original gp.addMinutes(1440) was here. If eating takes time, it should be managed.
-            // For now, I'm keeping it as it was, but 1440 minutes (24 hours) for eating seems excessive.
-            // This might be a placeholder or a specific game mechanic you intended.
-            gp.addMinutes(60);
+            gp.addMinutes(5);
         }
     }
+
+    public void drawFishingWindow(Graphics2D g2) {
+        int frameX = gp.tileSize;
+        int frameY = gp.tileSize * 2;
+        int frameWidth = gp.tileSize * 6;
+        int frameHeight = gp.tileSize * 5;
+
+        Color backgroundColor = new Color(0, 0, 0, 210);
+        g2.setColor(backgroundColor);
+        g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
+
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(5));
+        g2.drawRoundRect(frameX + 5, frameY + 5, frameWidth - 10, frameHeight - 10, 25, 25);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.drawString("Fish Caught!", frameX + 20, frameY + 50);
+        int debugY = frameY + 130;
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
+
+        if (gp.fishingTargetFish != null) {
+            g2.drawString("Attempt: " + gp.fishingAttempts + " / " + gp.maxFishingAttempts, frameX + 20, debugY);
+            debugY += 25;
+            g2.drawString("Fish: " + gp.fishingTargetFish.getName() + " (" + gp.fishingTargetFish.getRarity() + ")", frameX + 20, debugY);
+            debugY += 25;
+        } else {
+            debugY += 25;
+            g2.drawString("Mulai Memancing!!!", frameX + 20, debugY);
+            debugY += 25;
+        }
+
+        // Hint berdasarkan tebakan
+        if (gp.fishingHint != null && !gp.fishingHint.isEmpty()) {
+            g2.setColor(Color.YELLOW);
+            g2.drawString("Hint: " + gp.fishingHint, frameX + 20, debugY);
+        }
+        if (gp.debugMode) {
+            if (gp.fishingTarget != -1) {
+                g2.drawString("Target Code: " + gp.fishingTarget, frameX + 20, debugY + 25);
+            }
+        }
+        g2.drawString(gp.fishingInput, frameX + 20, frameY + 90);
+    }
+    public void sleeping() {
+        if (energy < MAX_ENERGY && keyH.interactPressed && interactionCooldown == 0) {
+            if (gp.gameState == gp.playState) {
+                System.out.println("Player: Time to sleep!");
+
+                gp.startSleepingSequence();
+                // Reset energy to full after sleeping
+                setEnergy(MAX_ENERGY);
+
+            } else {
+                System.out.println("Player: Can only sleep during play state.");
+            }
+        } else if (energy == -20) {
+            System.out.println("Player: Too exhausted to sleep! You need to recover first.");
+            gp.startSleepingSequence();
+            setEnergy(10);
+        } else {
+            System.out.println("Player: Energy is already full, no need to sleep.");
+
+        }
+    }
+
+      public void fishing() {
+        if (equippedItem != null && equippedItem.getName().equals("Fishing Rod") && 
+            energy >= -15 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState != gp.fishingState) {
+            Tile tileToFish = gp.map.getTile(interactionArea.x, interactionArea.y);
+            if (tileToFish != null && tileToFish.getTileName().equals("Water")) {
+                gp.gameState = gp.fishingState; 
+                setEnergy(getEnergy() - 5);
+                gp.addMinutes(15);
+                keyH.enterPressed = false;
+            } 
+        }
+    }
+
 }

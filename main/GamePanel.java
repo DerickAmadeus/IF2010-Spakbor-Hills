@@ -1,5 +1,6 @@
 package main;
 
+
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import Items.*;
@@ -13,12 +14,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.awt.Color;
 import java.awt.Font;
+import Items.*;
+import Map.Map;
+import java.awt.Color; // ← Tambahkan ini
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException; // Importing player class from player package
+import java.util.ArrayList; // Importing map class from Map package
+import java.util.Arrays;
+import java.util.List;
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
+import player.Player; 
+
 
 public class GamePanel extends JPanel implements Runnable {
 
     //Game State
-    public final int titleState = -2;
-    public final int farmNameInputState = -1;
+    public final int titleState = -3;
+    public final int farmNameInputState = -2;
+    public final int helpState = -1;
     public final int playState = 0;
     public final int pauseState = 1;
     public final int dialogState = 2;
@@ -26,12 +44,28 @@ public class GamePanel extends JPanel implements Runnable {
     public final int itemOptionState = 4;
     public final int sleepingFadeOutState = 5; // New state for fading to black
     public final int sleepingFadeInState = 6;  // New state for fading back from black
+    public final int fishingState = 5;
     public int gameState = titleState;
 
     public String[] initialSeason = {"Spring", "Summer", "Fall", "Winter"};
     public int currentSeasonIndex = 0;
     public String currentSeason = initialSeason[currentSeasonIndex];
-    public int gameHour = 6;
+    public String[] initialWeather = {"Rainy", "Sunny"};
+    public String currentWeather = initialWeather[1];
+    public int[] rainDaysInSeason = new int[2]; // Menyimpan dua hari hujan dalam 1 musim
+    List<RainDrop> rainDrops = new ArrayList<>();
+    private final int RAIN_COUNT = 100;
+
+    public Fish[] allFishes = loadInitialFish();
+    public Fish fishingTargetFish = null;
+    public int fishingTarget = -1;      // Angka yang harus ditebak
+    public int fishingAttempts = 0;     // Berapa kali user sudah mencoba
+    public int maxFishingAttempts = 0;  // Batas percobaan sesuai rarity
+    public String fishingHint = "";
+
+
+    // Game Time
+    public int gameHour = 6; // Mulai dari jam 6 pagi
     public int gameMinute = 0;
     public int gameDay = 1;
     public int daysPlayed = 0;
@@ -55,26 +89,39 @@ public class GamePanel extends JPanel implements Runnable {
 
     public List<TransitionData> transitions;
     public Map map = new Map(this);
-    public KeyHandler keyHandler = new KeyHandler(this);
-    public final TitlePage titlePage = new TitlePage(this);
-    Thread gameThread;
-    public CollisionChecker cChecker = new CollisionChecker(this);
-    public Player player;
-    private BufferedImage backgroundImage;
+    public KeyHandler keyHandler = new KeyHandler(this); // Key handler for keyboard input 
+    public final TitlePage  titlePage  = new TitlePage(this);
+    public final FarmName  farmName  = new FarmName(this);
+    public CollisionChecker cChecker = new CollisionChecker(this); // Collision checker for player movement
+    public Help help = new Help(this);
+    public Player player; // Player object
+    private BufferedImage backgroundImage; // Background image for the game\
+    
     public boolean debugMode = false;
 
-    // Fade effect variables
-    private int fadeAlpha = 0;
-    private final int FADE_SPEED = 5; // Adjust for faster/slower fade
+    public String fishingInput = "";
+
+    int playerX = 100; // Player's X position
+    int playerY = 100; // Player's Y position
+    int playerSpeed = 4; // Player's speed
+    
+    
+    Thread gameThread; // Thread for the game loop
 
     public GamePanel() {
         this.setPreferredSize(new java.awt.Dimension(screenWidth, screenHeight));
-        this.setDoubleBuffered(true);
-        this.addKeyListener(keyHandler);
-        this.setFocusable(true);
-        gameState = titleState;
-        this.player = new Player(this, keyHandler, "initial");
-        initializeTransitions();
+        // this.setBackground(java.awt.Color.cyan);
+        this.setDoubleBuffered(true); // Enable double buffering for smoother rendering
+        this.addKeyListener(keyHandler); // Add key listener for keyboard input
+        this.setFocusable(true); // Make the panel focusable to receive key events
+        
+        gameState = titleState; // start dari title dulu
+
+        setFocusTraversalKeysEnabled(false);
+
+        this.player = new Player(this, keyHandler, ""); // Initialize player object
+
+        initializeTransitions(); // Panggil setelah tileSize dan player siap
 
         try {
             backgroundImage = ImageIO.read(getClass().getResourceAsStream("/main/cloud.png"));
@@ -83,6 +130,12 @@ public class GamePanel extends JPanel implements Runnable {
             System.err.println("Gagal memuat gambar latar belakang game: " + e.getMessage());
             e.printStackTrace();
             backgroundImage = null;
+        }
+        for (int i = 0; i < RAIN_COUNT; i++) {
+            int x = (int)(Math.random() * screenWidth);
+            int y = (int)(Math.random() * screenHeight);
+            int speed = 2 + (int)(Math.random() * 3); // Kecepatan bervariasi
+            rainDrops.add(new RainDrop(x, y, speed, this));
         }
     }
 
@@ -94,6 +147,21 @@ public class GamePanel extends JPanel implements Runnable {
         transitions.add(new TransitionData(2, 10, 10, 3, 1, 0, 16, 1, false, tileSize));
         transitions.add(new TransitionData(0, 5, 10, 1, 1, 3, 7, 12, false, tileSize));
         transitions.add(new TransitionData(3, 7, 13, 1, 1, 0, 5, 11, false, tileSize));
+
+        //Farm Map ke NPC map and backwards
+        transitions.add(new TransitionData(0, 30, 30, 1, 3, 4, 4, 5, false, tileSize));
+        transitions.add(new TransitionData(4, 3, 5, 1, 3, 0, 29, 30, false, tileSize));
+
+        //NPC Map ke MT House Map and backwards
+        transitions.add(new TransitionData(4, 17, 3, 1, 1, 5, 7, 12, false, tileSize));
+        transitions.add(new TransitionData(5, 7, 13, 1, 1, 4, 17, 4, false, tileSize));
+
+        //NPC Map ke C House Map and backwards
+        transitions.add(new TransitionData(4, 26, 3, 1, 1, 6, 7, 12, false, tileSize));
+        transitions.add(new TransitionData(6, 7, 13, 1, 1, 4, 26, 4, false, tileSize));
+
+
+        // Tambahkan transisi lain sesuai kebutuhan Anda
     }
 
     public void checkMapTransitions() {
@@ -137,10 +205,192 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
     }
+    private void setRainDaysForSeason() {
+        int day1 = 1 + (int)(Math.random() * 10);
+        int day2;
+        do {
+            day2 = 1 + (int)(Math.random() * 10);
+        } while (day2 == day1);
+
+        rainDaysInSeason[0] = day1;
+        rainDaysInSeason[1] = day2;
+    }
+
+    public Fish[] loadInitialFish() {
+        ArrayList<String> any = new ArrayList<>(Arrays.asList("Spring", "Summer", "Fall", "Winter"));
+        ArrayList<String> spring = new ArrayList<>(Arrays.asList("Spring"));
+        ArrayList<String> summer = new ArrayList<>(Arrays.asList("Summer"));
+        ArrayList<String> fall = new ArrayList<>(Arrays.asList("Fall"));
+        ArrayList<String> winter = new ArrayList<>(Arrays.asList("Winter"));
+        ArrayList<String> sturgeonSeason = new ArrayList<>(Arrays.asList("Summer", "Winter"));
+        ArrayList<String> midnightCarpSeason = new ArrayList<>(Arrays.asList("Fall", "Winter"));
+        ArrayList<String> flounderSeason = new ArrayList<>(Arrays.asList("Spring", "Summer"));
+        ArrayList<String> superCucumberSeason = new ArrayList<>(Arrays.asList("Summer", "Fall", "Winter"));
+        ArrayList<String> catfishSeason = new ArrayList<>(Arrays.asList("Spring", "Summer", "Fall"));
+
+        ArrayList<String> rainy = new ArrayList<>(Arrays.asList("Rainy")); 
+        ArrayList<String> sunny = new ArrayList<>(Arrays.asList("Sunny"));
+        ArrayList<String> both = new ArrayList<>(Arrays.asList("Rainy", "Sunny"));
+
+        Fish[] fishlist = new Fish[]{
+            new Fish("Bullhead", "Ikan Bullhead, mudah ditemukan.", 50, 50, any, both, new ArrayList<>(Arrays.asList("Mountain Lake")), "Common", 
+                    new ArrayList<>(Arrays.asList(0)), new ArrayList<>(Arrays.asList(24))),
+            new Fish("Carp", "Ini Carp.", 50, 50, any, both, new ArrayList<>(Arrays.asList("Mountain Lake", "Pond")), "Common", 
+                    new ArrayList<>(Arrays.asList(0)), new ArrayList<>(Arrays.asList(24))),
+            new Fish("Chub", "Ikan Chub, cukup umum.", 50, 50, any, both, new ArrayList<>(Arrays.asList("Forest River", "Mountain Lake")), "Common", 
+                    new ArrayList<>(Arrays.asList(0)), new ArrayList<>(Arrays.asList(24))),
+            new Fish("Largemouth Bass", "Ikan besar dari danau pegunungan.", 100, 100, any, both, new ArrayList<>(Arrays.asList("Mountain Lake")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(18))),
+            new Fish("Rainbow Trout", "Ikan berwarna pelangi yang muncul saat cuaca cerah.", 120, 120, summer, sunny, new ArrayList<>(Arrays.asList("Forest River", "Mountain Lake")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(18))),
+            new Fish("Sturgeon", "Ikan langka dari danau pegunungan.", 200, 200, sturgeonSeason, both, new ArrayList<>(Arrays.asList("Mountain Lake")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(18))),
+            new Fish("Midnight Carp", "Ikan malam dari danau atau kolam.", 150, 150, midnightCarpSeason, both, new ArrayList<>(Arrays.asList("Mountain Lake", "Pond")), "Regular", 
+                    new ArrayList<>(Arrays.asList(20)), new ArrayList<>(Arrays.asList(2))),
+            new Fish("Flounder", "Ikan pipih dari laut.", 90, 90, flounderSeason, both, new ArrayList<>(Arrays.asList("Ocean")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(22))),
+            new Fish("Halibut", "Ikan laut besar aktif pagi dan malam.", 110, 110, any, both,  new ArrayList<>(Arrays.asList("Ocean")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6, 19)), new ArrayList<>(Arrays.asList(11, 2))),
+            new Fish("Octopus", "Gurita laut yang aktif siang hari.", 180, 180, summer, both,  new ArrayList<>(Arrays.asList("Ocean")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(22))),
+            new Fish("Pufferfish", "Ikan buntal beracun saat cuaca cerah.", 160, 160, summer, sunny,  new ArrayList<>(Arrays.asList("Ocean")), "Regular", 
+                    new ArrayList<>(Arrays.asList(0)), new ArrayList<>(Arrays.asList(16))),
+            new Fish("Sardine", "Ikan kecil dari laut.", 40, 40, any, both,  new ArrayList<>(Arrays.asList("Ocean")), "Common", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(18))),
+            new Fish("Super Cucumber", "Ikan misterius aktif malam hari.", 250, 250, superCucumberSeason, both,  new ArrayList<>(Arrays.asList("Ocean")), "Regular", 
+                    new ArrayList<>(Arrays.asList(18)), new ArrayList<>(Arrays.asList(2))),
+            new Fish("Catfish", "Ikan lele liar saat hujan.", 130, 130, catfishSeason, rainy,  new ArrayList<>(Arrays.asList("Forest River", "Pond")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(22))),
+            new Fish("Salmon", "Ikan migrasi dari sungai.", 120, 120, fall, both, new ArrayList<>(Arrays.asList("Forest River")), "Regular", 
+                    new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(18))),
+            new Fish("Angler", "Ikan legendaris yang hanya muncul di musim gugur.", 1000, 1000, fall, both,new ArrayList<>(Arrays.asList("Pond")), "Legendary", 
+                    new ArrayList<>(Arrays.asList(8)), new ArrayList<>(Arrays.asList(20))),
+            new Fish("Crimsonfish", "Ikan legendaris dari laut tropis.", 1000, 1000, summer, both, new ArrayList<>(Arrays.asList("Ocean")), "Legendary", 
+                    new ArrayList<>(Arrays.asList(8)), new ArrayList<>(Arrays.asList(20))),
+            new Fish("Glacierfish", "Ikan legendaris dari sungai beku.", 1000, 1000, winter, both, new ArrayList<>(Arrays.asList("Forest River")), "Legendary", 
+                    new ArrayList<>(Arrays.asList(8)), new ArrayList<>(Arrays.asList(20))),
+            new Fish("Legend", "Ikan legendaris tertinggi di danau gunung saat hujan.", 1200, 1200, spring, rainy, new ArrayList<>(Arrays.asList("Mountain Lake")), "Legendary", 
+                    new ArrayList<>(Arrays.asList(8)), new ArrayList<>(Arrays.asList(20)))
+        };
+        for (Fish f : fishlist) {
+            int harga = f.calculateHargaJual();
+            f.setHargaJual(harga);  // pastikan kamu punya setter `setHargaJual()`
+        }
+
+        return fishlist;
+    }
+
+    public Fish[] filterFishesBySeasonAndWeather(String season, String weather, int gameHour) {
+        ArrayList<Fish> filtered = new ArrayList<>();
+        int currentHour = gameHour;
+
+        for (Fish fish : allFishes) {
+            boolean seasonMatch = fish.getSeason().contains(season);
+            boolean weatherMatch = fish.getWeather().contains(weather);
+            boolean timeMatch = false;
+
+            ArrayList<Integer> appearTimes = fish.getAppearTime();
+            ArrayList<Integer> disappearTimes = fish.getDisappearTime();
+
+            for (int i = 0; i < appearTimes.size(); i++) {
+                int start = appearTimes.get(i);
+                int end = disappearTimes.get(i);
+
+                if (start <= end) {
+                    // Normal time range, e.g. 6 to 18
+                    if (currentHour >= start && currentHour < end) {
+                        timeMatch = true;
+                        break;
+                    }
+                } else {
+                    // Overnight time range, e.g. 20 to 2
+                    if (currentHour >= start || currentHour < end) {
+                        timeMatch = true;
+                        break;
+                    }
+                }
+            }
+
+            if (seasonMatch && weatherMatch && timeMatch) {
+                filtered.add(fish);
+            }
+        }
+
+        return filtered.toArray(new Fish[0]);
+    }
+
+
+    public void handleFishingPasswordInput(int code) {
+        if (gameState != fishingState) return;
+
+        if (fishingTarget == -1) {
+            // Setikan ikan dan password saat pertama kali masuk ke fishingState
+            Fish[] currentFish = filterFishesBySeasonAndWeather(currentSeason, currentWeather, gameHour);
+            for (Fish fish : currentFish) {
+                System.out.println(fish.getName());
+            }
+            if (currentFish.length == 0) return;
+
+            Fish prize = currentFish[(int)(Math.random() * currentFish.length)];
+            fishingTargetFish = prize; // Simpan untuk diberikan saat menang
+
+            int max = 10;
+            if (prize.getRarity().equals("Regular")) max = 100;
+            else if (prize.getRarity().equals("Legendary")) max = 500;
+
+            fishingTarget = (int) (Math.random() * max) + 1;
+            fishingAttempts = 0;
+            maxFishingAttempts = prize.getRarity().equals("Legendary") ? 7 : 10;
+
+            System.out.println("Tebak angka 1-" + max + " untuk menangkap " + prize.getName() + " (" + prize.getRarity() + ")");
+            fishingInput = "";
+            return;
+        }
+        boolean dapet = false;
+        // Input angka
+        if (code == KeyEvent.VK_BACK_SPACE && fishingInput.length() > 0) {
+            fishingInput = fishingInput.substring(0, fishingInput.length() - 1);
+        } else if (code >= KeyEvent.VK_0 && code <= KeyEvent.VK_9 && fishingInput.length() < 3) {
+            fishingInput += (char) code;
+        } else if (code == KeyEvent.VK_ENTER && fishingInput != null && !fishingInput.isEmpty()) {
+            if (fishingInput.equals(String.valueOf(fishingTarget))) {
+                player.getInventory().addItem(fishingTargetFish, 1);
+                System.out.println("Selamat!! Kamu dapat: " + fishingTargetFish.getName());
+                dapet = true;
+                resetFishing();
+            } else {
+                fishingAttempts++;
+                int inputVal = Integer.parseInt(fishingInput);
+                if (inputVal < fishingTarget) {
+                    fishingHint = "Terlalu kecil!";
+                } else if (inputVal > fishingTarget) {
+                    fishingHint = "Terlalu besar!";
+                }
+                fishingInput = ""; // reset input, bukan menutup window
+            }
+            if (fishingAttempts >= maxFishingAttempts && !dapet) {
+                System.out.println("Kesempatan habis. Gagal memancing!");
+                resetFishing();
+            }
+        } 
+    }
+
 
     public void setupGame() {
-        gameState = titleState;
+      gameState = titleState;
     }
+
+
+    private void resetFishing() {
+        fishingTarget = -1;
+        fishingInput = "";
+        fishingAttempts = 0;
+        maxFishingAttempts = 0;
+        fishingTargetFish = null;
+        gameState = playState;
+        fishingHint = "";
+    }
+
 
     public void startGameThread() {
         gameThread = new Thread(this);
@@ -189,19 +439,42 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-        if (gameState == titleState) {
-            if (keyHandler.enterPressed) {
-                if (titlePage.commandNumber == 0) {
-                    gameState = farmNameInputState;
-                } else if (titlePage.commandNumber == 2) {
+
+        if (gameState == titleState){
+            if(keyHandler.enterPressed){
+                if (titlePage.commandNumber == 3){
                     System.exit(0);
                 }
-                keyHandler.enterPressed = false;
+                else if(titlePage.commandNumber == 0){
+                    gameState = farmNameInputState;
+                }
+                else if(titlePage.commandNumber == 2){
+                    gameState = helpState;
+                }
             }
-        } else if (gameState == farmNameInputState) {
-            if (keyHandler.enterPressed) {
-                // Assuming farm name is set here somehow before transitioning
-                // player.setFarmName(inputFarmName);
+        }
+        else if (gameState == farmNameInputState){
+            setRainDaysForSeason();
+            //     // if(keyHandler.enterPressed){
+        //     //   gameState = playState;
+        }
+        // }   
+        
+        player.update();
+
+        // Potentially update other game entities or systems here
+        // e.g., map.update(), npcs.update(), etc.
+
+
+        if (keyHandler.f1Pressed) { // Assuming you add f1Pressed to KeyHandler
+            debugMode = !debugMode;
+            keyHandler.f1Pressed = false; // Consume the press to avoid rapid toggling
+            System.out.println("Debug mode: " + (debugMode ? "ON" : "OFF"));
+        }
+        if (keyHandler.invPressed) {
+            if (gameState == playState) {
+                gameState = inventoryState;
+            } else if (gameState == inventoryState || gameState == itemOptionState) {
                 gameState = playState;
                 keyHandler.enterPressed = false; // Consume press
             }
@@ -236,6 +509,15 @@ public class GamePanel extends JPanel implements Runnable {
                 map.updateTiles();
                 lastRealTime = now;
             }
+            player.fishing();
+        }
+        if (gameState == inventoryState) {
+            player.getInventory().updateInventoryCursor(
+                keyHandler.upPressed,
+                keyHandler.downPressed,
+                keyHandler.leftPressed,
+                keyHandler.rightPressed
+            );
 
         } else if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(
@@ -295,6 +577,17 @@ public class GamePanel extends JPanel implements Runnable {
                 fadeAlpha = 255; // Fully black
                 // --- Perform sleep actions ---
                 gameHour = 6; // Wake up at 6 AM
+        }
+        if (gameState == fishingState) {
+            if(keyHandler.enterPressed) {
+                gameState = playState;
+                keyHandler.enterPressed = false;
+            }
+        }
+        long now = System.currentTimeMillis();
+        if (now - lastRealTime >= REAL_TIME_INTERVAL && gameState != fishingState) {
+            gameMinute += 5;
+            if (gameMinute >= 60) {
                 gameMinute = 0;
                 gameDay++;
                 daysPlayed++;
@@ -332,6 +625,23 @@ public class GamePanel extends JPanel implements Runnable {
                 gameState = playState;
             }
             keyHandler.invPressed = false; // Consume the press
+
+        if (gameDay > 10) {
+            currentSeasonIndex = (currentSeasonIndex + 1) % 4;
+            currentSeason = initialSeason[currentSeasonIndex];
+            gameDay %= 10;
+            setRainDaysForSeason();
+        }
+        
+        if (gameDay == rainDaysInSeason[0] || gameDay == rainDaysInSeason[1]) {
+            currentWeather = initialWeather[0]; // Hujan
+        } else {
+            currentWeather = initialWeather[1];
+        }
+        if (currentWeather.equals("Rainy")) {
+            for (RainDrop drop : rainDrops) {
+                drop.update();
+            }
         }
     }
 
@@ -358,6 +668,22 @@ public class GamePanel extends JPanel implements Runnable {
         // Draw game world (visible during play, pause, dialog, inventory, options, and fades)
         if (map.currentMapID == 3) { // House map
             g2.setColor(java.awt.Color.black);
+            g2.dispose();
+            return;
+        } else if (gameState == farmNameInputState){
+            farmName.draw(g2);
+            g2.dispose();
+            return;
+        }
+        else if (gameState == helpState) {
+            help.draw(g2);
+            g2.dispose();
+        return;
+        }
+
+
+        if (map.currentMapID == 3) { // Ganti angka 3 jika ID peta rumah Anda berbeda
+            g2.setColor(java.awt.Color.black); // Atur latar belakang menjadi hitam untuk rumah
             g2.fillRect(0, 0, screenWidth, screenHeight);
         } else { // Other maps
             if (backgroundImage != null) {
@@ -370,13 +696,25 @@ public class GamePanel extends JPanel implements Runnable {
         map.draw(g2);
         player.drawPlayer(g2);
 
-        // UI Elements (Time, Season, Energy) - drawn on top of game world
+        map.draw(g2); // Draw the map
+        if (currentWeather.equals("Rainy")) {
+            g2.setColor(new Color(0, 0, 0, 80)); // Hitam transparan untuk efek gelap
+            g2.fillRect(0, 0, screenWidth, screenHeight);
+
+            for (RainDrop drop : rainDrops) {
+                drop.draw(g2); // Gambar partikel hujan di atas
+            }
+        }
         g2.setColor(java.awt.Color.white);
         g2.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20));
         String timeString = String.format("Day %d - %02d:%02d", gameDay, gameHour, gameMinute);
-        g2.drawString(timeString, screenWidth - 180, 30); // Adjusted position
-        g2.drawString(currentSeason, screenWidth - 180, 55); // Adjusted position
-        player.drawEnergyBar(g2); // Energy bar
+        g2.drawString(timeString, 500, 30);
+        g2.drawString(currentSeason + " - " + currentWeather, 500, 50);
+
+
+
+        player.drawPlayer(g2);
+        player.drawEnergyBar(g2);
 
         // Debug transition areas
         if (debugMode) {
@@ -411,6 +749,41 @@ public class GamePanel extends JPanel implements Runnable {
             g2.setColor(new Color(0, 0, 0, fadeAlpha)); // Black color with current alpha
             g2.fillRect(0, 0, screenWidth, screenHeight);
         }
-        // g2.dispose(); // Generally not called at the end of paintComponent by convention.
+
+        if (gameState == fishingState) {
+            player.drawFishingWindow(g2);
+        }
+
+    }
+
+    public void startSleepingSequence() {
+        // Mengatur jam permainan ke 6 pagi
+        gameHour = 5;
+        gameMinute = 55;
+
+        // Mengatur hari permainan ke hari berikutnya
+        gameDay++;
+        daysPlayed++;
+        // Memastikan pemain tidak dalam keadaan dialog atau interaksi lainnya
+        gameState = playState;
+
+        // Update peta dan transisi jika diperlukan
+        map.updateTiles(); // Update tiles setelah tidur
+
+        for (int i = 0; i <= 200; i += 10) {
+            try {
+            java.awt.Graphics g = this.getGraphics();
+            if (g != null) {
+                java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
+                g2.setColor(new Color(0, 0, 0, i));
+                g2.fillRect(0, 0, screenWidth, screenHeight);
+                g2.dispose();
+                Thread.sleep(30); // jeda animasi
+            }
+            } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            }
+        }
+        repaint(); // Memanggil repaint agar tampilan map diperbarui setelah tidur
     }
 }
