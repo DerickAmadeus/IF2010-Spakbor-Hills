@@ -459,9 +459,10 @@ public class Map {
         if (currentMapTiles == null) return; // Menggunakan currentMapTiles
         for (int r = 0; r < currentMapWorldRow; r++) {
             for (int c = 0; c < currentMapWorldCol; c++) {
-                if (tiles[c][r] != null && tiles[c][r] instanceof Soil) {
-                    tiles[c][r].update(gp); 
-                    Soil wet = (Soil) tiles[c][r];
+                Tile tiles = currentMapTiles[c][r]; // Menggunakan currentMapTiles
+                if (tiles != null && tiles instanceof Soil) {
+                    tiles.update(gp); 
+                    Soil wet = (Soil) tiles;
                     if (wet.getSeedPlanted() != null) {
                         if (gp.currentWeather == gp.initialWeather[0]) {
                             wet.water(gp);
