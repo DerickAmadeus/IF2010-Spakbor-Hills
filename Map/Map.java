@@ -52,7 +52,7 @@ public class Map {
 
     public Map(GamePanel gp) {
         this.gp = gp;
-        this.tileImage = new Tile[100]; // Sesuaikan ukuran jika perlu
+        this.tileImage = new Tile[300]; // Sesuaikan ukuran jika perlu
         this.loadedMapStates = new HashMap<>();
         getTileImagePrototypes();
         loadMapByID(0); // Memuat peta default
@@ -254,34 +254,34 @@ public class Map {
 
 
             // Mayor Tadi House Tiles Exterior
-            tileImage[86] = new Tile("Top Right Corner Roof", false);
-            tileImage[86].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/righttopcornerroof.png"));
-            tileImage[87] = new Tile("Bottom Left Right Roof", false);
-            tileImage[87].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/rightbottomcornerroof.png"));
-            tileImage[88] = new Tile("Bottom Roof", false);
-            tileImage[88].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/bottomroof.png"));
-            tileImage[89] = new Tile("Top Left Corner Roof", false);
-            tileImage[89].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/lefttopcornerroof.png"));
-            tileImage[90] = new Tile("Bottom Left Corner Roof", false);
-            tileImage[90].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/leftbottomcornerroof.png"));
-            tileImage[91] = new Tile("MTHouse Wall Top", false);
-            tileImage[91].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/walltop.png"));
-            tileImage[92] = new Tile("MTHouse Left Corner", false);
-            tileImage[92].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/leftcorner.png"));
-            tileImage[93] = new Tile("MTHouse Right Corner", false);
-            tileImage[93].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/rightcorner.png"));
-            tileImage[94] = new Tile("MTHouse Left Window Bottom", false);
-            tileImage[94].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/leftwindowbottom.png"));
-            tileImage[95] = new Tile("MTHouse Right Window Bottom", false);
-            tileImage[95].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/rightwindowbottom.png"));
-            tileImage[96] = new Tile("MTHouse Left Window Top", false);
-            tileImage[96].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/lefttopwindow.png"));
-            tileImage[97] = new Tile("MTHouse Right Window Top", false);
-            tileImage[97].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/righttopwindow.png"));
-            tileImage[98] = new Tile("Left Wall Top", false);
-            tileImage[98].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/leftwalltop.png"));
-            tileImage[99] = new Tile("Right Wall Top", false);
-            tileImage[99].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/rightwalltop.png"));
+            tileImage[101] = new Tile("Top Right Corner Roof", false);
+            tileImage[101].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/righttopcornerroof.png"));
+            tileImage[102] = new Tile("Bottom Left Right Roof", false);
+            tileImage[102].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/rightbottomcornerroof.png"));
+            tileImage[103] = new Tile("Bottom Roof", false);
+            tileImage[103].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/bottomroof.png"));
+            tileImage[104] = new Tile("Top Left Corner Roof", false);
+            tileImage[104].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/lefttopcornerroof.png"));
+            tileImage[105] = new Tile("Bottom Left Corner Roof", false);
+            tileImage[105].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/leftbottomcornerroof.png"));
+            tileImage[106] = new Tile("MTHouse Wall Top", false);
+            tileImage[106].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/walltop.png"));
+            tileImage[107] = new Tile("MTHouse Left Corner", false);
+            tileImage[107].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/leftcorner.png"));
+            tileImage[108] = new Tile("MTHouse Right Corner", false);
+            tileImage[108].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/rightcorner.png"));
+            tileImage[109] = new Tile("MTHouse Left Window Bottom", false);
+            tileImage[109].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/leftwindowbottom.png"));
+            tileImage[110] = new Tile("MTHouse Right Window Bottom", false);
+            tileImage[110].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/rightwindowbottom.png"));
+            tileImage[111] = new Tile("MTHouse Left Window Top", false);
+            tileImage[111].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/lefttopwindow.png"));
+            tileImage[112] = new Tile("MTHouse Right Window Top", false);
+            tileImage[112].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/righttopwindow.png"));
+            tileImage[113] = new Tile("Left Wall Top", false);
+            tileImage[113].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/leftwalltop.png"));
+            tileImage[114] = new Tile("Right Wall Top", false);
+            tileImage[114].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/rightwalltop.png"));
 
         } catch (IOException e) {
             System.err.println("Error loading tile prototype images: " + e.getMessage());
