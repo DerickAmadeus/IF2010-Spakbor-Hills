@@ -4,6 +4,7 @@ import main.GamePanel;
 import main.KeyHandler;
 import Map.Tile;
 import Map.Soil;
+import Furniture.Bed; // Import Bed class
 import java.awt.image.BufferedImage;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -21,15 +22,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-//error jir
-
 public class Player {
-    public int x, y; // Player's world X and Y coordinates
+    public int x, y;
     public int speed;
-    public int screenX; // Player's X position on the screen (usually center)
-    public int screenY; // Player's Y position on the screen (usually center)
-    public Rectangle solidArea; // Collision area for the player
-    public Rectangle interactionArea; // Area for checking interactions, will now align with a tile
+    public int screenX;
+    public int screenY;
+    public Rectangle solidArea;
+    public Rectangle interactionArea;
     public int solidAreaDefaultX, solidAreaDefaultY;
     public boolean collisionOn = false;
     GamePanel gp;
@@ -39,21 +38,21 @@ public class Player {
     private String location;
 
     public BufferedImage[] idleDownFrames, idleUpFrames, idleLeftFrames, idleRightFrames,
-                           leftFrames, rightFrames, upFrames, downFrames;
+            leftFrames, rightFrames, upFrames, downFrames;
 
     private int spriteCounter = 0;
     private int spriteNum = 0;
-    private final int ANIMATION_SPEED = 10; // Frames per animation sprite
+    private final int ANIMATION_SPEED = 10;
     private boolean isActuallyMoving = false;
     private Inventory<Item> inventory;
     private Item equippedItem;
     private int energy;
     private static final int MAX_ENERGY = 100; 
-    private String farmName;
+
     private Tile tile; 
+    private String farmName;
 
 
-    // Cooldown for interaction to prevent multiple interactions from a single long key press
     private int interactionCooldown = 0;
 
     public Player(GamePanel gp, KeyHandler keyH, String farmName) {
@@ -62,6 +61,7 @@ public class Player {
         this.energy = MAX_ENERGY;
         this.inventory = new Inventory<>(gp);
         this.farmName = farmName;
+
         loadInitialEquipment();
         loadInitialSeeds();
         loadInitialFood();
@@ -111,32 +111,6 @@ public class Player {
         inventory.addItem(grape, 3);
     }
 
-    /*public void loadInitialCrops() {
-        Crops parsnip = new Crops("Parsnip", "Sayuran akar musim semi", 35, 50, 1);
-        Crops cauliflower = new Crops("Cauliflower", "Sayuran bunga putih", 150, 200, 1);
-        Crops potato = new Crops("Potato", "Umbi penghasil karbohidrat", 80, 0, 1);
-        Crops wheat = new Crops("Wheat", "Serealia untuk dijadikan tepung", 30, 50, 3);
-        Crops blueberry = new Crops("Blueberry", "Buah kecil biru musim panas", 40, 150, 3);
-        Crops tomato = new Crops("Tomato", "Buah merah serbaguna", 60, 90, 1);
-        Crops hotPepper = new Crops("Hot Pepper", "Cabai pedas untuk musim panas", 40, 0, 1);
-        Crops melon = new Crops("Melon", "Buah musim panas besar dan manis", 250, 0, 1);
-        Crops cranberry = new Crops("Cranberry", "Buah musim gugur asam", 25, 0, 10);
-        Crops pumpkin = new Crops("Pumpkin", "Buah besar untuk musim gugur", 250, 300, 1);
-        Crops grape = new Crops("Grape", "Buah ungu yang bisa dijadikan wine", 10, 100, 20);
-
-        inventory.addItem(parsnip, 1);
-        inventory.addItem(cauliflower, 1);
-        inventory.addItem(potato, 2);
-        inventory.addItem(wheat, 3);
-        inventory.addItem(blueberry, 2);
-        inventory.addItem(tomato, 2);
-        inventory.addItem(hotPepper, 2);
-        inventory.addItem(melon, 2);
-        inventory.addItem(cranberry, 2);
-        inventory.addItem(pumpkin, 2);
-        inventory.addItem(grape, 2);
-    }*/
-
     public void loadInitialFood() {
         Food fishChips = new Food("Fish n' Chips", "Makanan goreng yang gurih", 135, 150, 50);
         Food baguette = new Food("Baguette", "Roti khas Prancis", 80, 100, 25);
@@ -183,14 +157,11 @@ public class Player {
         System.out.println("Direction: " + direction);
         System.out.println("Last Move Direction: " + lastMoveDirection);
         System.out.println("Energy: " + energy);
-
     }
 
-//test
-
     public void setDefaultValues() {
-        this.x = gp.tileSize * 10; // Example: Start at tile (10,10) in world coordinates
-        this.y = gp.tileSize * 10; // Example: Start at tile (10,10) in world coordinates
+        this.x = gp.tileSize * 10;
+        this.y = gp.tileSize * 10;
         this.speed = 4;
         this.lastMoveDirection = "down"; // Default facing direction
         this.direction = "idleDown";     // Default animation state
@@ -261,12 +232,7 @@ public class Player {
         return placeholder;
     }
 
-
     public void update() {
-        // System.out.println("Player Update Start - Keys: U=" + keyH.upPressed + " D=" + keyH.downPressed + " L=" + keyH.leftPressed + " R=" + keyH.rightPressed +
-        //            " | collisionOn: " + collisionOn + " | direction: " + direction + " | lastMoveDirection: " + lastMoveDirection);
-        // System.out.println("Current GameState in Player: " + gp.gameState + " | playState is: " + gp.playState);
-
         String prevAnimationState = direction;
         isActuallyMoving = false;
 
@@ -277,14 +243,10 @@ public class Player {
         boolean isAttemptingMoveByKeyPress = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
 
         if (isAttemptingMoveByKeyPress && gp.gameState == gp.playState) {
-            // ... (logika pergerakan yang sudah ada)
             if (keyH.upPressed) { direction = "up"; lastMoveDirection = "up"; }
             else if (keyH.downPressed) { direction = "down"; lastMoveDirection = "down"; }
             else if (keyH.leftPressed) { direction = "left"; lastMoveDirection = "left"; }
             else if (keyH.rightPressed) { direction = "right"; lastMoveDirection = "right"; }
-
-
-
 
             if (!collisionOn) {
                 switch (direction) {
@@ -297,24 +259,18 @@ public class Player {
 
             collisionOn = false;
             gp.cChecker.checkTile(this);
-
-            System.out.println("Collision after checkTile: " + collisionOn);
         }
 
-        // Terapkan batas dunia menggunakan dimensi peta saat ini
         int worldPixelWidth = gp.map.currentMapWorldCol * gp.tileSize;
         int worldPixelHeight = gp.map.currentMapWorldRow * gp.tileSize;
 
         if (x < 0) x = 0;
-        if (x + gp.tileSize > worldPixelWidth) x = worldPixelWidth - gp.tileSize; // Kanan
+        if (x + gp.tileSize > worldPixelWidth) x = worldPixelWidth - gp.tileSize;
         if (y < 0) y = 0;
-        if (y + gp.tileSize > worldPixelHeight) y = worldPixelHeight - gp.tileSize; // Bawah
+        if (y + gp.tileSize > worldPixelHeight) y = worldPixelHeight - gp.tileSize;
 
-
-        // ... (sisa logika update pemain, termasuk interactionArea, animasi, dll.)
-         // Update interaction area
-        int playerCurrentTileCol = (x + solidArea.x + solidArea.width / 2) / gp.tileSize; // Pusat solid area
-        int playerCurrentTileRow = (y + solidArea.y + solidArea.height / 2) / gp.tileSize; // Pusat solid area
+        int playerCurrentTileCol = (x + solidArea.x + solidArea.width / 2) / gp.tileSize;
+        int playerCurrentTileRow = (y + solidArea.y + solidArea.height / 2) / gp.tileSize;
 
         int targetTileCol = playerCurrentTileCol;
         int targetTileRow = playerCurrentTileRow;
@@ -328,18 +284,15 @@ public class Player {
 
         interactionArea.x = targetTileCol * gp.tileSize;
         interactionArea.y = targetTileRow * gp.tileSize;
-        // interactionArea.width dan height sudah gp.tileSize
-
 
         if (keyH.interactPressed && interactionCooldown == 0) {
             interact();
             keyH.interactPressed = false;
-            interactionCooldown = 15; // Cooldown kecil setelah interaksi tombol E
+            interactionCooldown = 15;
         }
 
-
         if (isAttemptingMoveByKeyPress && !collisionOn && isActuallyMoving) {
-            // 'direction' sudah diatur untuk animasi berjalan
+            // Direction is already set
         } else {
             switch (lastMoveDirection) {
                 case "up":    direction = "idleUp";    break;
@@ -392,9 +345,8 @@ public class Player {
         if (currentFrames != null && currentFrames.length > 0 && spriteNum < currentFrames.length) {
             image = currentFrames[spriteNum];
         } else if (idleDownFrames != null && idleDownFrames.length > 0) {
-            image = idleDownFrames[0]; // Fallback to first frame of idleDown
+            image = idleDownFrames[0];
         }
-
 
         if (image == null) {
             g2.setColor(Color.RED);
@@ -403,39 +355,30 @@ public class Player {
         }
         g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
 
-        // DEBUG: Draw Solid Area and Interaction Area
         if (gp.debugMode) {
-            // Draw Solid Area (relative to player's screen position)
-            g2.setColor(new Color(255, 0, 0, 100)); // Semi-transparent red
+            g2.setColor(new Color(255, 0, 0, 100));
             g2.fillRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
 
-            // Draw Interaction Area (needs to be converted from world to screen coordinates)
-            // Since interactionArea.x and .y are already world coordinates of the target tile,
-            // the conversion to screen coordinates remains the same.
-            g2.setColor(new Color(0, 255, 0, 100)); // Semi-transparent green
+            g2.setColor(new Color(0, 255, 0, 100));
             int interactionScreenX = interactionArea.x - x + screenX;
             int interactionScreenY = interactionArea.y - y + screenY;
             g2.fillRect(interactionScreenX, interactionScreenY, interactionArea.width, interactionArea.height);
         }
         if (equippedItem != null && equippedItem.getIcon() != null) {
-            int handX = screenX + gp.tileSize / 2; // posisi relatif tangan
+            int handX = screenX + gp.tileSize / 2;
             int handY = screenY + gp.tileSize / 2;
 
-            // Gambar item
             g2.drawImage(equippedItem.getIcon(), handX, handY, gp.tileSize / 2, gp.tileSize / 2, null);
 
-            // Dapatkan jumlah item di inventory
             Integer count = inventory.getItemCount(equippedItem);
             if (count != null && count > 1) {
                 g2.setColor(Color.white);
                 g2.setFont(new Font("Arial", Font.BOLD, 12));
                 String countStr = String.valueOf(count);
                 int stringWidth = g2.getFontMetrics().stringWidth(countStr);
-
                 g2.drawString(countStr, handX + gp.tileSize / 2 - stringWidth + 2, handY + gp.tileSize / 2 + 2);
             }
         }
-
     }
     public void drawEnergyBar(Graphics2D g2) {
         int barX = 20;
@@ -443,15 +386,12 @@ public class Player {
         int barWidth = 200;
         int barHeight = 30;
 
-        // Hitung proporsi energi
         double percent = (double) energy / MAX_ENERGY;
         int energyWidth = (int) (barWidth * percent);
 
-        // Gambar background bar (gelap)
         g2.setColor(Color.darkGray);
         g2.fillRoundRect(barX, barY, barWidth, barHeight, 10, 10);
 
-        // Tentukan warna berdasarkan persentase energi
         Color energyColor;
         if (percent > 0.5) {
             energyColor = Color.green;
@@ -463,15 +403,12 @@ public class Player {
             energyColor = Color.red;
         }
 
-        // Gambar bar energi dengan warna yang sesuai
         g2.setColor(energyColor);
         g2.fillRoundRect(barX, barY, energyWidth, barHeight, 10, 10);
 
-        // Gambar border luar
         g2.setColor(Color.black);
         g2.drawRoundRect(barX, barY, barWidth, barHeight, 10, 10);
 
-        // Tampilkan teks energi (di tengah bar)
         g2.setColor(Color.white);
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
         String energyText = energy + " / " + MAX_ENERGY;
@@ -480,68 +417,54 @@ public class Player {
         g2.drawString(energyText, textX, textY);
     }
     public void drawNotification(Graphics2D g2, String message, int x, int y) {
-        // Ukuran padding dan margin
         int paddingX = 15;
         int paddingY = 10;
 
-        // Set font notifikasi
         g2.setFont(new Font("Arial", Font.PLAIN, 20));
         FontMetrics fm = g2.getFontMetrics();
         int textWidth = fm.stringWidth(message);
         int textHeight = fm.getHeight();
 
-        // Hitung ukuran box berdasarkan teks
         int boxWidth = textWidth + paddingX * 2;
         int boxHeight = textHeight + paddingY * 2;
 
-        // Gambar background semi-transparan
-        Color backgroundColor = new Color(0, 0, 0, 180); // Transparansi lebih ringan
+        Color backgroundColor = new Color(0, 0, 0, 180);
         g2.setColor(backgroundColor);
         g2.fillRoundRect(x, y, boxWidth, boxHeight, 20, 20);
 
-        // Gambar border putih
         g2.setColor(Color.WHITE);
         g2.setStroke(new BasicStroke(3));
         g2.drawRoundRect(x, y, boxWidth, boxHeight, 20, 20);
 
-        // Gambar teks di dalam box (dengan posisi teks disesuaikan)
         g2.setColor(Color.WHITE);
         int textX = x + paddingX;
         int textY = y + paddingY + fm.getAscent();
         g2.drawString(message, textX, textY);
     }
 
-
-    // Getters
     public int getX() { return x; }
     public int getY() { return y; }
     public int getSpeed() { return speed; }
     public Rectangle getSolidArea() { return solidArea; }
-    public String getDirectionForCollision() { return direction; } // Current intended move direction for collision
-    public String getLastMoveDirection() { return lastMoveDirection; } // Last direction player moved or faced
-    public Rectangle getInteractionArea() { return interactionArea; } // The tile-aligned interaction area
+    public String getDirectionForCollision() { return direction; }
+    public String getLastMoveDirection() { return lastMoveDirection; }
+    public Rectangle getInteractionArea() { return interactionArea; }
     public Inventory<Item> getInventory() { return inventory;}
     public static int getMaxEnergy() { return MAX_ENERGY; }
 
-
-    // Action method for interaction
     public void interact() {
-        // Variabel tile sekarang menjadi lokal
         Tile tileToInteract = gp.map.getTile(interactionArea.x, interactionArea.y);
         if (tileToInteract == null) {
             System.out.println("Player: No tile found at interaction area (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ").");
             return;
         }
 
-        // Pastikan Tile.java punya getTileName() atau ganti dengan getName()
         System.out.println("Player: Interacting with tile at: (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ") Name: " + tileToInteract.getTileName());
 
-        // Gunakan instanceof untuk pengecekan tipe yang lebih aman
         if (tileToInteract instanceof Soil) {
             System.out.println("Player: Interacting with Soil tile.");
-            Soil soilTile = (Soil) tileToInteract; // Casting aman setelah instanceof
+            Soil soilTile = (Soil) tileToInteract;
             if (soilTile.getSeedPlanted() != null) {
-                //System.out.println("Player: Ada tanaman -> " + soilTile.getSeedPlanted().getName());
                 System.out.println("Tile index:" + (soilTile.getSeedPlanted().getTileIndex() - 13) + "Wet Index:" + soilTile.getSeedPlanted().getWetIndex());
                 System.out.println("wet cooldown: " + soilTile.getWetCooldown());
                 System.out.println("days: " + soilTile.getDaysToHarvest());
@@ -551,6 +474,20 @@ public class Player {
                 System.out.println("Player: Tanah ini kosong (tidak ada bibit).");
             }
 
+        } else if (tileToInteract instanceof Bed) { // Added Bed interaction
+            System.out.println("Player: Interacting with a Bed tile: " + tileToInteract.getTileName());
+            if (tileToInteract.getTileName().equals("Bed")) {
+                if (gp.gameState == gp.playState) {
+                    System.out.println("Player: Time to sleep!");
+                    gp.startSleepingSequence();
+                } else {
+                    System.out.println("Player: Can only sleep during play state.");
+                }
+            } else {
+                System.out.println("Player: This part of the bed is not for sleeping, or you need to face the right spot.");
+            }
+        } else if (tileToInteract.getTileName().toLowerCase().contains("building")) {
+            System.out.println("Player: Interacting with building: " + tileToInteract.getTileName());
         } else if (tileToInteract.getTileName().toLowerCase().contains("door")) { // Contoh interaksi dengan pintu
             System.out.println("Player: Interacting with a door.");
             // Logika pindah map atau masuk gedung
@@ -563,13 +500,18 @@ public class Player {
 
         } else {
             System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
-            // setEnergy(getEnergy()+10); // Mungkin tidak perlu untuk interaksi umum
         }
-        gp.addMinutes(60);
-        
-        // Cooldown sudah diatur di metode update() setelah memanggil interact()
-    }
 
+        for (int rainyDays : gp.rainDaysInSeason) {
+            System.out.println(rainyDays);
+        }
+        /*for (Fish f : gp.allFishes) {
+            System.out.println(f.getName() + ": " + f.getHargaJual());
+        }*/
+
+        // Cooldown sudah diatur di metode update() setelah memanggil interact()
+        gp.addMinutes(60);
+    }
 
     public void openInventory(Graphics2D g2) {
         inventory.drawInventory(g2);
@@ -580,13 +522,10 @@ public class Player {
     }
     public void equipItem(Item item) {
         if (item == null) {
-            // Unequip: kosongkan equipment
             equippedItem = null;
             System.out.println("Unequipped.");
             return;
         }
-
-        // Equip item baru
         equippedItem = item;
         System.out.println("Equipped: " + item.getName());
     }
@@ -622,8 +561,15 @@ public class Player {
         // Terapkan nilai energi baru, dengan batasan MAX_ENERGY dan minimal -20
         if (newEnergyValue > MAX_ENERGY) {
             this.energy = MAX_ENERGY;
-        } else if (newEnergyValue < -20) { // Jika kalkulasi akan membuatnya jauh di bawah -20
-            this.energy = -20; // Batasi minimal di -20
+        } else if (energy < 0 && energy > -20) {
+            System.out.println("Warning: Energy is low! Action can still be performed, but consider sleeping.");
+            this.energy = energy;
+        } else if (energy <= -20) {
+            this.energy = -20;
+            System.out.println("Error: Energy is too low! Going to sleep...");
+            if (gp.gameState == gp.playState) {
+                gp.startSleepingSequence();
+            }
         } else {
             this.energy = newEnergyValue;
         }
@@ -634,28 +580,28 @@ public class Player {
     }
 
     public void tiling() {
-        if (equippedItem != null && equippedItem.getName().equals("Hoe") && 
-            energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
+        if (equippedItem != null && equippedItem.getName().equals("Hoe") &&
+                energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
             Tile tileToTill = gp.map.getTile(interactionArea.x, interactionArea.y);
-            if (tileToTill != null && tileToTill.getTileName().equals("grass")) { // Pastikan nama "grass" konsisten
-                gp.map.setTileType(interactionArea.x, interactionArea.y, 10); // ID 10 adalah Soil kosong
+            if (tileToTill != null && tileToTill.getTileName().equals("grass")) {
+                gp.map.setTileType(interactionArea.x, interactionArea.y, 10);
                 setEnergy(getEnergy() - 5);
-                gp.addMinutes(1440);
+                gp.addMinutes(5);
                 System.out.println("Player: Tilled grass at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
             } else if (tileToTill != null) {
-                System.out.println("Player: Cannot till " + tileToTill.getTileName());
+                //aa
             }
         }
     }
 
     public void recoverLand() {
-        if (equippedItem != null && equippedItem.getName().equals("Pickaxe") && 
-            energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
+        if (equippedItem != null && equippedItem.getName().equals("Pickaxe") &&
+                energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
             Tile tileToTill = gp.map.getTile(interactionArea.x, interactionArea.y);
-            if (tileToTill != null && tileToTill.getTileName().equals("soil")) { // Pastikan nama "grass" konsisten
+            if (tileToTill != null && tileToTill.getTileName().equals("soil")) {
                 Soil recoverable = (Soil) tileToTill;
                 if (recoverable.canPlant()) {
-                    gp.map.setTileType(interactionArea.x, interactionArea.y, 0); // ID 10 adalah Soil kosong
+                    gp.map.setTileType(interactionArea.x, interactionArea.y, 0);
                     setEnergy(getEnergy() - 5);
                     gp.addMinutes(5);
                     System.out.println("Player: Ubah ke soil at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
@@ -667,9 +613,9 @@ public class Player {
     }
 
     public void planting() {
-        if (equippedItem != null && equippedItem instanceof Seeds && 
-            energy >= -15 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState == gp.playState) {
-            
+        if (equippedItem != null && equippedItem instanceof Seeds &&
+                energy >= -15 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState == gp.playState) {
+
             Tile tileToPlantOn = gp.map.getTile(interactionArea.x, interactionArea.y);
             boolean isLast = false;
 
@@ -684,7 +630,6 @@ public class Player {
                     inventory.removeItem(equippedItem, 1);
                     setEnergy(getEnergy() - 5);
                     gp.addMinutes(5);
-                    // Pesan sudah ada di Map.plantSeedAtTile atau Soil.plantSeed
                     if (isLast) {
                         equipItem(null);
                     }
@@ -701,10 +646,10 @@ public class Player {
         }
     }
     public void watering() {
-        if (equippedItem != null && equippedItem.getName().equals("Watering Can") && 
-            energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
+        if (equippedItem != null && equippedItem.getName().equals("Watering Can") &&
+                energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
             Tile tileToWater = gp.map.getTile(interactionArea.x, interactionArea.y);
-            if (tileToWater != null && tileToWater instanceof Soil) { // Pastikan nama "grass" konsisten
+            if (tileToWater != null && tileToWater instanceof Soil) {
                 Soil watered = (Soil) tileToWater;
                 if (!watered.canPlant() && watered.canWater()) {
                     watered.water(gp);
@@ -742,10 +687,52 @@ public class Player {
                 Food eaten = (Food) get;
                 eaten.eat(this, get);
             }
-            gp.addMinutes(1440);
+            gp.addMinutes(5);
         }
     }
 
+    public void drawFishingWindow(Graphics2D g2) {
+        int frameX = gp.tileSize;
+        int frameY = gp.tileSize * 2;
+        int frameWidth = gp.tileSize * 6;
+        int frameHeight = gp.tileSize * 5;
+
+        Color backgroundColor = new Color(0, 0, 0, 210);
+        g2.setColor(backgroundColor);
+        g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
+
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(5));
+        g2.drawRoundRect(frameX + 5, frameY + 5, frameWidth - 10, frameHeight - 10, 25, 25);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.drawString("Fish Caught!", frameX + 20, frameY + 50);
+        int debugY = frameY + 130;
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
+
+        if (gp.fishingTargetFish != null) {
+            g2.drawString("Attempt: " + gp.fishingAttempts + " / " + gp.maxFishingAttempts, frameX + 20, debugY);
+            debugY += 25;
+            g2.drawString("Fish: " + gp.fishingTargetFish.getName() + " (" + gp.fishingTargetFish.getRarity() + ")", frameX + 20, debugY);
+            debugY += 25;
+        } else {
+            debugY += 25;
+            g2.drawString("Mulai Memancing!!!", frameX + 20, debugY);
+            debugY += 25;
+        }
+
+        // Hint berdasarkan tebakan
+        if (gp.fishingHint != null && !gp.fishingHint.isEmpty()) {
+            g2.setColor(Color.YELLOW);
+            g2.drawString("Hint: " + gp.fishingHint, frameX + 20, debugY);
+        }
+        if (gp.debugMode) {
+            if (gp.fishingTarget != -1) {
+                g2.drawString("Target Code: " + gp.fishingTarget, frameX + 20, debugY + 25);
+            }
+        }
+        g2.drawString(gp.fishingInput, frameX + 20, frameY + 90);
+    }
     public void sleeping() {
         int energyRecover = 0;
         if (energy < 0) {
@@ -791,18 +778,17 @@ public class Player {
             }
         }
     }
-    /*public void fishing() {
+    public void fishing() {
         if (equippedItem != null && equippedItem.getName().equals("Fishing Rod") && 
-            energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
+            energy >= -15 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState != gp.fishingState) {
             Tile tileToFish = gp.map.getTile(interactionArea.x, interactionArea.y);
-            if (tileToFish != null && tileToFish.getTileName().equals("water")) { 
-                //implementasi memancing
+            if (tileToFish != null && tileToFish.getTileName().equals("Water")) {
+                gp.gameState = gp.fishingState; 
                 setEnergy(getEnergy() - 5);
-                gp.addMinutes(5);
-                System.out.println("Player: Tilled grass at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
-            } else if (tileToFish != null) {
-                System.out.println("Player: Cannot till " + tileToFish.getTileName());
-            }
+                gp.addMinutes(15);
+                keyH.enterPressed = false;
+            } 
         }
-    }*/
+    }
+
 }
