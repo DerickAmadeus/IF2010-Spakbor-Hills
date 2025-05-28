@@ -560,7 +560,7 @@ public class GamePanel extends JPanel implements Runnable {
                 gameState = playState; // Kembali ke mode bermain
 
                 // Konsumsi input agar tidak langsung memicu interaksi lain di frame yang sama
-                if (keyHandler.enterPressed) keyHandler.enterPressed = false;
+                keyHandler.enterPressed = false;
 
                 // currentDialogueText = ""; // Kosongkan teks dialog jika Anda menyimpannya di GamePanel
                                         // Atau jika menggunakan gp.ui.currentDialogue, UI yang mengosongkannya.
@@ -675,6 +675,7 @@ public class GamePanel extends JPanel implements Runnable {
                 drop.update();
             }
         }
+        System.out.println(gameState);
     }
 
     public Graphics2D getGraphics2D(){
@@ -780,6 +781,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
         if (gameState == fishingState) {
             player.drawFishingWindow(g2);
+        }
+        if (gameState == dialogState) {
+            player.dialogNPC(g2);
         }
 
     }

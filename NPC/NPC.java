@@ -197,38 +197,21 @@ public class NPC {
         return new Rectangle(worldX + hitbox.x, worldY + hitbox.y, hitbox.width, hitbox.height);
     }
 
-    public void showStatus() {
-        // Gambar kotak dialog di atas kepala NPC (seperti textbox)
-        // Asumsikan dipanggil dari dalam draw(Graphics2D g2) setelah gambar NPC
-        // Untuk demo, kita gambar dialog saat ini (atau dialog pertama)
-        String dialogText = (dialogues != null && dialogues.length > 0) ? dialogues[currentDialogueIndex] : "-";
-        int screenX = worldX - gp.player.x + gp.player.screenX;
-        int screenY = worldY - gp.player.y + gp.player.screenY;
+    public void showStatus(Graphics2D g2) {
+        int frameX = gp.tileSize*9;
+        int frameY = gp.tileSize;
+        int frameWidth = gp.tileSize*6;
+        int frameHeight = gp.tileSize*5;
+        Color c = new Color(0,0,0, 210);
+        g2.setColor(c);
+        g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
+        c = new Color(255,255,255);
+        g2.setColor(c);
+        g2.setStroke(new BasicStroke(5));
+        g2.drawRoundRect(frameX+5, frameY+5, frameWidth-10, frameHeight-10, 25, 25);
+    }
 
-        Graphics2D g2 = gp.getGraphics2D(); // Pastikan ada cara ambil Graphics2D dari GamePanel, atau terima g2 sebagai parameter
-
-        Font font = new Font("Arial", Font.BOLD, 16);
-        g2.setFont(font);
-        FontMetrics fm = g2.getFontMetrics();
-        int textWidth = fm.stringWidth(dialogText);
-        int textHeight = fm.getHeight();
-
-        int padding = 10;
-        int boxWidth = textWidth + padding * 2;
-        int boxHeight = textHeight + padding * 2;
-
-        int boxX = screenX + gp.tileSize / 2 - boxWidth / 2;
-        int boxY = screenY - boxHeight - 10;
-
-        // Kotak dialog (putih, border hitam)
-        g2.setColor(new Color(255, 255, 255, 230));
-        g2.fillRoundRect(boxX, boxY, boxWidth, boxHeight, 15, 15);
-        g2.setColor(Color.BLACK);
-        g2.setStroke(new BasicStroke(2));
-        g2.drawRoundRect(boxX, boxY, boxWidth, boxHeight, 15, 15);
-
-        // Teks dialog
-        g2.setColor(Color.BLACK);
-        g2.drawString(dialogText, boxX + padding, boxY + padding + fm.getAscent());
+    public String getName() {
+        return name;
     }
 }

@@ -579,30 +579,40 @@ public class Player {
     }
 
 
-    public void interactingWithNPC(){
-        // Cek apakah ada NPC di sekitar area interaksi
-        if (gp.npcs != null && keyH.enterPressed && interactionCooldown == 0 && gp.gameState != gp.dialogState) {
-            gp.gameState = gp.dialogState; // Pastikan gameState adalah playState sebelum interaksi
+    public boolean interactingWithNPC() {
+            // Pastikan kondisi ini benar: dipanggil saat interactPressed, cooldown 0, dan gameState == playState
+        if (gp.keyHandler.enterPressed && this.interactionCooldown == 0 && gp.gameState == gp.playState) {
             for (NPC npc : gp.npcs) {
-                if (npc != null && npc.getSpawnMapName() == getLocation()) { // Cek NPC di map saat ini
-                    // Dapatkan area pemicu interaksi NPC (dalam koordinat dunia)
-                    Rectangle npcInteractionZone = npc.getInteractionTriggerAreaWorld();
+                if (npc != null && npc.getSpawnMapName().equals(this.getLocation())) { // Gunakan .equals() untuk String
+                    Rectangle npcInteractionZone = npc.getInteractionTriggerAreaWorld(); // Pastikan metode ini ada di NPC
 
-                    // Cek apakah area interaksi pemain bersinggungan dengan area interaksi NPC
                     if (this.interactionArea.intersects(npcInteractionZone)) {
-                        System.out.println("Player: Berinteraksi dengan NPC: " + npc.name);
-                        npc.showStatus(); // Panggil metode speak() dari NPC untuk memulai dialog
-                        interactionCooldown = 15;
-                                    // NPC.speak() akan mengubah gp.gameState menjadi gp.dialogState
-                                    // dan mengatur gp.ui.currentDialogue atau gp.currentDialogueText
+                        System.out.println("Player: Memulai interaksi dengan NPC: " + npc.name);
+                        gp.gameState = gp.dialogState;   // Ubah game state menjadi dialog
+                        currentNPC = npc; // Set NPC yang sedang diajak bicara
 
-                        // gp.addMinutes(5); // Opsional: tambahkan sedikit waktu jika berbicara dengan NPC memakan waktu
+                        this.interactionCooldown = 20;        // Cooldown untuk player
+                        gp.keyHandler.interactPressed = false; // Konsumsi tombol yang MEMBUKA dialog
+                        return true; // Interaksi berhasil dimulai
                     }
                 }
             }
-        keyH.enterPressed = false; // Reset flag setelah interaksi
+            // Jika tidak ada NPC yang diajak bicara, tapi tombol interaksi ditekan
+            gp.keyHandler.interactPressed = false; // Tetap konsumsi tombolnya
+            this.interactionCooldown = 5;          // Cooldown singkat
+            gp.KeyHandler.enterPressed = false; // Reset tombol enter
+            return false; 
         }
-            
+        return false;
+    }
+
+    public void dialogNPC(Graphics2D g2) {
+        if (currentNPC != null) {
+            System.out.println("Player: Dialog with NPC: " + currentNPC.getName());
+            currentNPC.showStatus(g2);
+        } else {
+            System.out.println("Player: No NPC to talk to.");
+        }
     }
 
 
@@ -855,7 +865,7 @@ public class Player {
             gp.startSleepingSequence();
             setEnergy(energyRecover);
         } else {
-            System.out.println("Player: Energy is already full, no need to sleep.");
+            //System.out.println("Player: Energy is already full, no need to sleep.");
 
         }
     }
