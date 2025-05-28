@@ -797,7 +797,7 @@ public class Player {
         int energyRecover = 0;
         if (energy < 0) {
             energyRecover = (int)(0.1 * MAX_ENERGY);
-        } else if (energy < 10 ) {
+        } else if (energy <= 10 ) {
             energyRecover = (int)(0.5 * MAX_ENERGY); 
         } else {
             energyRecover = MAX_ENERGY;
