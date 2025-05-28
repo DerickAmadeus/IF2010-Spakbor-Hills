@@ -498,6 +498,7 @@ public class Player {
             System.out.println("Player: Interacting with TV.");
             WatchTV();
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         } else {
             System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
@@ -507,6 +508,8 @@ public class Player {
         
         // Cooldown sudah diatur di metode update() setelah memanggil interact()
     }
+=======
+>>>>>>> fb525b28b82c427a37f31a1f9f1e0809b32dc757
 =======
 >>>>>>> fb525b28b82c427a37f31a1f9f1e0809b32dc757
 
@@ -788,6 +791,7 @@ public class Player {
                 // Misalnya, menambah energi atau waktu
                 // gp.showWeatherNotification(gp.getCurrentWeather());
 <<<<<<< HEAD
+<<<<<<< HEAD
             }
         }
     }
@@ -802,6 +806,8 @@ public class Player {
                 System.out.println("Player: Tilled grass at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
             } else if (tileToFish != null) {
                 System.out.println("Player: Cannot till " + tileToFish.getTileName());
+=======
+>>>>>>> fb525b28b82c427a37f31a1f9f1e0809b32dc757
 =======
 >>>>>>> fb525b28b82c427a37f31a1f9f1e0809b32dc757
             }

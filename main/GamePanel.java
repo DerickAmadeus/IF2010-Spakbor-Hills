@@ -502,7 +502,10 @@ public class GamePanel extends JPanel implements Runnable {
             player.sleeping();
             player.WatchTV();
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> fb525b28b82c427a37f31a1f9f1e0809b32dc757
             // Time progression
             long now = System.currentTimeMillis();
             if (now - lastRealTime >= REAL_TIME_INTERVAL) {
@@ -526,6 +529,9 @@ public class GamePanel extends JPanel implements Runnable {
                 lastRealTime = now;
             }
             player.fishing();
+<<<<<<< HEAD
+>>>>>>> fb525b28b82c427a37f31a1f9f1e0809b32dc757
+=======
 >>>>>>> fb525b28b82c427a37f31a1f9f1e0809b32dc757
         }
         if (gameState == inventoryState) {
