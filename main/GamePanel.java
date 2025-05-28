@@ -165,28 +165,28 @@ public class GamePanel extends JPanel implements Runnable {
         transitions.add(new TransitionData(4, 3, 5, 1, 1, 0, 29, 30, false, tileSize));
 
         //NPC Map ke MT House Map and backwards
-        transitions.add(new TransitionData(4, 17, 3, 1, 1, 5, 7, 12, false, tileSize));
-        transitions.add(new TransitionData(5, 7, 13, 1, 1, 4, 17, 4, false, tileSize));
+        transitions.add(new TransitionData(4, 17, 3, 1, 1, 10, 7, 12, false, tileSize));
+        transitions.add(new TransitionData(10, 7, 13, 1, 1, 4, 17, 4, false, tileSize));
 
         //NPC Map ke C House Map and backwards
-        transitions.add(new TransitionData(4, 26, 3, 1, 1, 6, 7, 12, false, tileSize));
-        transitions.add(new TransitionData(6, 7, 13, 1, 1, 4, 26, 4, false, tileSize));
+        transitions.add(new TransitionData(4, 26, 3, 1, 1, 5, 7, 12, false, tileSize));
+        transitions.add(new TransitionData(5, 7, 13, 1, 1, 4, 26, 4, false, tileSize));
 
         //NPC Map ke P House Map and backwards
-        transitions.add(new TransitionData(4, 35, 3, 1, 1, 7, 7, 12, false, tileSize));
-        transitions.add(new TransitionData(7, 7, 13, 1, 1, 4, 35, 4, false, tileSize));
+        transitions.add(new TransitionData(4, 35, 3, 1, 1, 6, 7, 12, false, tileSize));
+        transitions.add(new TransitionData(6, 7, 13, 1, 1, 4, 35, 4, false, tileSize));
 
         //NPC Map ke D House Map and backwards
-        transitions.add(new TransitionData(4, 44, 3, 1, 1, 8, 7, 12, false, tileSize));
-        transitions.add(new TransitionData(8, 7, 13, 1, 1, 4, 44, 4, false, tileSize));
+        transitions.add(new TransitionData(4, 44, 3, 1, 1, 7, 7, 12, false, tileSize));
+        transitions.add(new TransitionData(7, 7, 13, 1, 1, 4, 44, 4, false, tileSize));
 
         //NPC Map ke A House Map and backwards
-        transitions.add(new TransitionData(4, 53, 3, 1, 1, 9, 7, 12, false, tileSize));
-        transitions.add(new TransitionData(9, 7, 13, 1, 1, 4, 53, 4, false, tileSize));
+        transitions.add(new TransitionData(4, 53, 3, 1, 1, 8, 7, 12, false, tileSize));
+        transitions.add(new TransitionData(8, 7, 13, 1, 1, 4, 53, 4, false, tileSize));
 
         //NPC Map ke Store Map and backwards
-        transitions.add(new TransitionData(4, 62, 3, 1, 1, 10, 7, 12, false, tileSize));
-        transitions.add(new TransitionData(10, 7, 13, 1, 1, 4, 62, 4, false, tileSize));
+        transitions.add(new TransitionData(4, 62, 3, 1, 1, 9, 7, 12, false, tileSize));
+        transitions.add(new TransitionData(9, 7, 13, 1, 1, 4, 62, 4, false, tileSize));
 
 
         // Tambahkan transisi lain sesuai kebutuhan Anda
