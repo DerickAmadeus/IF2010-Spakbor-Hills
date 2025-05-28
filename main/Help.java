@@ -15,7 +15,7 @@ public class Help {
     public int commandNumber = 0;
     private final String back = "BACK";
     private final String title = "GAME GUIDE";
-    private final String subtitle = "SPAKBOR HILLS ADVENTURE";
+    private final String subtitle = "HOW TO PLAY SPAKBOR HILLS";
 
     BufferedImage helpBackground;
 
@@ -55,8 +55,32 @@ public class Help {
         "- Each NPC loves/likes/hates different items",
         "- Reach 150 hearts to propose marriage",
         "- Marriage unlocks special benefits",
+        "",
+        "=== SEASONS ===",
+        "- Each season lasts 10 days",
+        "- Different crops grow in different seasons",
+        "- Some fish only available in certain seasons",
+        "",
+        "=== WEATHER ===",
+        "- Sunny: Normal day, water crops manually",
+        "- Rainy: Crops get watered automatically",
+        "- Some fish only appear in certain weather",
+        "",
+        "=== TIME SYSTEM ===",
+        "- Day starts at 6:00 AM",
+        "- Each in-game minute = 1 real second",
+        "- At 12:00 AM, player will fall asleep",
+        "",
+        "=== INVENTORY ===",
+        "- Press I to open inventory",
+        "- Use items, equip tools, or consume food",
+        "- Food restores energy",
+        "- Tools help with farming and fishing"
     };
 
+    private int scrollOffset = 0;
+    private final int lineHeight = 20;
+    private final int visibleLines = 12; 
 
     public Help(GamePanel gp){
         this.gp = gp;
@@ -110,24 +134,37 @@ public class Help {
         g2.drawString(title, getX(title, g2), gp.tileSize * 2);
 
         //subtitle
-        g2.setFont(helpFont.deriveFont(Font.BOLD, 24F));
+        g2.setFont(helpFont.deriveFont(Font.BOLD, 22F));
         g2.setColor(Color.WHITE);
         g2.drawString(subtitle, getX(subtitle, g2), gp.tileSize * 3);
 
         //konten
-        g2.setFont(helpFont.deriveFont(Font.PLAIN, 16F));
-        int y = gp.tileSize * 4;
-        int lineGap = gp.tileSize;
+        g2.setFont(helpFont.deriveFont(Font.PLAIN, 10F));
+         
+        // scroll
+        Shape oldClip = g2.getClip();
+        int contentX = gp.tileSize;
+        int contentY = gp.tileSize * 4;
+        int contentWidth = gp.screenWidth - 2 * gp.tileSize;
+        int contentHeight = gp.screenHeight - gp.tileSize * 6;
+        
+        g2.clipRect(contentX, contentY - lineHeight, contentWidth, contentHeight);
 
+        int startY = contentY + lineHeight - scrollOffset;
+        
         for (String txt : lines) {
-            if (txt.startsWith("===")) {
-                g2.setColor(new Color(100, 255, 100)); 
-            } else {
-                g2.setColor(Color.WHITE);
+            if (startY > contentY - lineHeight && startY < contentY + contentHeight) {
+                if (txt.startsWith("===")) {
+                    g2.setColor(new Color(100, 255, 100)); 
+                } else {
+                    g2.setColor(Color.WHITE);
+                }
+                g2.drawString(txt, contentX, startY);
             }
-            g2.drawString(txt, gp.tileSize, y);
-            y += lineGap;
+            startY += lineHeight;
         }
+
+        g2.setClip(oldClip); // Kembalikan clipping area
 
         // BACK
         g2.setFont(helpFont.deriveFont(Font.BOLD, 28F));
@@ -161,7 +198,14 @@ public class Help {
                 gp.gameState = gp.titleState;
                 gp.keyHandler.enterPressed = false;
             }
-        } 
+        } else if (keyCode == KeyEvent.VK_W) {
+            // Scroll up
+            scrollOffset = Math.max(0, scrollOffset - lineHeight);
+        } else if (keyCode == KeyEvent.VK_S) {
+            // Scroll down
+            int maxScroll = (lines.length * lineHeight) - (visibleLines * lineHeight);
+            scrollOffset = Math.min(maxScroll, scrollOffset + lineHeight);
+        }
     }
 
     public int getX(String text, Graphics2D g2){
