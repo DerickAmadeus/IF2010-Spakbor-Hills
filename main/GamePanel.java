@@ -138,6 +138,10 @@ public class GamePanel extends JPanel implements Runnable {
         transitions.add(new TransitionData(4, 17, 3, 1, 1, 5, 7, 12, false, tileSize));
         transitions.add(new TransitionData(5, 7, 13, 1, 1, 4, 17, 4, false, tileSize));
 
+        //NPC Map ke C House Map and backwards
+        transitions.add(new TransitionData(4, 26, 3, 1, 1, 6, 7, 12, false, tileSize));
+        transitions.add(new TransitionData(6, 7, 13, 1, 1, 4, 26, 4, false, tileSize));
+
         // Tambahkan transisi lain sesuai kebutuhan Anda
     }
 

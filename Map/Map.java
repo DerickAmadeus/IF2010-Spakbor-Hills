@@ -47,6 +47,7 @@ public class Map {
             "/Map/maps/house_map.txt",
             "/Map/maps/npc_map.txt",
             "/Map/maps/mthouse_map.txt",
+            "/Map/maps/chouse_map.txt",
     };
 
     public Map(GamePanel gp) {
