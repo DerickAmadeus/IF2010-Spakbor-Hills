@@ -15,6 +15,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import player.Player; 
+import NPC.NPC;
 
 public class GamePanel extends JPanel implements Runnable {
     
@@ -44,6 +45,7 @@ public class GamePanel extends JPanel implements Runnable {
     public int fishingAttempts = 0;     // Berapa kali user sudah mencoba
     public int maxFishingAttempts = 0;  // Batas percobaan sesuai rarity
     public String fishingHint = "";
+    public NPC[] npcs = loadNPCs(); // Array of NPCs in the game
 
 
     // Game Time
@@ -417,6 +419,29 @@ public class GamePanel extends JPanel implements Runnable {
         fishingHint = "";
     }
 
+    public NPC[] loadNPCs() {
+        NPC[] npcArray = new NPC[3]; // Ganti nama variabel agar tidak sama dengan field kelas
+
+        // Contoh: NPC "Villager" akan muncul di map dengan ID 0 (misalnya Farm Map)
+        // pada tile (kolom 10, baris 12)
+        // Parameter: GamePanel, Nama NPC, ID Map Spawn, Tile X, Tile Y
+        npcArray[0] = new NPC(this, "MT", "MTHouse", 10, 12);
+
+        // Contoh: NPC "Merchant" akan muncul di map dengan ID 4 (misalnya NPC Map)
+        // pada tile (kolom 5, baris 8)
+        npcArray[1] = new NPC(this, "Merchant", "apa", 5, 8);
+
+        // Contoh: NPC "Fisherman" akan muncul di map dengan ID 1 (misalnya Forest River)
+        // pada tile (kolom 20, baris 15)
+        npcArray[2] = new NPC(this, "Fisherman", "itu", 20, 15);
+
+        // Pastikan nama NPC ("Villager", "Merchant", "Fisherman") sesuai dengan
+        // nama file gambar animasi Anda (misal: Villager_idle_0.png, dst.)
+        // dan ID Map (0, 4, 1) sesuai dengan ID map di game Anda.
+
+        return npcArray;
+    }
+
 
 
     public void setupGame(){
@@ -489,6 +514,14 @@ public class GamePanel extends JPanel implements Runnable {
         // }   
         
         player.update();
+        for (NPC npc : npcs) {
+            if (npc != null) {
+                // Hanya update NPC yang berada di map yang sama dengan pemain
+                if (npc.getSpawnMapName() == player.getLocation()) {
+                    npc.update(); // Panggil metode update() pada setiap objek NPC
+                }
+            }
+        }
 
         // Potentially update other game entities or systems here
         // e.g., map.update(), npcs.update(), etc.
@@ -516,6 +549,23 @@ public class GamePanel extends JPanel implements Runnable {
             player.harvesting();
             player.sleeping();
             player.fishing();
+            player.interactingWithNPC();
+        } else if (gameState == dialogState) {
+        // Saat dalam mode dialog, pemain biasanya tidak bisa bergerak.
+        // Input utama yang ditunggu adalah untuk melanjutkan atau menutup dialog.
+
+        // Jika pemain menekan tombol Enter atau tombol Interaksi (E) lagi:
+            if (keyHandler.enterPressed || keyHandler.interactPressed) {
+                System.out.println("Dialog closed by player.");
+                gameState = playState; // Kembali ke mode bermain
+
+                // Konsumsi input agar tidak langsung memicu interaksi lain di frame yang sama
+                if (keyHandler.enterPressed) keyHandler.enterPressed = false;
+
+                // currentDialogueText = ""; // Kosongkan teks dialog jika Anda menyimpannya di GamePanel
+                                        // Atau jika menggunakan gp.ui.currentDialogue, UI yang mengosongkannya.
+
+            }
         }
         if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(
@@ -591,6 +641,7 @@ public class GamePanel extends JPanel implements Runnable {
                 keyHandler.enterPressed = false;
             }
         }
+
         long now = System.currentTimeMillis();
         if (now - lastRealTime >= REAL_TIME_INTERVAL && gameState != fishingState) {
             gameMinute += 5;
@@ -624,6 +675,16 @@ public class GamePanel extends JPanel implements Runnable {
                 drop.update();
             }
         }
+    }
+
+    public Graphics2D getGraphics2D(){
+        java.awt.Graphics g = this.getGraphics();
+        if (g == null) {
+            System.err.println("Gagal mendapatkan Graphics untuk GamePanel.");
+            return null;
+        }
+        return (java.awt.Graphics2D) g.create(); // Mengembalikan Graphics2D yang dapat digunakan untuk menggambar
+
     }
 
     public void paintComponent(java.awt.Graphics g) {
@@ -681,6 +742,15 @@ public class GamePanel extends JPanel implements Runnable {
 
         player.drawPlayer(g2);
         player.drawEnergyBar(g2);
+        for (NPC npc : npcs) { // Iterasi melalui setiap NPC dalam array npcs
+            if (npc != null) { // Pastikan objek NPC tidak null (jika array mungkin tidak terisi penuh)
+                // Hanya gambar NPC jika berada di map yang sama dengan pemain
+                // Asumsi: NPC memiliki spawnMapID (int) dan map.currentMapID (int)
+                if (npc.getSpawnMapName() == player.getLocation()) {
+                    npc.draw(g2); // Panggil metode draw() pada setiap objek NPC individual
+                }
+            }
+        }
 
         if (debugMode) {
             for (TransitionData transition : transitions) {

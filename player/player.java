@@ -17,6 +17,7 @@ import javax.imageio.ImageIO;
 
 import Furniture.Bed;
 import Items.*;
+import NPC.NPC;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -37,6 +38,7 @@ public class Player {
     public String direction; // Current animation/movement state (e.g., "up", "idleDown")
     String lastMoveDirection; // Last actual direction of movement input ("up", "down", "left", "right")
     private String location;
+    private NPC currentNPC; // NPC that the player is currently interacting with, if any
 
     public BufferedImage[] idleDownFrames, idleUpFrames, idleLeftFrames, idleRightFrames,
                            leftFrames, rightFrames, upFrames, downFrames;
@@ -193,7 +195,7 @@ public class Player {
     public void setDefaultValues() {
         this.x = gp.tileSize * 10; // Example: Start at tile (10,10) in world coordinates
         this.y = gp.tileSize * 10; // Example: Start at tile (10,10) in world coordinates
-        this.speed = 4;
+        this.speed = 10;
         this.lastMoveDirection = "down"; // Default facing direction
         this.direction = "idleDown";     // Default animation state
         this.location = "Farm Map";
@@ -299,6 +301,7 @@ public class Player {
 
             collisionOn = false;
             gp.cChecker.checkTile(this);
+            gp.cChecker.checkNPC(this); // Cek NPC dengan interaksi
 
            // System.out.println("Collision after checkTile: " + collisionOn);
         }
@@ -576,6 +579,33 @@ public class Player {
     }
 
 
+    public void interactingWithNPC(){
+        // Cek apakah ada NPC di sekitar area interaksi
+        if (gp.npcs != null && keyH.enterPressed && interactionCooldown == 0 && gp.gameState != gp.dialogState) {
+            gp.gameState = gp.dialogState; // Pastikan gameState adalah playState sebelum interaksi
+            for (NPC npc : gp.npcs) {
+                if (npc != null && npc.getSpawnMapName() == getLocation()) { // Cek NPC di map saat ini
+                    // Dapatkan area pemicu interaksi NPC (dalam koordinat dunia)
+                    Rectangle npcInteractionZone = npc.getInteractionTriggerAreaWorld();
+
+                    // Cek apakah area interaksi pemain bersinggungan dengan area interaksi NPC
+                    if (this.interactionArea.intersects(npcInteractionZone)) {
+                        System.out.println("Player: Berinteraksi dengan NPC: " + npc.name);
+                        npc.showStatus(); // Panggil metode speak() dari NPC untuk memulai dialog
+                        interactionCooldown = 15;
+                                    // NPC.speak() akan mengubah gp.gameState menjadi gp.dialogState
+                                    // dan mengatur gp.ui.currentDialogue atau gp.currentDialogueText
+
+                        // gp.addMinutes(5); // Opsional: tambahkan sedikit waktu jika berbicara dengan NPC memakan waktu
+                    }
+                }
+            }
+        keyH.enterPressed = false; // Reset flag setelah interaksi
+        }
+            
+    }
+
+
     public void openInventory(Graphics2D g2) {
         inventory.drawInventory(g2);
     }
@@ -609,8 +639,10 @@ public class Player {
             this.location = "Farm Map";
         } else if (locationID == 1) {
             this.location = "Forest River";
+        } else if (locationID == 5){
+            this.location = "MTHouse";
         }
-
+ 
     }
 
     public void setFarmName(String farmName) {
