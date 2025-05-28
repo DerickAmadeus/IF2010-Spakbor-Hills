@@ -1,23 +1,18 @@
 package main;
 
-import javax.imageio.ImageIO;
-import javax.swing.JPanel;
-
 import Items.*;
-
-import java.awt.Graphics2D;
-import java.awt.Rectangle; // Tambahkan import ini
-import java.io.IOException;
+import Map.Map;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D; // Tambahkan import ini
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-
-import player.Player; // Importing player class from player package
-import Map.Map; // Importing map class from Map package
-
-import java.util.ArrayList; // Tambahkan import ini
-import java.util.List;    // Tambahkan import ini
-import java.awt.Color;    // Tambahkan import ini
-
-import java.awt.Font; // Tambahkan import ini
+import java.io.IOException; // Importing player class from player package
+import java.util.ArrayList; // Importing map class from Map package
+import java.util.List; // Tambahkan import ini
+import javax.imageio.ImageIO;    // Tambahkan import ini
+import javax.swing.JPanel;    // Tambahkan import ini
+import player.Player; // Tambahkan import ini
 
 public class GamePanel extends JPanel implements Runnable {
     
@@ -135,6 +130,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         transitions.add(new TransitionData(3, 7, 13, 1, 1, 0, 5, 11, false, tileSize));
 
+        //Farm Map ke NPC map and backwards
+        transitions.add(new TransitionData(0, 30, 30, 1, 3, 4, 4, 5, false, tileSize));
+        transitions.add(new TransitionData(4, 3, 5, 1, 3, 0, 29, 30, false, tileSize));
 
         // Tambahkan transisi lain sesuai kebutuhan Anda
     }

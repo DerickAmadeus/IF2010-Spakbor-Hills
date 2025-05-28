@@ -1,21 +1,19 @@
 package Map;
 
-import main.GamePanel;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import Items.Seeds;
-import Furniture.Bed; // Pastikan import ini dan lainnya sesuai dengan yang Anda gunakan
+import Furniture.Bed;
 import Furniture.Stove;
 import Furniture.TV;
-// import Items.Misc; // Hapus jika tidak digunakan
-
-import java.awt.Graphics2D;
-import java.io.InputStream;
+import Items.Seeds;
+import java.awt.Graphics2D; // Pastikan import ini dan lainnya sesuai dengan yang Anda gunakan
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.imageio.ImageIO;
+import main.GamePanel;
 
 public class Map {
     GamePanel gp;
@@ -46,7 +44,8 @@ public class Map {
             "/Map/maps/farm_map.txt",
             "/Map/maps/forest_map.txt",
             "/Map/maps/mountain_lake_map.txt",
-            "/Map/maps/house_map.txt"
+            "/Map/maps/house_map.txt",
+            "/Map/maps/npc_map.txt",
     };
 
     public Map(GamePanel gp) {
