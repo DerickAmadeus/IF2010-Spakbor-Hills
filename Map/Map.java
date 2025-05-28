@@ -443,6 +443,16 @@ public class Map {
             tileImage[168].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/leftwalltop.png"));
             tileImage[169] = new Tile("Right Wall Top", false);
             tileImage[169].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/rightwalltop.png"));
+            tileImage[170] = new Tile("Left Wall Top", false);
+            tileImage[170].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/S.png"));
+            tileImage[171] = new Tile("Right Wall Top", false);
+            tileImage[171].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/T.png"));
+            tileImage[172] = new Tile("Right Wall Top", false);
+            tileImage[172].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/O.png"));
+            tileImage[173] = new Tile("Right Wall Top", false);
+            tileImage[173].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/R.png"));
+            tileImage[174] = new Tile("Right Wall Top", false);
+            tileImage[174].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/E.png"));
 
 
 
