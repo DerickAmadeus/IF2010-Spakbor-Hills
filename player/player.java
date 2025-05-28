@@ -558,9 +558,9 @@ public class Player {
         for (int rainyDays : gp.rainDaysInSeason) {
             System.out.println(rainyDays);
         }
-        for (Fish f : gp.allFishes) {
+        /*for (Fish f : gp.allFishes) {
             System.out.println(f.getName() + ": " + f.getHargaJual());
-        }
+        }*/
         // Cooldown sudah diatur di metode update() setelah memanggil interact()
         gp.addMinutes(60);
     }
@@ -621,7 +621,7 @@ public class Player {
             if (tileToTill != null && tileToTill.getTileName().equals("grass")) { // Pastikan nama "grass" konsisten
                 gp.map.setTileType(interactionArea.x, interactionArea.y, 10); // ID 10 adalah Soil kosong
                 setEnergy(getEnergy() - 5);
-                gp.addMinutes(1440);
+                gp.addMinutes(5);
                 System.out.println("Player: Tilled grass at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
             } else if (tileToTill != null) {
                 System.out.println("Player: Cannot till " + tileToTill.getTileName());
@@ -742,7 +742,7 @@ public class Player {
         g2.drawRoundRect(frameX + 5, frameY + 5, frameWidth - 10, frameHeight - 10, 25, 25);
 
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
-        g2.drawString("Enter Fishing Code:", frameX + 20, frameY + 50);
+        g2.drawString("Fish Caught!", frameX + 20, frameY + 50);
         int debugY = frameY + 130;
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
 
