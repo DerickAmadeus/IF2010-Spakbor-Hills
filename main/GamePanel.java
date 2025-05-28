@@ -161,8 +161,8 @@ public class GamePanel extends JPanel implements Runnable {
         transitions.add(new TransitionData(3, 7, 13, 1, 1, 0, 5, 11, false, tileSize));
 
         //Farm Map ke NPC map and backwards
-        transitions.add(new TransitionData(0, 30, 30, 1, 3, 4, 4, 5, false, tileSize));
-        transitions.add(new TransitionData(4, 3, 5, 1, 3, 0, 29, 30, false, tileSize));
+        transitions.add(new TransitionData(0, 30, 30, 1, 1, 4, 4, 5, false, tileSize));
+        transitions.add(new TransitionData(4, 3, 5, 1, 1, 0, 29, 30, false, tileSize));
 
         //NPC Map ke MT House Map and backwards
         transitions.add(new TransitionData(4, 17, 3, 1, 1, 5, 7, 12, false, tileSize));
@@ -179,6 +179,14 @@ public class GamePanel extends JPanel implements Runnable {
         //NPC Map ke D House Map and backwards
         transitions.add(new TransitionData(4, 44, 3, 1, 1, 8, 7, 12, false, tileSize));
         transitions.add(new TransitionData(8, 7, 13, 1, 1, 4, 44, 4, false, tileSize));
+
+        //NPC Map ke A House Map and backwards
+        transitions.add(new TransitionData(4, 53, 3, 1, 1, 9, 7, 12, false, tileSize));
+        transitions.add(new TransitionData(9, 7, 13, 1, 1, 4, 53, 4, false, tileSize));
+
+        //NPC Map ke Store Map and backwards
+        transitions.add(new TransitionData(4, 62, 3, 1, 1, 10, 7, 12, false, tileSize));
+        transitions.add(new TransitionData(10, 7, 13, 1, 1, 4, 62, 4, false, tileSize));
 
 
         // Tambahkan transisi lain sesuai kebutuhan Anda
