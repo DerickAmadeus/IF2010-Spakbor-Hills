@@ -1,5 +1,19 @@
 package main;
 
+
+import javax.imageio.ImageIO;
+import javax.swing.JPanel;
+import Items.*;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.io.IOException;
+import java.awt.image.BufferedImage;
+import player.Player;
+import Map.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.awt.Color;
+import java.awt.Font;
 import Items.*;
 import Map.Map;
 import java.awt.Color; // ← Tambahkan ini
@@ -16,8 +30,9 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import player.Player; 
 
+
 public class GamePanel extends JPanel implements Runnable {
-    
+
     //Game State
     public final int titleState = -3;
     public final int farmNameInputState = -2;
@@ -27,8 +42,11 @@ public class GamePanel extends JPanel implements Runnable {
     public final int dialogState = 2;
     public final int inventoryState = 3;
     public final int itemOptionState = 4;
+    public final int sleepingFadeOutState = 5; // New state for fading to black
+    public final int sleepingFadeInState = 6;  // New state for fading back from black
     public final int fishingState = 5;
     public int gameState = titleState;
+
     public String[] initialSeason = {"Spring", "Summer", "Fall", "Winter"};
     public int currentSeasonIndex = 0;
     public String currentSeason = initialSeason[currentSeasonIndex];
@@ -53,30 +71,23 @@ public class GamePanel extends JPanel implements Runnable {
     public int daysPlayed = 0;
     public int lastUpdateMinute = -1;
 
-
-
     private long lastRealTime = System.currentTimeMillis();
-    private static final int REAL_TIME_INTERVAL = 1000; // 1 detik
+    private static final int REAL_TIME_INTERVAL = 1000;
 
-    final int originalTileSize = 16; // Original tile size in pixels
-    final int scale = 3; // Scale factor
+    final int originalTileSize = 16;
+    final int scale = 3;
+    public final int tileSize = originalTileSize * scale;
+    public final int maxScreenCol = 16;
+    public final int maxScreenRow = 12;
+    public final int screenWidth = tileSize * maxScreenCol;
+    public final int screenHeight = tileSize * maxScreenRow;
 
-    public final int tileSize = originalTileSize * scale; // Scaled tile size
-    public final int maxScreenCol = 16; // Maximum number of columns on the screen
-    public final int maxScreenRow = 12; // Maximum number of rows on the screen
-    public final int screenWidth = tileSize * maxScreenCol; // Screen width in pixels
-    public final int screenHeight = tileSize * maxScreenRow; // Screen height in pixels
-
-
-    //WorldMap Parameters
-    public final int worldCol = 32; // Number of columns in the world map
-    public final int worldRow = 32; // Number of rows in the world map
-    public final int worldWidth = tileSize * worldCol; // World map width in pixels
-    public final int worldHeight = tileSize * worldRow; // World map height in pixels
+    public final int worldCol = 32;
+    public final int worldRow = 32;
+    public final int worldWidth = tileSize * worldCol;
+    public final int worldHeight = tileSize * worldRow;
 
     public List<TransitionData> transitions;
-
-
     public Map map = new Map(this);
     public KeyHandler keyHandler = new KeyHandler(this); // Key handler for keyboard input 
     public final TitlePage  titlePage  = new TitlePage(this);
@@ -118,7 +129,7 @@ public class GamePanel extends JPanel implements Runnable {
         } catch (IOException e) {
             System.err.println("Gagal memuat gambar latar belakang game: " + e.getMessage());
             e.printStackTrace();
-            backgroundImage = null; // Atur ke null jika gagal, paintComponent akan menangani ini
+            backgroundImage = null;
         }
         for (int i = 0; i < RAIN_COUNT; i++) {
             int x = (int)(Math.random() * screenWidth);
@@ -130,34 +141,11 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void initializeTransitions() {
         transitions = new ArrayList<>();
-
-        // Contoh Transisi:
-        // Dari Farm Map (ID 0) ke Forest Map (ID 1)
-        // Area pemicu di Farm Map: kolom 0, baris 10 sampai 12 (lebar 1 tile, tinggi 3 tiles)
-        // Pemain muncul di Forest Map pada tile (15, 10) (misalnya, di sisi kanan forest map)
         transitions.add(new TransitionData(0, 0, 10, 1, 3, 1, 12, 11, false, tileSize));
-
-        // Dari Forest Map (ID 1) kembali ke Farm Map (ID 0)
-        // Area pemicu di Forest Map: kolom 16 (misal), baris 10 sampai 12
-        // Pemain muncul di Farm Map pada tile (1, 11) (misalnya, dekat sisi kiri farm map)
         transitions.add(new TransitionData(1, 15, 10, 1, 3, 0, 1, 11, false, tileSize));
-
-        // Dari Farm Map (ID 0) ke Mountain Lake Map (ID 2)
-        // Misal, dari sisi atas farm map: kolom 15-17, baris 0
-        // Muncul di Mountain Lake Map di tile (10, 15) (misal, di sisi bawah mountain map)
         transitions.add(new TransitionData(0, 15, 0, 3, 1, 2, 10, 9, false, tileSize));
-
-        // Dari Mountain Lake Map (ID 2) kembali ke Farm Map (ID 0)
-        // Area pemicu di Mountain Lake Map: kolom 10-12, baris 16
-        // Muncul di Farm Map pada tile (16, 1)
         transitions.add(new TransitionData(2, 10, 10, 3, 1, 0, 16, 1, false, tileSize));
-        
-        // Dari Farm Map (ID 0) ke HouseMap (ID 3)
-        // Area pemicu, Door
-        //muncul di depan door rumah
         transitions.add(new TransitionData(0, 5, 10, 1, 1, 3, 7, 12, false, tileSize));
-        // No additional transitions needed here for background color change.
-
         transitions.add(new TransitionData(3, 7, 13, 1, 1, 0, 5, 11, false, tileSize));
 
         //Farm Map ke NPC map and backwards
@@ -178,57 +166,42 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void checkMapTransitions() {
         for (TransitionData transition : transitions) {
-            transition.updateCooldown(); // Selalu update cooldown
-
-            // Buat Rectangle absolut dari solidArea pemain untuk pengecekan
+            transition.updateCooldown();
             Rectangle absolutePlayerSolidArea = new Rectangle(
-                player.x + player.solidArea.x,
-                player.y + player.solidArea.y,
-                player.solidArea.width,
-                player.solidArea.height
-            );
+                    player.x + player.solidArea.x,
+                    player.y + player.solidArea.y,
+                    player.solidArea.width,
+                    player.solidArea.height);
 
             if (transition.isTriggered(absolutePlayerSolidArea, map.currentMapID)) {
-                if (!transition.requiresInteraction) { // Untuk transisi otomatis (injak)
+                if (!transition.requiresInteraction) {
                     System.out.println("Transition triggered: From Map ID " + map.currentMapID +
-                                       " To Map ID " + transition.targetMapID +
-                                       " at player pos (" + transition.targetPlayerX / tileSize + ", " +
-                                       transition.targetPlayerY / tileSize + ")");
-
-                    int previousMapID = map.currentMapID; // Simpan ID map sebelumnya
-
+                            " To Map ID " + transition.targetMapID +
+                            " at player pos (" + transition.targetPlayerX / tileSize + ", " +
+                            transition.targetPlayerY / tileSize + ")");
+                    int previousMapID = map.currentMapID;
                     map.loadMapByID(transition.targetMapID);
                     player.x = transition.targetPlayerX;
                     player.y = transition.targetPlayerY;
-
-                    // Reset status penting pemain jika perlu
-                    player.collisionOn = false; 
-                    player.direction = "down"; // Atur arah default
-                    // player.isActuallyMoving = false; // Jika Anda memiliki variabel ini di Player
-
-                    transition.startCooldown(); // Mulai cooldown untuk transisi yang baru saja digunakan
-
-                    // Mencegah langsung kembali: terapkan cooldown pada transisi yang mengarah kembali
-                    // jika pemain spawn di atasnya.
+                    player.collisionOn = false;
+                    player.direction = "down";
+                    transition.startCooldown();
                     for (TransitionData otherTransition : transitions) {
-                        if (otherTransition.sourceMapID == map.currentMapID && // Jika transisi lain ada di map baru
-                            otherTransition.targetMapID == previousMapID) {   // Dan mengarah kembali ke map lama
-
-                            Rectangle playerSpawnSolidArea = new Rectangle( // Area solid pemain di posisi spawn baru
-                                player.x + player.solidArea.x,
-                                player.y + player.solidArea.y,
-                                player.solidArea.width,
-                                player.solidArea.height
-                            );
+                        if (otherTransition.sourceMapID == map.currentMapID &&
+                                otherTransition.targetMapID == previousMapID) {
+                            Rectangle playerSpawnSolidArea = new Rectangle(
+                                    player.x + player.solidArea.x,
+                                    player.y + player.solidArea.y,
+                                    player.solidArea.width,
+                                    player.solidArea.height);
                             if (otherTransition.sourceArea.intersects(playerSpawnSolidArea)) {
                                 otherTransition.startCooldown();
                                 System.out.println("Applied return cooldown to transition from map " + otherTransition.sourceMapID + " to " + otherTransition.targetMapID);
                             }
                         }
                     }
-                    break; // Proses satu transisi per frame untuk menghindari masalah
+                    break;
                 }
-                
             }
         }
     }
@@ -402,6 +375,12 @@ public class GamePanel extends JPanel implements Runnable {
         } 
     }
 
+
+    public void setupGame() {
+      gameState = titleState;
+    }
+
+
     private void resetFishing() {
         fishingTarget = -1;
         fishingInput = "";
@@ -413,15 +392,16 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
 
-
-    public void setupGame(){
-        gameState = titleState;
-    }
-
-
     public void startGameThread() {
-        gameThread = new Thread(this); // Create a new thread for the game loop
-        gameThread.start(); // Start the game loop thread
+        gameThread = new Thread(this);
+        gameThread.start();
+    }
+    
+    public void startSleepingSequence() {
+        if (gameState == playState) { // Ensure we can only sleep from playState
+            gameState = sleepingFadeOutState;
+            fadeAlpha = 0; // Start fully transparent, will fade to black
+        }
     }
 
     public void addMinutes(int minutesToAdd) {
@@ -434,26 +414,22 @@ public class GamePanel extends JPanel implements Runnable {
                     gameHour = 0;
                     gameDay++;
                     daysPlayed++;
+                    if (gameDay > 10) { // Season Change Logic
+                        currentSeasonIndex = (currentSeasonIndex + 1) % initialSeason.length;
+                        currentSeason = initialSeason[currentSeasonIndex];
+                        gameDay = 1; // Reset day for new season
+                    }
                 }
             }
-            map.updateTiles(); // hanya update tiap 5 menit, sesuai
+            map.updateTiles();
         }
     }
 
-
-
     @Override
     public void run() {
-        // Game loop logic here
         while (gameThread != null) {
-            
-
-            // Update game state
             update();
-            // Repaint screen
             repaint();
-
-            // Delay to simulate FPS
             try {
                 Thread.sleep(16); // roughly 60 FPS
             } catch (InterruptedException e) {
@@ -463,6 +439,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
+
         if (gameState == titleState){
             if(keyHandler.enterPressed){
                 if (titlePage.commandNumber == 3){
@@ -499,16 +476,39 @@ public class GamePanel extends JPanel implements Runnable {
                 gameState = inventoryState;
             } else if (gameState == inventoryState || gameState == itemOptionState) {
                 gameState = playState;
+                keyHandler.enterPressed = false; // Consume press
             }
-            keyHandler.invPressed = false;
-        }
-        if (gameState == playState) {
+        } else if (gameState == playState) {
+            player.update();
             player.tiling();
             player.recoverLand();
             player.planting();
             checkMapTransitions();
             player.watering();
             player.harvesting();
+
+            // Time progression
+            long now = System.currentTimeMillis();
+            if (now - lastRealTime >= REAL_TIME_INTERVAL) {
+                gameMinute += 5;
+                if (gameMinute >= 60) {
+                    gameMinute = 0;
+                    gameHour++;
+                    if (gameHour >= 24) {
+                        gameHour = 0; // Midnight
+                        gameDay++;
+                        daysPlayed++;
+                        // Season Change Logic on natural day turnover
+                        if (gameDay > 10) {
+                            currentSeasonIndex = (currentSeasonIndex + 1) % initialSeason.length;
+                            currentSeason = initialSeason[currentSeasonIndex];
+                            gameDay = 1; // Reset day for new season
+                        }
+                    }
+                }
+                map.updateTiles();
+                lastRealTime = now;
+            }
             player.fishing();
         }
         if (gameState == inventoryState) {
@@ -519,18 +519,20 @@ public class GamePanel extends JPanel implements Runnable {
                 keyHandler.rightPressed
             );
 
+        } else if (gameState == inventoryState) {
+            player.getInventory().updateInventoryCursor(
+                    keyHandler.upPressed, keyHandler.downPressed, keyHandler.leftPressed, keyHandler.rightPressed);
             keyHandler.upPressed = false;
             keyHandler.downPressed = false;
             keyHandler.leftPressed = false;
             keyHandler.rightPressed = false;
 
-            // Saat tekan Enter, buka opsi untuk item yang dipilih
             if (keyHandler.enterPressed) {
                 player.getInventory().selectCurrentItem();
+                // gameState might change to itemOptionState by selectCurrentItem()
                 keyHandler.enterPressed = false;
             }
-        }
-        else if (gameState == itemOptionState) {
+        } else if (gameState == itemOptionState) {
             if (keyHandler.upPressed) {
                 player.getInventory().optionCommandNum = (player.getInventory().optionCommandNum - 1 + 3) % 3;
                 keyHandler.upPressed = false;
@@ -539,45 +541,42 @@ public class GamePanel extends JPanel implements Runnable {
                 player.getInventory().optionCommandNum = (player.getInventory().optionCommandNum + 1) % 3;
                 keyHandler.downPressed = false;
             }
-
-            if (gameState == itemOptionState) {
-                if (keyHandler.enterPressed) {
-                    Item selected = player.getInventory().getSelectedItem();
-                    if (selected instanceof Equipment) {
-                        Equipment eq = (Equipment) selected;
-                        if (player.getInventory().optionCommandNum == 0) {
-                            if (player.getEquippedItem() == eq) {
-                                player.equipItem(null);
-                            } else {
-                                player.equipItem(eq);
-                            }
-                            gameState = inventoryState;
-                        } else if (player.getInventory().optionCommandNum == 1) {
-                            gameState = inventoryState; // Cancel
-                        }
-                    }  else if (selected instanceof Seeds) {
-                        Seeds eq = (Seeds) selected;
-                        if (player.getInventory().optionCommandNum == 0) {
-                            if (player.getEquippedItem() == eq) {
-                                player.equipItem(null);
-                            } else {
-                                player.equipItem(eq);
-                            }
-                            gameState = inventoryState;
-                        } else if (player.getInventory().optionCommandNum == 1) {
-                            gameState = inventoryState; // Cancel
-                        }
-                    } else if (selected instanceof Fish || selected instanceof Crops || selected instanceof Food) {
-                        if (player.getInventory().optionCommandNum == 0) {
-                            player.eating();
-                            gameState = inventoryState;
-                        } else if (player.getInventory().optionCommandNum == 1) {
-                            gameState = inventoryState; // Cancel
-                        }
+            if (keyHandler.enterPressed) {
+                Item selected = player.getInventory().getSelectedItem();
+                if (selected instanceof Equipment) {
+                    Equipment eq = (Equipment) selected;
+                    if (player.getInventory().optionCommandNum == 0) { // Equip/Unequip
+                        if (player.getEquippedItem() == eq) player.equipItem(null);
+                        else player.equipItem(eq);
+                        gameState = inventoryState;
+                    } else if (player.getInventory().optionCommandNum == 1) { // Cancel
+                        gameState = inventoryState;
                     }
-                    keyHandler.enterPressed = false;
+                } else if (selected instanceof Seeds) {
+                     Seeds sd = (Seeds) selected;
+                    if (player.getInventory().optionCommandNum == 0) { // Equip/Unequip
+                        if (player.getEquippedItem() == sd) player.equipItem(null);
+                        else player.equipItem(sd);
+                        gameState = inventoryState;
+                    } else if (player.getInventory().optionCommandNum == 1) { // Cancel
+                        gameState = inventoryState;
+                    }
+                } else if (selected instanceof Fish || selected instanceof Crops || selected instanceof Food) {
+                     if (player.getInventory().optionCommandNum == 0) { // Eat
+                        player.eating(); // Assumes eating handles item removal & energy
+                        gameState = inventoryState;
+                    } else if (player.getInventory().optionCommandNum == 1) { // Cancel
+                        gameState = inventoryState;
+                    }
                 }
+                keyHandler.enterPressed = false;
             }
+        } else if (gameState == sleepingFadeOutState) {
+            fadeAlpha += FADE_SPEED;
+            if (fadeAlpha >= 255) {
+                fadeAlpha = 255; // Fully black
+                // --- Perform sleep actions ---
+                gameHour = 6; // Wake up at 6 AM
         }
         if (gameState == fishingState) {
             if(keyHandler.enterPressed) {
@@ -590,16 +589,42 @@ public class GamePanel extends JPanel implements Runnable {
             gameMinute += 5;
             if (gameMinute >= 60) {
                 gameMinute = 0;
-                gameHour++;
-                if (gameHour >= 24) {
-                    gameHour = 0;
-                    gameDay++;
-                    daysPlayed++;
+                gameDay++;
+                daysPlayed++;
+                player.setEnergy(Player.MAX_ENERGY); // Restore energy
+
+                // Season Change Logic
+                if (gameDay > 10) { // Assuming 10 days per season
+                    currentSeasonIndex = (currentSeasonIndex + 1) % initialSeason.length;
+                    currentSeason = initialSeason[currentSeasonIndex];
+                    gameDay = 1; // Reset day for new season
                 }
+                map.updateTiles(); // Update tiles for the new day/time
+                // --- End sleep actions ---
+                gameState = sleepingFadeInState; // Start fading back in
             }
-            map.updateTiles();
-            lastRealTime = now;
+        } else if (gameState == sleepingFadeInState) {
+            fadeAlpha -= FADE_SPEED;
+            if (fadeAlpha <= 0) {
+                fadeAlpha = 0; // Fully transparent
+                gameState = playState; // Back to game
+            }
         }
+
+        // Global key listeners (can be accessed from multiple states)
+        if (keyHandler.f1Pressed) {
+            debugMode = !debugMode;
+            keyHandler.f1Pressed = false;
+            System.out.println("Debug mode: " + (debugMode ? "ON" : "OFF"));
+        }
+        if (keyHandler.invPressed) {
+            if (gameState == playState) {
+                gameState = inventoryState;
+            } else if (gameState == inventoryState || gameState == itemOptionState) {
+                // Close inventory/options and return to play state
+                gameState = playState;
+            }
+            keyHandler.invPressed = false; // Consume the press
 
         if (gameDay > 10) {
             currentSeasonIndex = (currentSeasonIndex + 1) % 4;
@@ -624,9 +649,25 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-
         if (gameState == titleState) {
             titlePage.draw(g2);
+            g2.dispose(); // dispose was here in original, but typically not at the end of paintComponent
+            return;
+        } else if (gameState == farmNameInputState) {
+            g2.setColor(java.awt.Color.black);
+            g2.fillRect(0, 0, screenWidth, screenHeight);
+            g2.setColor(java.awt.Color.white);
+            g2.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 30));
+            g2.drawString("Enter Farm Name:", 100, screenHeight / 2 - 40);
+            // Add input field drawing here if you have one for farm name
+            g2.drawString("Press Enter to Continue", 100, screenHeight / 2 + 40);
+            // No g2.dispose() here in original for this state
+            return;
+        }
+
+        // Draw game world (visible during play, pause, dialog, inventory, options, and fades)
+        if (map.currentMapID == 3) { // House map
+            g2.setColor(java.awt.Color.black);
             g2.dispose();
             return;
         } else if (gameState == farmNameInputState){
@@ -644,15 +685,16 @@ public class GamePanel extends JPanel implements Runnable {
         if (map.currentMapID == 3) { // Ganti angka 3 jika ID peta rumah Anda berbeda
             g2.setColor(java.awt.Color.black); // Atur latar belakang menjadi hitam untuk rumah
             g2.fillRect(0, 0, screenWidth, screenHeight);
-        } else {
-            // Jika bukan peta rumah, gambar latar belakang luar ruangan seperti biasa
+        } else { // Other maps
             if (backgroundImage != null) {
                 g2.drawImage(backgroundImage, 0, 0, screenWidth, screenHeight, null);
             } else {
-                g2.setColor(java.awt.Color.cyan); // Latar belakang fallback jika gambar awan gagal dimuat
+                g2.setColor(java.awt.Color.cyan);
                 g2.fillRect(0, 0, screenWidth, screenHeight);
             }
         }
+        map.draw(g2);
+        player.drawPlayer(g2);
 
         map.draw(g2); // Draw the map
         if (currentWeather.equals("Rainy")) {
@@ -674,14 +716,14 @@ public class GamePanel extends JPanel implements Runnable {
         player.drawPlayer(g2);
         player.drawEnergyBar(g2);
 
+        // Debug transition areas
         if (debugMode) {
             for (TransitionData transition : transitions) {
                 if (transition.sourceMapID == map.currentMapID) {
-                    g2.setColor(new Color(0, 0, 255, 80)); // Biru transparan
+                    g2.setColor(new Color(0, 0, 255, 80));
                     int screenAreaX = transition.sourceArea.x - player.x + player.screenX;
                     int screenAreaY = transition.sourceArea.y - player.y + player.screenY;
                     g2.fillRect(screenAreaX, screenAreaY, transition.sourceArea.width, transition.sourceArea.height);
-
                     if (transition.cooldownFrames > 0) {
                         g2.setColor(Color.YELLOW);
                         g2.setFont(new Font("Arial", Font.BOLD, 12));
@@ -694,12 +736,20 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
 
+        // Inventory and Item Options UI (drawn on top of game world and basic UI)
         if (gameState == inventoryState) {
             player.openInventory(g2);
         }
         if (gameState == itemOptionState) {
-            player.getInventory().drawItemOptionWindow(g2);
+            player.getInventory().drawItemOptionWindow(g2); // Assumes inventory is drawn first or handled by this method
         }
+
+        // Fade Effect Overlay (drawn on top of almost everything)
+        if (gameState == sleepingFadeOutState || gameState == sleepingFadeInState) {
+            g2.setColor(new Color(0, 0, 0, fadeAlpha)); // Black color with current alpha
+            g2.fillRect(0, 0, screenWidth, screenHeight);
+        }
+
         if (gameState == fishingState) {
             player.drawFishingWindow(g2);
         }
