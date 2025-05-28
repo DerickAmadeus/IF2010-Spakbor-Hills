@@ -112,21 +112,21 @@ public class Soil extends Tile {
     public void updateImageBasedOnState(GamePanel gp) { 
         if (seedPlanted != null) {
             int visualID = seedPlanted.getTileIndex(); 
-            if (gp != null && visualID != -1 && visualID < gp.map.tileimage.length && gp.map.tileimage[visualID] != null) {
+            if (gp != null && visualID != -1 && visualID < gp.map.tileImage.length && gp.map.tileImage[visualID] != null) {
                 if (dayHarvest > 0) {
-                    if (wetCooldown == MAX_COOLDOWN) {
-                        this.Image = gp.map.tileimage[visualID + Seeds.getTotalSeeds()].Image; // Gunakan image dari prototype visual
+                    if (wetCooldown == 3) {
+                        this.Image = gp.map.tileImage[visualID + Seeds.getTotalSeeds()].Image; // Gunakan image dari prototype visual
                     } else if (wetCooldown > 0) {
-                        this.Image = gp.map.tileimage[visualID].Image; // Gunakan image dari prototype visual
+                        this.Image = gp.map.tileImage[visualID].Image; // Gunakan image dari prototype visual
                     } else {
-                        seedPlanted = null;
-                        loadImage(this.emptySoilImagePath);
+                        seedPlanted = null; // Reset seed if not watered
+                        loadImage(this.emptySoilImagePath); // Load empty soil image
                         return;
                     }
                 } else {
                     if (wetCooldown >= 0) {
                         wetCooldown = MAX_COOLDOWN;
-                        this.Image = gp.map.tileimage[visualID + Seeds.getTotalSeeds() * 2].Image;
+                        this.Image = gp.map.tileImage[visualID + Seeds.getTotalSeeds() * 2].Image;
                     }
                 }
                 if (!seedPlanted.getSeason().contains(gp.currentSeason)) {

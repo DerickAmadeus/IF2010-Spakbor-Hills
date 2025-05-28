@@ -690,4 +690,35 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
     }
+
+    public void startSleepingSequence() {
+        // Mengatur jam permainan ke 6 pagi
+        gameHour = 5;
+        gameMinute = 55;
+
+        // Mengatur hari permainan ke hari berikutnya
+        gameDay++;
+        daysPlayed++;
+        // Memastikan pemain tidak dalam keadaan dialog atau interaksi lainnya
+        gameState = playState;
+
+        // Update peta dan transisi jika diperlukan
+        map.updateTiles(); // Update tiles setelah tidur
+
+        for (int i = 0; i <= 200; i += 10) {
+            try {
+            java.awt.Graphics g = this.getGraphics();
+            if (g != null) {
+                java.awt.Graphics2D g2 = (java.awt.Graphics2D) g.create();
+                g2.setColor(new Color(0, 0, 0, i));
+                g2.fillRect(0, 0, screenWidth, screenHeight);
+                g2.dispose();
+                Thread.sleep(30); // jeda animasi
+            }
+            } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            }
+        }
+        repaint(); // Memanggil repaint agar tampilan map diperbarui setelah tidur
+    }
 }
