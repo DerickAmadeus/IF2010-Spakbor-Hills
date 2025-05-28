@@ -168,7 +168,12 @@ public class GamePanel extends JPanel implements Runnable {
                     player.collisionOn = false; 
                     player.direction = "down"; // Atur arah default
                     // player.isActuallyMoving = false; // Jika Anda memiliki variabel ini di Player
+                    player.setLocation(transition.targetMapID);
+                    if (map.currentMapID != 3 && map.currentMapID != 0) {
+                        addMinutes(15);
+                        player.setEnergy(player.getEnergy() - 10);
 
+                    }
                     transition.startCooldown(); // Mulai cooldown untuk transisi yang baru saja digunakan
 
                     // Mencegah langsung kembali: terapkan cooldown pada transisi yang mengarah kembali
@@ -291,6 +296,7 @@ public class GamePanel extends JPanel implements Runnable {
             checkMapTransitions();
             player.watering();
             player.harvesting();
+            player.sleeping();
 
         }
         if (gameState == inventoryState) {
@@ -424,6 +430,7 @@ public class GamePanel extends JPanel implements Runnable {
         String timeString = String.format("Day %d - %02d:%02d", gameDay, gameHour, gameMinute);
         g2.drawString(timeString, 500, 30);
         g2.drawString(currentSeason, 500, 50);
+        g2.drawString(player.getLocation(), 500, 70);
 
 
 

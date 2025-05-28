@@ -36,6 +36,7 @@ public class Player {
     KeyHandler keyH;
     public String direction; // Current animation/movement state (e.g., "up", "idleDown")
     String lastMoveDirection; // Last actual direction of movement input ("up", "down", "left", "right")
+    private String location;
 
     public BufferedImage[] idleDownFrames, idleUpFrames, idleLeftFrames, idleRightFrames,
                            leftFrames, rightFrames, upFrames, downFrames;
@@ -193,6 +194,7 @@ public class Player {
         this.speed = 4;
         this.lastMoveDirection = "down"; // Default facing direction
         this.direction = "idleDown";     // Default animation state
+        this.location = "Farm Map";
     }
 
     public void getPlayerImage() {
@@ -560,6 +562,7 @@ public class Player {
             System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
             // setEnergy(getEnergy()+10); // Mungkin tidak perlu untuk interaksi umum
         }
+        gp.addMinutes(60);
         
         // Cooldown sudah diatur di metode update() setelah memanggil interact()
     }
@@ -589,6 +592,19 @@ public class Player {
         return farmName;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(int locationID) {
+        if (locationID == 0) {
+            this.location = "Farm Map";
+        } else if (locationID == 1) {
+            this.location = "Forest River";
+        }
+
+    }
+
     public void setFarmName(String farmName) {
         this.farmName = farmName;
     }
@@ -611,23 +627,7 @@ public class Player {
 
         // Periksa kondisi auto-sleep jika energi baru saja turun ke/di bawah -20
         // dan pemain sedang dalam kondisi bisa bermain (playState).
-        if (this.energy <= -20 && oldEnergy > -20) { // Hanya picu jika melewati ambang batas ke bawah
-            if (gp.gameState == gp.playState) { // Dan hanya jika sedang dalam state bermain aktif
-                System.out.println("Player: Too exhausted! Automatically going to sleep...");
-                // Penting: gp.startSleepingSequence() harus menangani transisi state dengan benar.
-                // Ini termasuk mengubah game state untuk mencegah aksi lebih lanjut
-                // dan pada akhirnya memulihkan energi (misalnya, saat hari baru dimulai).
-                gp.startSleepingSequence();
-                // Pemulihan energi (misalnya menjadi 10 atau MAX_ENERGY) idealnya ditangani sebagai bagian
-                // dari proses yang dimulai oleh startSleepingSequence().
-                energy = 10; // Atau bisa juga MAX_ENERGY, tergantung desain game Anda
-            }
-        } else if (this.energy < 0 && this.energy > -20) { // Kondisi energi rendah tapi belum pingsan
-             // Pesan peringatan ini dari kode asli Anda dipertahankan.
-            System.out.println("Warning: Energy is low! Action can still be performed, but consider sleeping.");
-        }
-        // Komentar "msdih print" dan "Error: Energy is too low! sleeping rn..."
-        // dari kode asli Anda kini digantikan dengan logika auto-sleep di atas.
+
     }
 
     public void tiling() {
@@ -744,21 +744,34 @@ public class Player {
     }
 
     public void sleeping() {
+        int energyRecover = 0;
+        if (energy < 0) {
+            energyRecover = (int)(0.1 * MAX_ENERGY);
+        } else if (energy < 10 ) {
+            energyRecover = (int)(0.5 * MAX_ENERGY); 
+        } else {
+            energyRecover = MAX_ENERGY;
+        }
+
+
         if (energy < MAX_ENERGY && keyH.interactPressed && interactionCooldown == 0) {
             if (gp.gameState == gp.playState) {
                 System.out.println("Player: Time to sleep!");
 
                 gp.startSleepingSequence();
                 // Reset energy to full after sleeping
-                setEnergy(MAX_ENERGY);
+                setEnergy(energyRecover);
 
             } else {
                 System.out.println("Player: Can only sleep during play state.");
             }
         } else if (energy == -20) {
-            System.out.println("Player: Too exhausted to sleep! You need to recover first.");
             gp.startSleepingSequence();
-            setEnergy(10);
+            setEnergy(energyRecover);
+        } 
+        if (gp.gameHour == 2){
+            gp.startSleepingSequence();
+            setEnergy(energyRecover);
         } else {
             System.out.println("Player: Energy is already full, no need to sleep.");
 
