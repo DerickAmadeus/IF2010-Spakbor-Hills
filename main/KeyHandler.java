@@ -24,16 +24,20 @@ public class KeyHandler implements KeyListener{
         if (gp.gameState == gp.titleState){
             if (code == KeyEvent.VK_W){
                 gp.titlePage.commandNumber--;
-                if (gp.titlePage.commandNumber < 0) gp.titlePage.commandNumber = 2;
+                if (gp.titlePage.commandNumber < 0) gp.titlePage.commandNumber = 3;
             } else if (code == KeyEvent.VK_S){
                 gp.titlePage.commandNumber++;
-                if (gp.titlePage.commandNumber > 2) gp.titlePage.commandNumber = 0;
+                if (gp.titlePage.commandNumber > 3) gp.titlePage.commandNumber = 0;
             } else if (code == KeyEvent.VK_ENTER){
                 enterPressed = true;   
-                if (gp.titlePage.commandNumber==0){        // NEW GAME
+                if (gp.titlePage.commandNumber == 0){        // NEW GAME
                     gp.gameState = gp.farmNameInputState;        // diproses di GamePanel.update()
-            }
-            return;                          // abaikan input lain saat title
+                } else if (gp.titlePage.commandNumber == 2) { // HELP
+                gp.gameState = gp.helpState;
+                } else if (gp.titlePage.commandNumber == 3) { // QUIT
+                    System.exit(0);
+                }
+                return;                          // abaikan input lain saat title
             }
         }
 
@@ -44,6 +48,11 @@ public class KeyHandler implements KeyListener{
             }
         gp.farmName.keyPressed(e);
         return;
+        }
+
+        if (gp.gameState == gp.helpState) {
+            gp.help.keyPressed(e);
+            return;
         }
 
         if (gp.gameState == gp.playState){

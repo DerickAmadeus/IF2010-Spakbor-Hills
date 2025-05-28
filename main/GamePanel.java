@@ -25,8 +25,8 @@ import java.awt.Font;
 public class GamePanel extends JPanel implements Runnable {
     
     //Game State
-    public final int titleState = -2;
-    public final int farmNameInputState = -1;
+    public final int titleState = -3;
+    public final int farmNameInputState = -2;
     public final int helpState = -1;
     public final int playState = 0;
     public final int pauseState = 1;
@@ -88,6 +88,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final TitlePage  titlePage  = new TitlePage(this);
     public final FarmName  farmName  = new FarmName(this);
     public CollisionChecker cChecker = new CollisionChecker(this); // Collision checker for player movement
+    public Help help = new Help(this);
     public Player player; // Player object
     private BufferedImage backgroundImage; // Background image for the game\
     
@@ -470,12 +471,12 @@ public class GamePanel extends JPanel implements Runnable {
                 keyHandler.enterPressed = false;
             }
         }
-        else if (gameState == farmNameInputState){
-            if(keyHandler.enterPressed){
-              gameState = playState;
-              setRainDaysForSeason();
-            }
-        }   
+        // else if (gameState == farmNameInputState){
+        //     // if(keyHandler.enterPressed){
+        //     //   gameState = playState;
+        //     //   setRainDaysForSeason();
+        //     // }
+        // }   
         
         player.update();
 
@@ -628,6 +629,13 @@ public class GamePanel extends JPanel implements Runnable {
             g2.dispose();
             return;
         }
+        else if (gameState == helpState) {
+
+        help.draw(g2);
+        g2.dispose();
+        return;
+        }
+
 
         if (map.currentMapID == 3) { // Ganti angka 3 jika ID peta rumah Anda berbeda
             g2.setColor(java.awt.Color.black); // Atur latar belakang menjadi hitam untuk rumah

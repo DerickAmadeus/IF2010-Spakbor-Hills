@@ -115,7 +115,7 @@ public class Help {
         g2.drawString(subtitle, getX(subtitle, g2), gp.tileSize * 3);
 
         //konten
-        g2.setFont(helpFont.deriveFont(Font.PLAIN, 18F));
+        g2.setFont(helpFont.deriveFont(Font.PLAIN, 16F));
         int y = gp.tileSize * 4;
         int lineGap = gp.tileSize;
 

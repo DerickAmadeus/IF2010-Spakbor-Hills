@@ -90,10 +90,10 @@ public class TitlePage {
 
         if (commandNumber == 0){
             g2.drawString(">", x - gp.tileSize, y);
-            if(gp.keyHandler.enterPressed){
-                gp.gameState = gp.farmNameInputState;
-                gp.keyHandler.enterPressed = false;
-            }
+            // if(gp.keyHandler.enterPressed){
+            //     gp.gameState = gp.farmNameInputState;
+            //     gp.keyHandler.enterPressed = false;
+            // }
         }
 
         //LOAD GAME
