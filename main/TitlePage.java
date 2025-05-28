@@ -109,6 +109,19 @@ public class TitlePage {
             g2.drawString(">", x - gp.tileSize, y);
         }
 
+        //HELP
+        text = "HELP";
+        x = getX(text, g2);
+        y += gp.tileSize;
+        g2.setColor(Color.black);
+        g2.drawString(text, x + 5, y + 5);
+        g2.setColor(Color.white);
+        g2.drawString(text, x, y);
+
+        if (commandNumber == 2){
+            g2.drawString(">", x - gp.tileSize, y);
+        }
+
         //QUIT  
         text = "QUIT";
         x = getX(text, g2);
@@ -118,7 +131,7 @@ public class TitlePage {
         g2.setColor(Color.white);
         g2.drawString(text, x, y);
 
-        if (commandNumber == 2){
+        if (commandNumber == 3){
             g2.drawString(">", x - gp.tileSize, y);
         }
     }

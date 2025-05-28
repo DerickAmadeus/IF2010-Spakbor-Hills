@@ -48,6 +48,8 @@ public class Player {
     private Item equippedItem;
     private int energy;
     private static final int MAX_ENERGY = 100; 
+
+    private Tile tile; 
     private String farmName;
 
 
@@ -60,6 +62,7 @@ public class Player {
         this.energy = MAX_ENERGY;
         this.inventory = new Inventory<>(gp);
         this.farmName = farmName;
+
         loadInitialEquipment();
         loadInitialSeeds();
         loadInitialFood();
@@ -74,6 +77,10 @@ public class Player {
         interactionArea = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
         setDefaultValues();
         getPlayerImage();
+    }
+
+    public void setFarmName(String farmName) {
+        this.farmName = farmName;
     }
 
     public void loadInitialSeeds() {

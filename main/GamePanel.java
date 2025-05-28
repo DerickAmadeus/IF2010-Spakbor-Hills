@@ -6,26 +6,28 @@ import java.awt.event.KeyEvent; // ← Tambahkan ini
 
 import Items.*;
 
+// import java.awt.*;
 import java.awt.Graphics2D;
-import java.awt.Rectangle; // Tambahkan import ini
+import java.awt.Rectangle; 
 import java.io.IOException;
 import java.awt.image.BufferedImage;
 
 import player.Player; // Importing player class from player package
 import Map.Map; // Importing map class from Map package
 
-import java.util.ArrayList; // Tambahkan import ini
+import java.util.ArrayList; 
 import java.util.Arrays;
-import java.util.List;    // Tambahkan import ini
-import java.awt.Color;    // Tambahkan import ini
+import java.util.List;   
+import java.awt.Color;   
 
-import java.awt.Font; // Tambahkan import ini
+import java.awt.Font; 
 
 public class GamePanel extends JPanel implements Runnable {
     
     //Game State
     public final int titleState = -2;
     public final int farmNameInputState = -1;
+    public final int helpState = -1;
     public final int playState = 0;
     public final int pauseState = 1;
     public final int dialogState = 2;
@@ -84,22 +86,21 @@ public class GamePanel extends JPanel implements Runnable {
     public Map map = new Map(this);
     public KeyHandler keyHandler = new KeyHandler(this); // Key handler for keyboard input 
     public final TitlePage  titlePage  = new TitlePage(this);
-    Thread gameThread; // Thread for the game loop
+    public final FarmName  farmName  = new FarmName(this);
     public CollisionChecker cChecker = new CollisionChecker(this); // Collision checker for player movement
     public Player player; // Player object
     private BufferedImage backgroundImage; // Background image for the game\
-
+    
     public boolean debugMode = false;
+
     public String fishingInput = "";
-
-
-
 
     int playerX = 100; // Player's X position
     int playerY = 100; // Player's Y position
     int playerSpeed = 4; // Player's speed
-
     
+    
+    Thread gameThread; // Thread for the game loop
 
     public GamePanel() {
         this.setPreferredSize(new java.awt.Dimension(screenWidth, screenHeight));
@@ -110,7 +111,10 @@ public class GamePanel extends JPanel implements Runnable {
         
         gameState = titleState; // start dari title dulu
 
-        this.player = new Player(this, keyHandler, "initial"); // Initialize player object
+        setFocusTraversalKeysEnabled(false);
+
+        this.player = new Player(this, keyHandler, ""); // Initialize player object
+
         initializeTransitions(); // Panggil setelah tileSize dan player siap
 
         try {
@@ -454,11 +458,14 @@ public class GamePanel extends JPanel implements Runnable {
     public void update() {
         if (gameState == titleState){
             if(keyHandler.enterPressed){
-                if(titlePage.commandNumber == 0){
+                if (titlePage.commandNumber == 3){
+                    System.exit(0);
+                }
+                else if(titlePage.commandNumber == 0){
                     gameState = farmNameInputState;
                 }
-                else if (titlePage.commandNumber == 2){
-                    System.exit(0);
+                else if(titlePage.commandNumber == 2){
+                    gameState = helpState;
                 }
                 keyHandler.enterPressed = false;
             }
@@ -614,16 +621,12 @@ public class GamePanel extends JPanel implements Runnable {
 
         if (gameState == titleState) {
             titlePage.draw(g2);
-
-            return; // Keluar setelah menggambar title state
-        } else if (gameState == farmNameInputState) {
-            g2.setColor(java.awt.Color.black);
-            g2.fillRect(0, 0, screenWidth, screenHeight);
-            g2.setColor(java.awt.Color.white);
-            g2.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 30));
-            g2.drawString("Farm Name Input State", 100, screenHeight / 2);
-            // Sebaiknya jangan panggil g2.dispose() di sini
-            return; // Keluar setelah menggambar farm name input state
+            g2.dispose();
+            return;
+        } else if (gameState == farmNameInputState){
+            farmName.draw(g2);
+            g2.dispose();
+            return;
         }
 
         if (map.currentMapID == 3) { // Ganti angka 3 jika ID peta rumah Anda berbeda
