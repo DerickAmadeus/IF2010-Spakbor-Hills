@@ -17,7 +17,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import Furniture.Stove;
+import Furniture.*;
 import player.Player;
 import player.Recipe;
 import player.RecipeLoader; 
@@ -37,6 +37,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int cookingState = 6;
     public final int fuelState = 7;
     public final int fishSelectionState = 8;
+    public final int watchingState = 9;
     public int gameState = titleState;
     public String[] initialSeason = {"Spring", "Summer", "Fall", "Winter"};
     public int currentSeasonIndex = 0;
@@ -66,6 +67,7 @@ public class GamePanel extends JPanel implements Runnable {
     public int fishSelectionRow = 0;
     public int fishSelectionOffset = 0;
     public Stove activeStove; 
+    public TV activeTV;
     Recipe pendingRecipe;
     int requiredFishAmount;
 
@@ -664,9 +666,10 @@ public class GamePanel extends JPanel implements Runnable {
             checkMapTransitions();
             player.watering();
             player.harvesting();
-            player.sleeping();
             player.fishing();
+            player.sleeping();
             player.cooking();
+            player.watching();
         }
         if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(
@@ -876,7 +879,13 @@ public class GamePanel extends JPanel implements Runnable {
             }
             player.sleeping();
         }
-        
+        if (gameState == watchingState) {
+            if(keyHandler.enterPressed) {
+                gameState = playState;
+                keyHandler.enterPressed = false;
+            }
+            player.sleeping();
+        }
         long now = System.currentTimeMillis();
         if (now - lastRealTime >= REAL_TIME_INTERVAL && gameState != fishingState) {
             gameMinute += 5;
@@ -901,7 +910,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
         
         if (gameDay == rainDaysInSeason[0] || gameDay == rainDaysInSeason[1]) {
-            currentWeather = initialWeather[0]; // Hujan
+            currentWeather = initialWeather[0]; 
         } else {
             currentWeather = initialWeather[1];
         }
@@ -1249,22 +1258,34 @@ public class GamePanel extends JPanel implements Runnable {
             g2.fillRect(0, 0, screenWidth, screenHeight);
         }
         if (currentWeather.equals("Rainy") && !player.getLocation().equals("Player's House")) {
-            g2.setColor(new Color(0, 0, 0, 80)); // Hitam transparan untuk efek gelap
+            g2.setColor(new Color(0, 0, 0, 80)); 
             g2.fillRect(0, 0, screenWidth, screenHeight);
 
             for (RainDrop drop : rainDrops) {
-                drop.draw(g2); // Gambar partikel hujan di atas
+                drop.draw(g2); 
             }
         }
         g2.setColor(java.awt.Color.white);
         g2.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20));
         String timeString = String.format("Day %d - %02d:%02d", gameDay, gameHour, gameMinute);
         g2.drawString(timeString, 500, 30);
-        g2.drawString(currentSeason, 500, 50);
         g2.drawString(player.getLocation(), 500, 70);
-        g2.drawString(currentSeason + " - " + currentWeather, 500, 50);
-
-
+        switch (currentSeason) {
+            case "Spring":
+                g2.setColor(Color.PINK);
+                break;
+            case "Summer":
+                g2.setColor(Color.YELLOW);
+                break;
+            case "Fall":
+                g2.setColor(Color.ORANGE);
+                break;
+            case "Winter":
+                g2.setColor(Color.CYAN);
+            default:
+                break;
+        }
+        g2.drawString(currentSeason, 500, 50);
 
         player.drawPlayer(g2);
         player.drawEnergyBar(g2);
@@ -1272,7 +1293,7 @@ public class GamePanel extends JPanel implements Runnable {
         if (debugMode) {
             for (TransitionData transition : transitions) {
                 if (transition.sourceMapID == map.currentMapID) {
-                    g2.setColor(new Color(0, 0, 255, 80)); // Biru transparan
+                    g2.setColor(new Color(0, 0, 255, 80)); 
                     int screenAreaX = transition.sourceArea.x - player.x + player.screenX;
                     int screenAreaY = transition.sourceArea.y - player.y + player.screenY;
                     g2.fillRect(screenAreaX, screenAreaY, transition.sourceArea.width, transition.sourceArea.height);
@@ -1306,6 +1327,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
         if (gameState == fishSelectionState) {
             drawFishSelection(g2);
+        }
+        if (gameState == watchingState) {
+            activeTV.screen(g2, this);
         }
     }
 

@@ -833,4 +833,16 @@ public class Player {
             }
         }
     }
+      public void watching() {
+        if (energy >= -5 && keyH.enterPressed && interactionCooldown == 0) {
+            Tile TV = gp.map.getTile(interactionArea.x, interactionArea.y);
+            if (TV != null && TV instanceof TV) {
+                gp.activeTV = (TV) TV;
+                gp.gameState = gp.watchingState;
+                keyH.enterPressed = false;
+                setEnergy(getEnergy() - 5);
+                gp.addMinutes(15);
+            } 
+        }
+    }
 }
