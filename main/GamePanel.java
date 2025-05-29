@@ -4,6 +4,7 @@ import Items.*;
 import Map.Map;
 import java.awt.Color; // ← Tambahkan ini
 import java.awt.Font;
+import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
@@ -11,10 +12,15 @@ import java.awt.image.BufferedImage;
 import java.io.IOException; // Importing player class from player package
 import java.util.ArrayList; // Importing map class from Map package
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-import player.Player; 
+
+import Furniture.*;
+import player.Player;
+import player.Recipe;
+import player.RecipeLoader; 
 
 public class GamePanel extends JPanel implements Runnable {
     
@@ -29,6 +35,10 @@ public class GamePanel extends JPanel implements Runnable {
     public final int inventoryState = 3;
     public final int itemOptionState = 4;
     public final int fishingState = 5;
+    public final int cookingState = 6;
+    public final int fuelState = 7;
+    public final int fishSelectionState = 8;
+    public final int watchingState = 9;
     public int gameState = titleState;
     public String[] initialSeason = {"Spring", "Summer", "Fall", "Winter"};
     public int currentSeasonIndex = 0;
@@ -46,6 +56,21 @@ public class GamePanel extends JPanel implements Runnable {
     public int maxFishingAttempts = 0;  // Batas percobaan sesuai rarity
     public String fishingHint = "";
 
+    public Recipe[] allRecipes = RecipeLoader.loadInitialRecipes();
+    public Misc[] fuels = {new Misc("Firewood", "ini firewood", 20, 40), new Misc("Coal", "ini coal", 20, 40)};
+    public int cookingCursorCol = 0;
+    public int cookingCursorRow = 0;
+    public int cookingCursorOffset = 0;
+    public int fuelCursorCol = 0;
+    public int fuelCursorRow = 0;
+    public int fuelCursorOffset = 0;
+    public int fishSelectionCol = 0;
+    public int fishSelectionRow = 0;
+    public int fishSelectionOffset = 0;
+    public Stove activeStove; 
+    public TV activeTV;
+    Recipe pendingRecipe;
+    int requiredFishAmount;
 
     // Game Time
     public int gameHour = 6; // Mulai dari jam 6 pagi
@@ -370,7 +395,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
 
-    public void handleFishingPasswordInput(int code) {
+    public void handleFishingInput(int code) {
         if (gameState != fishingState) return;
 
         if (fishingTarget == -1) {
@@ -434,8 +459,127 @@ public class GamePanel extends JPanel implements Runnable {
         gameState = playState;
         fishingHint = "";
     }
+    public void updateCookingCursor(boolean up, boolean down, boolean left, boolean right) {
+        final int maxIndex = 10; // 11 item → index 0–10
+        final int ITEMS_PER_ROW = 4;
+        final int MAX_ROWS_ON_SCREEN = 5;
 
+        if (up && cookingCursorRow > 0) {
+            cookingCursorRow--;
+            if (cookingCursorRow < cookingCursorOffset) {
+                cookingCursorOffset = cookingCursorRow;
+            }
+        }
 
+        if (down) {
+            int nextIndex = (cookingCursorRow + 1) * ITEMS_PER_ROW + cookingCursorCol;
+            if (nextIndex <= maxIndex) {
+                cookingCursorRow++;
+                if (cookingCursorRow >= cookingCursorOffset + MAX_ROWS_ON_SCREEN) {
+                    cookingCursorOffset = cookingCursorRow - MAX_ROWS_ON_SCREEN + 1;
+                }
+            }
+        }
+
+        if (left && cookingCursorCol > 0) {
+            cookingCursorCol--;
+        }
+
+        if (right) {
+            if (cookingCursorCol < ITEMS_PER_ROW - 1) {
+                int nextIndex = cookingCursorRow * ITEMS_PER_ROW + cookingCursorCol + 1;
+                if (nextIndex <= maxIndex) {
+                    cookingCursorCol++;
+                }
+            }
+        }
+
+        // Hindari kursor berada di slot kosong
+        int currentIndex = cookingCursorRow * ITEMS_PER_ROW + cookingCursorCol;
+        if (currentIndex > maxIndex) {
+            cookingCursorCol = maxIndex % ITEMS_PER_ROW;
+            cookingCursorRow = maxIndex / ITEMS_PER_ROW;
+        }
+    }
+    public void updateFuelCursor(boolean up, boolean down, boolean left, boolean right) {
+        final int maxIndex = 1; 
+        final int ITEMS_PER_ROW = 1;
+        final int MAX_ROWS_ON_SCREEN = 2;
+
+        if (up && fuelCursorRow > 0) {
+            fuelCursorRow--;
+            if (fuelCursorRow < fuelCursorOffset) {
+                fuelCursorOffset = fuelCursorRow;
+            }
+        }
+
+        if (down) {
+            int nextIndex = (fuelCursorRow + 1) * ITEMS_PER_ROW + fuelCursorCol;
+            if (nextIndex <= maxIndex) {
+                fuelCursorRow++;
+                if (fuelCursorRow >= fuelCursorOffset + MAX_ROWS_ON_SCREEN) {
+                    fuelCursorOffset = fuelCursorRow - MAX_ROWS_ON_SCREEN + 1;
+                }
+            }
+        }
+
+        if (left && fuelCursorCol > 0) {
+            fuelCursorCol--;
+        }
+
+        if (right) {
+            if (fuelCursorCol < ITEMS_PER_ROW - 1) {
+                int nextIndex = fuelCursorRow * ITEMS_PER_ROW + fuelCursorCol + 1;
+                if (nextIndex <= maxIndex) {
+                    fuelCursorCol++;
+                }
+            }
+        }
+
+        // Hindari kursor berada di slot kosong
+        int currentIndex = fuelCursorRow * ITEMS_PER_ROW + fuelCursorCol;
+        if (currentIndex > maxIndex) {
+            fuelCursorCol = maxIndex % ITEMS_PER_ROW;
+            fuelCursorRow = maxIndex / ITEMS_PER_ROW;
+        }
+    }
+    public void updateFishSelectionCursor(int maxIndex, boolean up, boolean down, boolean left, boolean right) {
+        int ITEMS_PER_ROW = 5;
+        int SLOT_SIZE = 64;
+        int VIEWPORT_HEIGHT = 300; 
+        int MAX_ROWS_ON_SCREEN = VIEWPORT_HEIGHT / SLOT_SIZE;
+        if (up && fishSelectionRow > 0) {
+            fishSelectionRow--;
+            if (fishSelectionRow < fishSelectionOffset) {
+                fishSelectionOffset = fishSelectionRow;
+            }
+        }
+        if (down) {
+            int nextIndex = (fishSelectionRow + 1) * ITEMS_PER_ROW + fishSelectionCol;
+            if (nextIndex <= maxIndex) {
+                fishSelectionRow++;
+                if (fishSelectionRow >= fishSelectionOffset + MAX_ROWS_ON_SCREEN) {
+                    fishSelectionOffset = fishSelectionRow - MAX_ROWS_ON_SCREEN + 1;
+                }
+            }
+        }
+        if (left && fishSelectionCol > 0) {
+            fishSelectionCol--;
+        }
+        if (right) {
+            if (fishSelectionCol < ITEMS_PER_ROW - 1) {
+                int nextIndex = fishSelectionRow * ITEMS_PER_ROW + fishSelectionCol + 1;
+                if (nextIndex <= maxIndex) {
+                    fishSelectionCol++;
+                }
+            }
+        }
+
+        if ((fishSelectionRow * ITEMS_PER_ROW + fishSelectionCol) > maxIndex) {
+            fishSelectionCol = maxIndex % ITEMS_PER_ROW;
+            fishSelectionRow = maxIndex / ITEMS_PER_ROW;
+        }
+    }
 
     public void setupGame(){
         gameState = titleState;
@@ -555,8 +699,10 @@ public class GamePanel extends JPanel implements Runnable {
             checkMapTransitions();
             player.watering();
             player.harvesting();
-            player.sleeping();
             player.fishing();
+            player.sleeping();
+            player.cooking();
+            player.watching();
         }
         if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(
@@ -571,11 +717,11 @@ public class GamePanel extends JPanel implements Runnable {
             keyHandler.leftPressed = false;
             keyHandler.rightPressed = false;
 
-            // Saat tekan Enter, buka opsi untuk item yang dipilih
             if (keyHandler.enterPressed) {
                 player.getInventory().selectCurrentItem();
                 keyHandler.enterPressed = false;
             }
+            player.sleeping();
         }
         else if (gameState == itemOptionState) {
             if (keyHandler.upPressed) {
@@ -619,18 +765,159 @@ public class GamePanel extends JPanel implements Runnable {
                             player.eating();
                             gameState = inventoryState;
                         } else if (player.getInventory().optionCommandNum == 1) {
-                            gameState = inventoryState; // Cancel
+                            gameState = inventoryState; 
                         }
                     }
                     keyHandler.enterPressed = false;
                 }
             }
+            player.sleeping();
         }
         if (gameState == fishingState) {
             if(keyHandler.enterPressed) {
                 gameState = playState;
                 keyHandler.enterPressed = false;
             }
+        }
+        if (gameState == cookingState) {
+            updateCookingCursor(
+                keyHandler.upPressed,
+                keyHandler.downPressed,
+                keyHandler.leftPressed,
+                keyHandler.rightPressed
+            );
+
+            keyHandler.upPressed = false;
+            keyHandler.downPressed = false;
+            keyHandler.leftPressed = false;
+            keyHandler.rightPressed = false;
+
+            if (keyHandler.enterPressed) {
+                keyHandler.enterPressed = false;
+
+                Recipe selectedRecipe = allRecipes[cookingCursorRow * 4 + cookingCursorCol];
+
+                if (activeStove != null && activeStove.getFuel() != null && activeStove.getcookingFuel() > 0) {
+                    String fuelName = activeStove.getFuel().getName();
+                    int timesToCook = fuelName.equals("Coal") ? 2 : 1;
+
+                    HashMap<Item, Integer> ingredients = selectedRecipe.getIngredients();
+                    boolean hasAllIngredients = true;
+                    HashMap<Item, Integer> actualIngredientsToUse = new HashMap<>();
+
+                    for (Item item : ingredients.keySet()) {
+                        int required = ingredients.get(item) * timesToCook;
+
+                        if (item.getName().equals("Any Fish")) {
+                            if (player.getInventory().hasItemOfClass(Fish.class, required)) {
+                                pendingRecipe = selectedRecipe;
+                                requiredFishAmount = required;
+                                gameState = fishSelectionState;
+                                return;
+                            } else {
+                                hasAllIngredients = false;
+                                gameState = playState;
+                                break;
+                            }
+                        } else {
+                            if (player.getInventory().hasItem(item) && player.getInventory().getItemCount(item) >= required) {
+                                actualIngredientsToUse.put(item, required);
+                            } else {
+                                hasAllIngredients = false;
+                                gameState = playState;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (hasAllIngredients) {
+                        // Konsumsi bahan
+                        for (Item item : actualIngredientsToUse.keySet()) {
+                            player.getInventory().removeItem(item, actualIngredientsToUse.get(item));
+                        }
+                        activeStove.cook(this, selectedRecipe.getFood());
+                    }
+                    if (activeStove.getcookingFuel() <= 0) {
+                        gameState = playState;
+                    }
+                } else {
+                    gameState = playState;
+                }
+            }
+            player.sleeping();
+        }
+        if (gameState == fuelState) {
+            updateFuelCursor(
+                keyHandler.upPressed,
+                keyHandler.downPressed,
+                keyHandler.leftPressed,
+                keyHandler.rightPressed
+            );
+
+            keyHandler.upPressed = false;
+            keyHandler.downPressed = false;
+            keyHandler.leftPressed = false;
+            keyHandler.rightPressed = false;
+            if(keyHandler.enterPressed) {
+                gameState = playState;
+                keyHandler.enterPressed = false;
+            } else if (keyHandler.fpressed) {
+                Misc selectedFuel = fuels[fuelCursorRow]; 
+                if (player.getInventory().getItem(selectedFuel) != null) {
+                    if(activeStove.getFuel() == null) {
+                        activeStove.isiFuel(selectedFuel);
+                        player.getInventory().removeItem(selectedFuel, 1); 
+                    } else if (activeStove.getFuel().getName().equals("Firewood") && selectedFuel.getName().equals("Coal")) {
+                        player.getInventory().addItem(activeStove.getFuel(), 1);
+                        activeStove.isiFuel(selectedFuel);
+                        player.getInventory().removeItem(selectedFuel, 1); 
+                    } else if (activeStove.getFuel().getName().equals("Coal") && selectedFuel.getName().equals("Firewood") && activeStove.getcookingFuel() > 1) {
+                        player.getInventory().addItem(activeStove.getFuel(), 1);
+                        activeStove.isiFuel(selectedFuel);
+                        player.getInventory().removeItem(selectedFuel, 1); 
+                    }
+                }
+                keyHandler.fpressed = false;
+            }
+            player.sleeping();
+        }
+        if (gameState == fishSelectionState) {
+            HashMap<Item, Integer> fishes = player.getInventory().getAllItemOfClass(Fish.class);
+            List<Item> fishList = new ArrayList<>(fishes.keySet());
+            updateFishSelectionCursor( fishes.size() - 1,
+                keyHandler.upPressed,
+                keyHandler.downPressed,
+                keyHandler.leftPressed,
+                keyHandler.rightPressed
+            );
+
+            keyHandler.upPressed = false;
+            keyHandler.downPressed = false;
+            keyHandler.leftPressed = false;
+            keyHandler.rightPressed = false;
+            if (keyHandler.enterPressed) {
+                Item selectedFish = fishList.get(fishSelectionRow * 4 + fishSelectionCol);
+                if (player.getInventory().getItemCount(selectedFish) >= requiredFishAmount) {
+                    player.getInventory().removeItem(selectedFish, requiredFishAmount);
+                    HashMap<Item, Integer> otherIngredients = pendingRecipe.getIngredients();
+                    for (Item item : otherIngredients.keySet()) {
+                        if (!item.getName().equals("Any Fish")) {
+                            player.getInventory().removeItem(item, otherIngredients.get(item));
+                        }
+                    }
+                    activeStove.cook(this, pendingRecipe.getFood());
+                    gameState = playState;
+                }
+                keyHandler.enterPressed = false;
+            }
+            player.sleeping();
+        }
+        if (gameState == watchingState) {
+            if(keyHandler.enterPressed) {
+                gameState = playState;
+                keyHandler.enterPressed = false;
+            }
+            player.sleeping();
         }
         long now = System.currentTimeMillis();
         if (now - lastRealTime >= REAL_TIME_INTERVAL && gameState != fishingState) {
@@ -656,16 +943,312 @@ public class GamePanel extends JPanel implements Runnable {
         }
         
         if (gameDay == rainDaysInSeason[0] || gameDay == rainDaysInSeason[1]) {
-            currentWeather = initialWeather[0]; // Hujan
+            currentWeather = initialWeather[0]; 
         } else {
             currentWeather = initialWeather[1];
         }
-        if (currentWeather.equals("Rainy")) {
+        if (currentWeather.equals("Rainy") && !player.getLocation().equals("Player's House")) {
             for (RainDrop drop : rainDrops) {
                 drop.update();
             }
         }
     }
+
+    public void drawFishingWindow(Graphics2D g2) {
+        int frameX = tileSize;
+        int frameY = tileSize * 2;
+        int frameWidth = tileSize * 6;
+        int frameHeight = tileSize * 5;
+
+        Color backgroundColor = new Color(0, 0, 0, 210);
+        g2.setColor(backgroundColor);
+        g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
+
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(5));
+        g2.drawRoundRect(frameX + 5, frameY + 5, frameWidth - 10, frameHeight - 10, 25, 25);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.drawString("Fish Caught!", frameX + 20, frameY + 50);
+        int debugY = frameY + 130;
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
+
+        if (fishingTargetFish != null) {
+            g2.drawString("Attempt: " + fishingAttempts + " / " + maxFishingAttempts, frameX + 20, debugY);
+            debugY += 25;
+            g2.drawString("Fish: " + fishingTargetFish.getName() + " (" + fishingTargetFish.getRarity() + ")", frameX + 20, debugY);
+            debugY += 25;
+        } else {
+            debugY += 25;
+            g2.drawString("Mulai Memancing!!!", frameX + 20, debugY);
+            debugY += 25;
+        }
+
+        // Hint berdasarkan tebakan
+        if (fishingHint != null && !fishingHint.isEmpty()) {
+            g2.setColor(Color.YELLOW);
+            g2.drawString("Hint: " + fishingHint, frameX + 20, debugY);
+        }
+        if (debugMode) {
+            if (fishingTarget != -1) {
+                g2.drawString("Target Code: " + fishingTarget, frameX + 20, debugY + 25);
+            }
+        }
+        g2.drawString(fishingInput, frameX + 20, frameY + 90);
+    }
+
+    public void drawCookingWindow(Graphics2D g2) {
+        int frameX = tileSize;
+        int frameY = tileSize * 2;
+        int frameWidth = tileSize * 5;
+        int frameHeight = tileSize * 4;
+
+        Color backgroundColor = new Color(0, 0, 0, 210);
+        g2.setColor(backgroundColor);
+        g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
+        g2.fillRoundRect(frameX + 350, frameY, frameWidth, frameHeight + 100, 35, 35);
+
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(5));
+        g2.drawRoundRect(frameX + 5, frameY + 5, frameWidth - 10, frameHeight - 10, 25, 25);
+        g2.drawRoundRect(frameX + 5 + 350, frameY + 5, frameWidth - 10, frameHeight - 10 + 100, 25, 25);
+
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
+        //slot
+        final int slotXStart = frameX + 20;
+        final int slotYStart = frameY + 20;
+
+        // CURSOR
+        int cursorX = slotXStart + (tileSize * cookingCursorCol);
+        int cursorY = slotYStart + (tileSize * (cookingCursorRow - cookingCursorOffset));
+        int cursorWidth = tileSize;
+        int cursorHeight = tileSize;
+
+        // DRAW CURSOR
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10); 
+        int index = 0;
+        for (Recipe recipe : allRecipes) {
+            int row = index / 4;
+
+            if (row < cookingCursorOffset) {
+                index++;
+                continue; // Lewati baris di atas viewport
+            }
+
+            if (row >= cookingCursorOffset + 300 / 64) {
+                break; // Hentikan kalau sudah melebihi viewport
+            }
+
+            int col = index % 4;
+            int itemX = slotXStart + col * tileSize;
+            int itemY = slotYStart + (row - cookingCursorOffset) * tileSize; // kurangi offset agar scroll naik
+
+            if (recipe.getFood().getIcon() != null) {
+                int padding = 6;
+                int drawSize = tileSize - 2 * padding;
+                int drawX = itemX + padding;
+                int drawY = itemY + padding;
+
+                g2.drawImage(recipe.getFood().getIcon(), drawX, drawY, drawSize, drawSize, null);
+            }
+            index++;
+        }
+        // Hitung index recipe yang sedang dipilih
+       // Hitung index recipe yang sedang dipilih
+        int selectedIndex = cookingCursorRow * 4 + cookingCursorCol;
+        if (selectedIndex >= 0 && selectedIndex < allRecipes.length) {
+            Recipe selectedRecipe = allRecipes[selectedIndex];
+
+            // Posisi awal panel kanan
+            int detailX = frameX + 370;
+            int detailY = frameY + 20;
+            int detailGapY = tileSize;
+
+            int ingIndex = 0;
+            for (Item item : selectedRecipe.getIngredients().keySet()) {
+                int amount = selectedRecipe.getIngredients().get(item);
+                if (activeStove != null && activeStove.getFuel() != null && activeStove.getFuel().getName().equals("Coal")) {
+                    amount *= 2;
+                }
+                int iconSize = tileSize - 8;
+                int iconX = detailX;
+                int iconY = detailY + ingIndex * detailGapY;
+
+                boolean enough = false;
+
+                if (item.getName().equals("Any Fish")) {
+                    enough = player.getInventory().hasItemOfClass(Fish.class, amount);
+                } else {
+                    enough = player.getInventory().getItem(item) != null &&
+                            player.getInventory().getItemCount(item) >= amount;
+                }
+
+                if (item.getIcon() != null) {
+                    g2.drawImage(item.getIcon(), iconX, iconY, iconSize, iconSize, null);
+                }
+
+                g2.setColor(enough ? Color.white : Color.red);
+                g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
+                String displayName = item.getName();
+                g2.drawString(displayName + " x" + amount, iconX + iconSize + 10, iconY + 24);
+                ingIndex++;
+            }
+            }
+    }
+   public void drawFuelWindow(Graphics2D g2) {
+        int frameX = tileSize;
+        int frameY = tileSize * 2;
+        int frameWidth = tileSize * 4;
+        int frameHeight = tileSize * 3;
+
+        Color backgroundColor = new Color(0, 0, 0, 210);
+        g2.setColor(backgroundColor);
+        g2.fillRoundRect(frameX + 250, frameY, frameWidth, frameHeight, 35, 35);
+
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(5));
+        g2.drawRoundRect(frameX + 5 + 250, frameY + 5, frameWidth - 10, frameHeight - 10, 25, 25);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
+
+        final int slotXStart = frameX + 20 + 250;
+        final int slotYStart = frameY + 20;
+
+        // Batasan cursor untuk 2 item
+        if (fuelCursorRow < 0) fuelCursorRow = 0;
+        if (fuelCursorRow > 1) fuelCursorRow = 1;
+
+        // DRAW CURSOR (vertikal)
+        int cursorX = slotXStart;
+        int cursorY = slotYStart + fuelCursorRow * tileSize;
+        int cursorWidth = tileSize;
+        int cursorHeight = tileSize;
+
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10); 
+
+        // DRAW FUELS (hanya 2 item, vertikal)
+        for (int i = 0; i < fuels.length && i < 2; i++) {
+            Misc fuel = fuels[i];
+            int itemX = slotXStart;
+            int itemY = slotYStart + i * tileSize;
+
+            if (fuel.getIcon() != null) {
+                int padding = 6;
+                int drawSize = tileSize - 2 * padding;
+                int drawX = itemX + padding;
+                int drawY = itemY + padding;
+
+                g2.drawImage(fuel.getIcon(), drawX, drawY, drawSize, drawSize, null);
+                if (player.getInventory().getItem(fuel) == null) {
+                    g2.setColor(Color.red);
+                } else {
+                    g2.setColor(Color.white);
+                }
+                g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
+                g2.drawString(fuel.getName() + " x" + 1, drawX + drawSize + 10, drawY + 24);
+            }
+        }
+        int slotWidth = tileSize;
+        int slotHeight = tileSize;
+        int slotX = frameX + 250 + (frameWidth / 2) - (slotWidth / 2); 
+        int slotY = frameY + frameHeight - tileSize + 50;
+        g2.setColor(backgroundColor);
+        g2.fillRoundRect(slotX, slotY, slotWidth, slotHeight, 15, 15);
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(slotX + 5, slotY + 5, slotWidth - 10, slotHeight - 10, 10, 10);
+
+        if (activeStove != null && activeStove.getFuel() != null) {
+            Misc fuel = activeStove.getFuel();
+            if (fuel.getIcon() != null) {
+                int padding = 6;
+                int drawSize = tileSize - 2 * padding;
+                int drawX = slotX + padding;
+                int drawY = slotY + padding;
+                g2.drawImage(fuel.getIcon(), drawX, drawY, drawSize, drawSize, null);
+            }
+        }
+    }
+
+    public void drawFishSelection(Graphics2D g2) {
+        // FRAME UKURAN & POSISI
+        int frameX = tileSize * 9;
+        int frameY = tileSize;
+        int frameWidth = tileSize * 6;
+        int frameHeight = tileSize * 5;
+        Color c = new Color(0,0,0, 210);
+        g2.setColor(c);
+        g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
+        c = new Color(255,255,255);
+        g2.setColor(c);
+        g2.setStroke(new BasicStroke(5));
+        g2.drawRoundRect(frameX+5, frameY+5, frameWidth-10, frameHeight-10, 25, 25);
+
+        final int slotXStart = frameX + 20;
+        final int slotYStart = frameY + 20;
+
+        int cursorX = slotXStart + (tileSize * fishSelectionCol);
+        int cursorY = slotYStart + (tileSize * (fishSelectionRow - fishSelectionOffset));
+        int cursorWidth = tileSize;
+        int cursorHeight = tileSize;
+
+        // DRAW CURSOR
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
+        HashMap<Item, Integer> fishes = player.getInventory().getAllItemOfClass(Fish.class);
+        List<Item> fishList = new ArrayList<>(fishes.keySet());
+
+        int ITEMS_PER_ROW = 5;
+        int SLOT_SIZE = 64;
+        int VIEWPORT_HEIGHT = 300; 
+        int MAX_ROWS_ON_SCREEN = VIEWPORT_HEIGHT / SLOT_SIZE;
+        int index = 0;
+        for (Item item : fishList) {
+            int row = index / ITEMS_PER_ROW;
+
+            if (row < fishSelectionOffset) {
+                index++;
+                continue; // Lewati baris di atas viewport
+            }
+
+            if (row >= fishSelectionOffset + MAX_ROWS_ON_SCREEN) {
+                break; // Hentikan kalau sudah melebihi viewport
+            }
+
+            int col = index % ITEMS_PER_ROW;
+            int itemX = slotXStart + col * tileSize;
+            int itemY = slotYStart + (row - fishSelectionOffset) * tileSize; // kurangi offset agar scroll naik
+
+            if (item.getIcon() != null) {
+                int padding = 6;
+                int drawSize = tileSize - 2 * padding;
+                int drawX = itemX + padding;
+                int drawY = itemY + padding;
+
+                g2.drawImage(item.getIcon(), drawX, drawY, drawSize, drawSize, null);
+            }
+
+            Integer count = fishes.get(item);
+            if (count != null && count > 1) {
+                g2.setColor(Color.white);
+                g2.setFont(new Font("Arial", Font.BOLD, 12));
+                String countStr = String.valueOf(count);
+                int stringWidth = g2.getFontMetrics().stringWidth(countStr);
+                g2.drawString(countStr, itemX + tileSize - stringWidth - 4, itemY + tileSize - 4);
+            }
+
+            index++;
+        }
+    }
+
 
     public void paintComponent(java.awt.Graphics g) {
         super.paintComponent(g);
@@ -708,23 +1291,40 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
         map.draw(g2); // Draw the map
-        if (currentWeather.equals("Rainy")) {
-            g2.setColor(new Color(0, 0, 0, 80)); // Hitam transparan untuk efek gelap
+        if (gameHour >= 18 || gameHour <= 5) {
+            Color nightOverlay = new Color(0, 0, 0, 100);
+            g2.setColor(nightOverlay);
+            g2.fillRect(0, 0, screenWidth, screenHeight);
+        }
+        if (currentWeather.equals("Rainy") && !player.getLocation().equals("Player's House")) {
+            g2.setColor(new Color(0, 0, 0, 80)); 
             g2.fillRect(0, 0, screenWidth, screenHeight);
 
             for (RainDrop drop : rainDrops) {
-                drop.draw(g2); // Gambar partikel hujan di atas
+                drop.draw(g2); 
             }
         }
         g2.setColor(java.awt.Color.white);
         g2.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20));
         String timeString = String.format("Day %d - %02d:%02d", gameDay, gameHour, gameMinute);
         g2.drawString(timeString, 500, 30);
-        g2.drawString(currentSeason, 500, 50);
         g2.drawString(player.getLocation(), 500, 70);
-        g2.drawString(currentSeason + " - " + currentWeather, 500, 50);
-
-
+        switch (currentSeason) {
+            case "Spring":
+                g2.setColor(Color.PINK);
+                break;
+            case "Summer":
+                g2.setColor(Color.YELLOW);
+                break;
+            case "Fall":
+                g2.setColor(Color.ORANGE);
+                break;
+            case "Winter":
+                g2.setColor(Color.CYAN);
+            default:
+                break;
+        }
+        g2.drawString(currentSeason, 500, 50);
 
         player.drawPlayer(g2);
         player.drawEnergyBar(g2);
@@ -732,7 +1332,7 @@ public class GamePanel extends JPanel implements Runnable {
         if (debugMode) {
             for (TransitionData transition : transitions) {
                 if (transition.sourceMapID == map.currentMapID) {
-                    g2.setColor(new Color(0, 0, 255, 80)); // Biru transparan
+                    g2.setColor(new Color(0, 0, 255, 80)); 
                     int screenAreaX = transition.sourceArea.x - player.x + player.screenX;
                     int screenAreaY = transition.sourceArea.y - player.y + player.screenY;
                     g2.fillRect(screenAreaX, screenAreaY, transition.sourceArea.width, transition.sourceArea.height);
@@ -756,9 +1356,20 @@ public class GamePanel extends JPanel implements Runnable {
             player.getInventory().drawItemOptionWindow(g2);
         }
         if (gameState == fishingState) {
-            player.drawFishingWindow(g2);
+            drawFishingWindow(g2);
         }
-
+        if (gameState == cookingState) {
+            drawCookingWindow(g2);
+        }
+        if (gameState == fuelState) {
+            drawFuelWindow(g2);
+        }
+        if (gameState == fishSelectionState) {
+            drawFishSelection(g2);
+        }
+        if (gameState == watchingState) {
+            activeTV.screen(g2, this);
+        }
     }
 
     public void startSleepingSequence() {

@@ -503,6 +503,10 @@ public class Map {
             newInstance = new Soil((Soil) prototype);
         } else if (prototype instanceof Bed) { // Pastikan Bed adalah subclass Tile dan punya copy constructor
             newInstance = new Bed((Bed) prototype);
+        } else if (prototype instanceof Stove) {
+            newInstance = new Stove((Stove) prototype);
+        } else if (prototype instanceof TV) {
+            newInstance = new TV((TV) prototype);
         }
         else {
             // Pastikan Tile memiliki copy constructor: public Tile(Tile other)
@@ -674,6 +678,9 @@ public class Map {
                         }
                         wet.updateImageBasedOnState(gp);
                     }
+                } else if (tiles != null && tiles instanceof Stove) {
+                    Stove stove = (Stove) tiles;
+                    stove.update(gp);
                 }
             }
         }

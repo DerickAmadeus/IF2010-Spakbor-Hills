@@ -1,9 +1,6 @@
 package Map;
 import Items.Seeds;
 import player.Player;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-import java.io.IOException;
 import main.GamePanel;
 import Items.Crops;
 

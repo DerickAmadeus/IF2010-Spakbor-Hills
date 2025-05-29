@@ -2,14 +2,10 @@ package Map;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import java.awt.*;
-
-import Items.Fish;
 import main.GamePanel;
+import Furniture.Stove;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Tile {
     private String name;
@@ -46,6 +42,9 @@ public class Tile {
     public void update(GamePanel gp) {
         if (this instanceof Soil) {
             Soil update = (Soil) this;
+            update.update(gp);
+        } if (this instanceof Stove) {
+            Stove update = (Stove) this;
             update.update(gp);
         }
     }

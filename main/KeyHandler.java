@@ -6,7 +6,7 @@ import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener{
 
-    public boolean enterPressed, upPressed, downPressed, leftPressed, rightPressed, interactPressed, f1Pressed, invPressed; // Boolean flags for key states
+    public boolean enterPressed, upPressed, downPressed, leftPressed, rightPressed, interactPressed, f1Pressed, invPressed, fpressed; // Boolean flags for key states
     public boolean input0, input9;
     GamePanel gp; // Reference to the GamePanel
 
@@ -82,12 +82,14 @@ public class KeyHandler implements KeyListener{
                 invPressed = true;
             } else if (code == KeyEvent.VK_ENTER) {
                 enterPressed = true;
+            } else if (code == KeyEvent.VK_F) {
+                fpressed = true;
             }
         }
 
         if (gp.gameState == gp.fishingState) {
-            gp.handleFishingPasswordInput(code);
-            return; // Jangan lanjut ke input lainnya saat sedang input password
+            gp.handleFishingInput(code);
+            return;
         }
     }
     
@@ -107,6 +109,8 @@ public class KeyHandler implements KeyListener{
             invPressed = false;
         } else if (code == KeyEvent.VK_ENTER && gp.gameState != gp.fishingState) {
             enterPressed = false;
+        } else if (code == KeyEvent.VK_F) {
+            fpressed = false;
         }
     }
 }

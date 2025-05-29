@@ -1,17 +1,18 @@
 package player;
 import Items.Item;
+import Items.Food;
 import java.util.HashMap;
 
 public class Recipe {
     private String itemID;
-    private String name;
+    private Food food;
     private HashMap<Item, Integer> ingredients;
     private boolean unlockInfo = false;
     private boolean canCook = false;
 
-    public Recipe(String itemID, String name) {
+    public Recipe(String itemID, Food food) {
         this.itemID = itemID;
-        this.name = name;
+        this.food = food;
         ingredients = new HashMap<>();
     }
 
@@ -19,8 +20,8 @@ public class Recipe {
         return itemID;
     }
 
-    public String getName() {
-        return name;
+    public Food getFood() {
+        return food;
     }
 
     public HashMap<Item, Integer> getIngredients() {
