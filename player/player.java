@@ -38,7 +38,7 @@ public class Player {
     public String direction; // Current animation/movement state (e.g., "up", "idleDown")
     String lastMoveDirection; // Last actual direction of movement input ("up", "down", "left", "right")
     private String location;
-    private NPC currentNPC; // NPC that the player is currently interacting with, if any
+    public NPC currentNPC; // NPC that the player is currently interacting with, if any
 
     public BufferedImage[] idleDownFrames, idleUpFrames, idleLeftFrames, idleRightFrames,
                            leftFrames, rightFrames, upFrames, downFrames;
@@ -609,6 +609,7 @@ public class Player {
         if (currentNPC != null) {
             System.out.println("Player: Dialog with NPC: " + currentNPC.getName());
             currentNPC.showStatus(g2);
+            currentNPC.drawActionMenu(g2);
         } else {
             System.out.println("Player: No NPC to talk to.");
         }

@@ -34,6 +34,10 @@ public class NPC {
     private int spriteNum = 0;
     private final int ANIMATION_SPEED = 15;
     private final int IDLE_FRAME_COUNT = 6; // Anda set 6, sebelumnya saya contohkan 8
+    private boolean showActionMenu = false;
+    private String[] actions = {"Talk", "Give Item", "View Status", "Leave"};
+    private int selectedActionIndex = 0;
+
 
 
     // Variabel NPC
@@ -43,7 +47,6 @@ public class NPC {
     private Item[] lovedItems;
     private Item[] likedItems;
     private Item[] hatedItems;
-
     private String relationship;
 
     public NPC(GamePanel gp, String name, String spawnMapName, int tileX, int tileY, Item[] loveditems, Item[] likedItems, Item[] hatedItems) {
@@ -104,16 +107,11 @@ public class NPC {
 
     // Metode yang dipanggil ketika pemain berinteraksi dengan NPC ini
 
+// NPC.java
     public void interact() {
-        if (dialogues != null && dialogues.length > 0) {
-            // Tampilkan dialog NPC
-            System.out.println(name + ": " + dialogues[currentDialogueIndex]);
-            currentDialogueIndex++;
-            if (currentDialogueIndex >= dialogues.length) {
-                currentDialogueIndex = 0; // Reset ke awal dialog
-            }
-        } else {
-            System.out.println(name + " tidak memiliki dialog.");
+        if (!showActionMenu) {
+            showActionMenu = true;
+            selectedActionIndex = 0;
         }
     }
 
@@ -380,14 +378,64 @@ public class NPC {
 
     }
 
-    public void selectAction() {
-        // Logika untuk memilih aksi NPC, misalnya membuka dialog atau menu
-        if (dialogues != null && dialogues.length > 0) {
-            interact(); // Panggil metode interact untuk menampilkan dialog
-        } else {
-            System.out.println(name + " tidak memiliki aksi yang dapat dilakukan.");
+    public void drawActionMenu(Graphics2D g2) {
+        int frameX = gp.tileSize * 1;
+        int frameY = gp.tileSize * 8;
+        int frameWidth = gp.tileSize * 14; // Dua kali lebar untuk menampung teks
+        int frameHeight = gp.tileSize * 3; // Satu tile per action
+
+        drawSubwindow(g2, frameX, frameY, frameWidth, frameHeight);
+
+        g2.setFont(new Font("Arial", Font.BOLD, 20));
+        g2.setColor(Color.WHITE);
+
+        // Hitung total lebar semua teks actions + jarak antar actions
+        FontMetrics fm = g2.getFontMetrics();
+        int totalTextWidth = 0;
+        int padding = 40; // Jarak antar action
+        for (String action : actions) {
+            totalTextWidth += fm.stringWidth(action);
+        }
+        int totalWidth = totalTextWidth + padding * (actions.length - 1);
+
+        // Mulai dari tengah frame
+        int startX = frameX + (frameWidth - totalWidth) / 2;
+        int y = frameY + gp.tileSize * 2;
+
+        int x = startX;
+        for (int i = 0; i < actions.length; i++) {
+            if (i == selectedActionIndex) {
+            g2.setColor(Color.YELLOW);
+            } else {
+            g2.setColor(Color.WHITE);
+            }
+            g2.drawString(actions[i], x, y);
+            x += fm.stringWidth(actions[i]) + padding;
         }
     }
+
+    public void selectAction(boolean leftPressed, boolean rightPressed) {
+        if (leftPressed) {
+            selectedActionIndex--;
+            if (selectedActionIndex < 0) {
+                selectedActionIndex = actions.length - 1; // Loop ke akhir
+            }
+        } else if (rightPressed) {
+            selectedActionIndex++;
+            if (selectedActionIndex >= actions.length) {
+                selectedActionIndex = 0; // Loop ke awal
+            }
+        }
+    }
+
+    public String confirmAction() {
+        return actions[selectedActionIndex]; // Mengembalikan aksi yang sedang dipilih
+    }
+
+
+
+
+    
 
     public String getName() {
         return name;

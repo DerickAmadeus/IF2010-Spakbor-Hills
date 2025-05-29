@@ -584,14 +584,13 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Jika pemain menekan tombol Enter atau tombol Interaksi (E) lagi:
             if (keyHandler.enterPressed) {
-                System.out.println("Dialog closed by player.");
-                gameState = playState; // Kembali ke mode bermain
+                if (player.currentNPC.confirmAction().equals("Leave")){
+                    gameState = playState; // Kembali ke playState jika dialog selesai
+                } else {
+                    // player.currentNPC.performAction(); // Lakukan aksi yang dipilih oleh pemain
+                }
+                keyHandler.enterPressed = false; // Reset tombol Enter setelah digunakan
 
-                // Konsumsi input agar tidak langsung memicu interaksi lain di frame yang sama
-                keyHandler.enterPressed = false;
-
-                // currentDialogueText = ""; // Kosongkan teks dialog jika Anda menyimpannya di GamePanel
-                                        // Atau jika menggunakan gp.ui.currentDialogue, UI yang mengosongkannya.
 
             }
         }
@@ -662,6 +661,10 @@ public class GamePanel extends JPanel implements Runnable {
                     keyHandler.enterPressed = false;
                 }
             }
+        } else if (gameState == dialogState) {
+            player.currentNPC.selectAction(keyHandler.leftPressed, keyHandler.rightPressed); // Memanggil metode selectAction pada NPC yang sedang berinteraksi
+            keyHandler.leftPressed = false;
+            keyHandler.rightPressed = false;
         }
         if (gameState == fishingState) {
             if(keyHandler.enterPressed) {
