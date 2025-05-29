@@ -39,6 +39,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int fuelState = 7;
     public final int fishSelectionState = 8;
     public final int watchingState = 9;
+    public final int fishingWinState = 10;
     public int gameState = titleState;
     public String[] initialSeason = {"Spring", "Summer", "Fall", "Winter"};
     public int currentSeasonIndex = 0;
@@ -280,7 +281,7 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
     }
-    private void setRainDaysForSeason() {
+    public void setRainDaysForSeason() {
         int day1 = 1 + (int)(Math.random() * 10);
         int day2;
         do {
@@ -432,7 +433,7 @@ public class GamePanel extends JPanel implements Runnable {
                 player.getInventory().addItem(fishingTargetFish, 1);
                 System.out.println("Selamat!! Kamu dapat: " + fishingTargetFish.getName());
                 dapet = true;
-                resetFishing();
+                gameState = fishingWinState;
             } else {
                 fishingAttempts++;
                 int inputVal = Integer.parseInt(fishingInput);
@@ -665,8 +666,8 @@ public class GamePanel extends JPanel implements Runnable {
                 if (!playerInput.playerNameInput.trim().isEmpty() && (playerInput.selectedGender.equals("Male") || playerInput.selectedGender.equals("Female"))){
                     player.setPlayerName(playerInput.playerNameInput.trim());
                     player.setGender(playerInput.selectedGender);
-                    gameState = playState;
                     setRainDaysForSeason();
+                    gameState = playState;
                 }
                 keyHandler.enterPressed = false;
             }
@@ -919,6 +920,14 @@ public class GamePanel extends JPanel implements Runnable {
             }
             player.sleeping();
         }
+        if (gameState == fishingWinState) {
+            if(keyHandler.enterPressed) {
+                resetFishing();
+                gameState = playState;
+                keyHandler.enterPressed = false;
+            }
+            player.sleeping();
+        }
         long now = System.currentTimeMillis();
         if (now - lastRealTime >= REAL_TIME_INTERVAL && gameState != fishingState && gameState >= playState) {
             gameMinute += 5;
@@ -969,14 +978,36 @@ public class GamePanel extends JPanel implements Runnable {
         g2.drawRoundRect(frameX + 5, frameY + 5, frameWidth - 10, frameHeight - 10, 25, 25);
 
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
-        g2.drawString("Fish Caught!", frameX + 20, frameY + 50);
         int debugY = frameY + 130;
-        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
-
         if (fishingTargetFish != null) {
-            g2.drawString("Attempt: " + fishingAttempts + " / " + maxFishingAttempts, frameX + 20, debugY);
-            debugY += 25;
-            g2.drawString("Fish: " + fishingTargetFish.getName() + " (" + fishingTargetFish.getRarity() + ")", frameX + 20, debugY);
+            switch (fishingTargetFish.getRarity()) {
+                case "Common":
+                    g2.setColor(new Color(169, 169, 169));
+                    g2.drawString("Attempt: " + fishingAttempts + " / " + maxFishingAttempts, frameX + 20, debugY);
+                    debugY += 25;
+                    g2.drawString("A Common Catch!", frameX + 20, frameY + 50);
+                    g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
+                    g2.drawString("Input 1-10 to Catch!", frameX + 20, debugY);
+                    break;
+                case "Regular":
+                    g2.setColor(new Color(30, 144, 255));
+                    g2.drawString("Attempt: " + fishingAttempts + " / " + maxFishingAttempts, frameX + 20, debugY);
+                    debugY += 25;
+                    g2.drawString("Lucky Catch!", frameX + 20, frameY + 50);
+                    g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 20F));
+                    g2.drawString("Input 1-100 to Catch!", frameX + 20, debugY);
+                    break;
+                case "Legendary":
+                    g2.setColor(new Color(218, 165, 32));
+                    g2.drawString("Attempt: " + fishingAttempts + " / " + maxFishingAttempts, frameX + 20, debugY);
+                    debugY += 25;
+                    g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 16F));
+                    g2.drawString("Unknown Presence Awakened...", frameX + 20, frameY + 50);
+                    g2.drawString("Input 1–500 to Uncover the Mystery", frameX + 20, debugY);
+                    break;
+                default:
+                    break;
+            }
             debugY += 25;
         } else {
             debugY += 25;
@@ -1369,6 +1400,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
         if (gameState == watchingState) {
             activeTV.screen(g2, this);
+        }
+        if (gameState == fishingWinState) {
+            fishingTargetFish.fishingWin(this, g2);
         }
     }
 

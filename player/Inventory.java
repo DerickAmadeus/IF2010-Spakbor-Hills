@@ -81,12 +81,12 @@ public class Inventory<T extends Item> {
             }
 
             if (row >= scrollOffset + MAX_ROWS_ON_SCREEN) {
-                break; // Hentikan kalau sudah melebihi viewport
+                break; 
             }
 
             int col = index % ITEMS_PER_ROW;
             int itemX = slotXStart + col * gp.tileSize;
-            int itemY = slotYStart + (row - scrollOffset) * gp.tileSize; // kurangi offset agar scroll naik
+            int itemY = slotYStart + (row - scrollOffset) * gp.tileSize; 
 
             if (item.getIcon() != null) {
                 int padding = 6;
@@ -108,21 +108,17 @@ public class Inventory<T extends Item> {
 
             index++;
         }
-        // AFTER drawing all items...
 
-        // Hitung index dari cursor saat ini
         int selectedIndex = slotRow * ITEMS_PER_ROW + slotCol;
 
         if (selectedIndex >= 0 && selectedIndex < itemContainer.size()) {
             T selectedItem = itemContainer.get(selectedIndex);
             if (selectedItem != null) {
-                // Gambar nama dan deskripsi
                 g2.setColor(Color.white);
                 g2.setFont(new Font("Arial", Font.BOLD, 18));
                 g2.drawString(selectedItem.getName(), dFrameX + 20, dFrameY + 30);
 
                 g2.setFont(new Font("Arial", Font.PLAIN, 14));
-                // Bungkus teks deskripsi agar tidak keluar jendela
                 drawWrappedText(g2, selectedItem.getDesc(), dFrameX + 20, dFrameY + 55, dFrameWidth - 40, 18);
             }
         }
@@ -171,7 +167,7 @@ public class Inventory<T extends Item> {
         } else if (item instanceof Fish || item instanceof Crops || item instanceof Food){
             options = new String[]{"Eat", "Cancel"};
         } else {
-            options = new String[]{"damn"};
+            options = new String[]{"Cancel"};
         }
 
         for (int i = 0; i < options.length; i++) {
