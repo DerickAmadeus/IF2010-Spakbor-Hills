@@ -2,6 +2,10 @@
 package NPC;
 
 import main.GamePanel;
+import Items.*;
+
+
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,8 +23,6 @@ public class NPC {
     public Rectangle interactionTriggerArea; // Area di sekitar NPC untuk memicu interaksi
 
     GamePanel gp;
-    public String name;
-    public String spawnMapName; // Menggunakan int untuk ID map
 
     // Dialog
     public String[] dialogues;
@@ -33,9 +35,32 @@ public class NPC {
     private final int ANIMATION_SPEED = 15;
     private final int IDLE_FRAME_COUNT = 6; // Anda set 6, sebelumnya saya contohkan 8
 
-    public NPC(GamePanel gp, String name, String spawnMapName, int tileX, int tileY) {
+
+    // Variabel NPC
+    public String name;
+    public String spawnMapName; // Menggunakan int untuk ID map
+    private int heartPoints;
+    private Item[] lovedItems;
+    private Item[] likedItems;
+    private Item[] hatedItems;
+
+    private String relationship;
+
+    public NPC(GamePanel gp, String name, String spawnMapName, int tileX, int tileY, Item[] loveditems, Item[] likedItems, Item[] hatedItems) {
         this.gp = gp;
         this.name = name;
+        heartPoints = 0;
+        this.lovedItems = loveditems;
+        this.likedItems = likedItems;
+        this.hatedItems = hatedItems;
+
+        
+
+
+
+
+
+
         this.spawnMapName = spawnMapName;
         this.worldX = tileX * gp.tileSize;
         this.worldY = tileY * gp.tileSize;
@@ -180,35 +205,188 @@ public class NPC {
         }
     }
 
-    // Metode interactionBox yang Anda buat sebelumnya bisa dihapus atau tidak digunakan jika sudah ada draw debug
-    // public void interactionBox(Graphics2D g2) { ... }
-
     public String getSpawnMapName() { // Pastikan getter ini ada
         return spawnMapName;
     }
 
     // Getter untuk area interaksi NPC (dalam koordinat dunia)
     public Rectangle getInteractionTriggerAreaWorld() {
-        // Jika NPC bisa bergerak, pastikan rectangle ini diupdate posisinya.
-        // Untuk NPC statis, set di constructor sudah cukup.
-        // Jika interactionTriggerArea adalah field yang diinisialisasi di constructor dengan worldX, worldY:
-        // return this.interactionTriggerArea;
-        // Atau jika selalu berdasarkan hitbox:
         return new Rectangle(worldX + hitbox.x, worldY + hitbox.y, hitbox.width, hitbox.height);
     }
 
-    public void showStatus(Graphics2D g2) {
-        int frameX = gp.tileSize*9;
-        int frameY = gp.tileSize;
-        int frameWidth = gp.tileSize*6;
-        int frameHeight = gp.tileSize*5;
-        Color c = new Color(0,0,0, 210);
+    public void drawSubwindow(Graphics2D g2, int frameX, int frameY, int frameWidth, int frameHeight) {
+        Color c = new Color(150,75,0, 210);
         g2.setColor(c);
         g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
         c = new Color(255,255,255);
         g2.setColor(c);
         g2.setStroke(new BasicStroke(5));
         g2.drawRoundRect(frameX+5, frameY+5, frameWidth-10, frameHeight-10, 25, 25);
+    }
+
+    public void showStatus(Graphics2D g2) {
+        // draw Sub Windownya
+        int frameX = gp.tileSize*9;
+        int frameY = gp.tileSize;
+        int frameWidth = gp.tileSize*6;
+        int frameHeight = gp.tileSize*5;
+        drawSubwindow(g2, frameX, frameY, frameWidth, frameHeight);
+
+
+        // Metode ini bisa digunakan untuk menampilkan status NPC, misalnya saat dialog
+        g2.setColor(Color.WHITE);
+        g2.setFont(new Font("Arial", Font.BOLD, 16));
+        FontMetrics metrics = g2.getFontMetrics();
+        String statusText = "NPC: " + name;
+        int textWidth = metrics.stringWidth(statusText);
+        int textHeight = metrics.getHeight();
+        
+        // Gambar latar belakang untuk teks
+        g2.setColor(new Color(0, 0, 0, 150)); // Hitam transparan
+        g2.fillRect(10, 10, textWidth + 10, textHeight + 5);
+        
+        // Gambar teks
+        g2.setColor(Color.WHITE);
+        g2.drawString(statusText, frameX + 20, frameY + 40);
+        // Gambar garis bawah
+        g2.setStroke(new BasicStroke(2));
+
+        // Gambar heart points
+        g2.setFont(new Font("Arial", Font.PLAIN, 14));
+        String heartPointsText = "Heart Points: " + heartPoints;
+
+        g2.setColor(Color.WHITE);
+        g2.drawString(heartPointsText, frameX + 20, frameY + 80);
+
+
+        // Gambar loved items
+        int y = frameY + 100; // Mulai dari posisi Y setelah heart points
+        FontMetrics fm = g2.getFontMetrics();
+        int maxWidth = frameWidth - 40; // padding kiri-kanan
+        int x = frameX + 20;
+
+        if (lovedItems != null && lovedItems.length > 0) {
+            String lovedItemsText = "Loved Items: ";
+            for (Item item : lovedItems) {
+            lovedItemsText += item.getName() + ", ";
+            }
+            // Hapus koma terakhir
+            if (lovedItemsText.endsWith(", ")) {
+            lovedItemsText = lovedItemsText.substring(0, lovedItemsText.length() - 2);
+            }
+
+            // Bungkus teks jika terlalu panjang untuk frame
+            String[] words = lovedItemsText.split(" ");
+            StringBuilder line = new StringBuilder();
+            for (String word : words) {
+            String testLine = line + (line.length() == 0 ? "" : " ") + word;
+            if (fm.stringWidth(testLine) > maxWidth) {
+                g2.drawString(line.toString(), x, y);
+                y += fm.getHeight() + 4; // spacing antar baris
+                line = new StringBuilder(word);
+            } else {
+                if (line.length() > 0) line.append(" ");
+                line.append(word);
+            }
+            }
+            if (line.length() > 0) {
+            g2.drawString(line.toString(), x, y);
+            y += fm.getHeight() + 8; // spacing antar section
+            }
+        }
+
+        // Gambar liked items, mulai dari y setelah loved items
+        if (likedItems != null && likedItems.length > 0) {
+            String likedItemsText = "Liked Items: ";
+            for (Item item : likedItems) {
+            likedItemsText += item.getName() + ", ";
+            }
+            // Hapus koma terakhir
+            if (likedItemsText.endsWith(", ")) {
+            likedItemsText = likedItemsText.substring(0, likedItemsText.length() - 2);
+            }
+
+            // Bungkus teks jika terlalu panjang untuk frame
+            String[] words = likedItemsText.split(" ");
+            StringBuilder line = new StringBuilder();
+            for (String word : words) {
+            String testLine = line + (line.length() == 0 ? "" : " ") + word;
+            if (fm.stringWidth(testLine) > maxWidth) {
+                g2.drawString(line.toString(), x, y);
+                y += fm.getHeight() + 4; // spacing antar baris
+                line = new StringBuilder(word); 
+            } else {
+                if (line.length() > 0) line.append(" ");
+                line.append(word);
+            }
+            }
+            if (line.length() > 0) {
+            g2.drawString(line.toString(), x, y);
+            y += fm.getHeight() + 8; // spacing antar section
+            }
+        }
+
+        // Gambar hated items, mulai dari y setelah liked items
+        if (hatedItems != null && hatedItems.length > 0) {
+            String hatedItemsText = "Hated Items: ";
+            for (Item item : hatedItems) {
+            hatedItemsText += item.getName() + ", ";
+            }
+            // Hapus koma terakhir
+            if (hatedItemsText.endsWith(", ")) {
+            hatedItemsText = hatedItemsText.substring(0, hatedItemsText.length() - 2);
+            }
+
+            // Bungkus teks jika terlalu panjang untuk frame
+            String[] words = hatedItemsText.split(" ");
+            StringBuilder line = new StringBuilder();
+            for (String word : words) {
+            String testLine = line + (line.length() == 0 ? "" : " ") + word;
+            if (fm.stringWidth(testLine) > maxWidth) {
+                g2.drawString(line.toString(), x, y);
+                y += fm.getHeight() + 4; // spacing antar baris
+                line = new StringBuilder(word); 
+            } else {
+                if (line.length() > 0) line.append(" ");
+                line.append(word);
+            }
+            }
+            if (line.length() > 0) {
+            g2.drawString(line.toString(), x, y);
+            y += fm.getHeight() + 8; // spacing antar section
+            }
+        } else {
+            String hatedItemsText = "Hated Items: Semua item yang tidak disukai.";
+            String[] words = hatedItemsText.split(" ");
+            StringBuilder line = new StringBuilder();
+            for (String word : words) {
+            String testLine = line + (line.length() == 0 ? "" : " ") + word;
+            if (fm.stringWidth(testLine) > maxWidth) {
+                g2.drawString(line.toString(), x, y);
+                y += fm.getHeight() + 4; // spacing antar baris
+                line = new StringBuilder(word); 
+            } else {
+                if (line.length() > 0) line.append(" ");
+                line.append(word);
+            }
+            }
+            if (line.length() > 0) {
+            g2.drawString(line.toString(), x, y);
+            y += fm.getHeight() + 8; // spacing antar section
+            }
+            y += fm.getHeight() + 8; // spacing antar section
+        }
+        
+
+    }
+
+    public void selectAction() {
+        // Logika untuk memilih aksi NPC, misalnya membuka dialog atau menu
+        if (dialogues != null && dialogues.length > 0) {
+            interact(); // Panggil metode interact untuk menampilkan dialog
+        } else {
+            System.out.println(name + " tidak memiliki aksi yang dapat dilakukan.");
+        }
     }
 
     public String getName() {

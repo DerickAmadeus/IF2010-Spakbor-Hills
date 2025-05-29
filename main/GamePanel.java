@@ -419,21 +419,49 @@ public class GamePanel extends JPanel implements Runnable {
         fishingHint = "";
     }
 
+    public Fish getFishByName(String name) {
+        if (allFishes != null && name != null) {
+            for (Fish f : allFishes) {
+                if (f != null && f.getName().equalsIgnoreCase(name)) { // equalsIgnoreCase lebih fleksibel
+                    return f;
+                }
+            }
+        }
+        System.err.println("PERINGATAN: Ikan dengan nama '" + name + "' tidak ditemukan.");
+        return null; // Atau bisa throw exception, atau kembalikan item placeholder
+    }
+
     public NPC[] loadNPCs() {
         NPC[] npcArray = new NPC[3]; // Ganti nama variabel agar tidak sama dengan field kelas
+
+
+        // --NPC1 ----
+        loadInitialFish();
+        Item[] mtLoved = {
+            getFishByName("Legend"),
+        };
+
+        Item[] mtLiked = {
+            getFishByName("Angler"),
+            getFishByName("Crimsonfish"),
+            getFishByName("Glacierfish"),
+        };
+
+        Item[] mtHated = {};
 
         // Contoh: NPC "Villager" akan muncul di map dengan ID 0 (misalnya Farm Map)
         // pada tile (kolom 10, baris 12)
         // Parameter: GamePanel, Nama NPC, ID Map Spawn, Tile X, Tile Y
-        npcArray[0] = new NPC(this, "MT", "MTHouse", 10, 12);
+        npcArray[0] = new NPC(this, "MT", "MTHouse", 10, 12,  
+                        mtLoved, mtLiked, mtHated);
 
         // Contoh: NPC "Merchant" akan muncul di map dengan ID 4 (misalnya NPC Map)
         // pada tile (kolom 5, baris 8)
-        npcArray[1] = new NPC(this, "Merchant", "apa", 5, 8);
+        // npcArray[1] = new NPC(this, "Merchant", "apa", 5, 8);
 
-        // Contoh: NPC "Fisherman" akan muncul di map dengan ID 1 (misalnya Forest River)
-        // pada tile (kolom 20, baris 15)
-        npcArray[2] = new NPC(this, "Fisherman", "itu", 20, 15);
+        // // Contoh: NPC "Fisherman" akan muncul di map dengan ID 1 (misalnya Forest River)
+        // // pada tile (kolom 20, baris 15)
+        // npcArray[2] = new NPC(this, "Fisherman", "itu", 20, 15);
 
         // Pastikan nama NPC ("Villager", "Merchant", "Fisherman") sesuai dengan
         // nama file gambar animasi Anda (misal: Villager_idle_0.png, dst.)
@@ -555,7 +583,7 @@ public class GamePanel extends JPanel implements Runnable {
         // Input utama yang ditunggu adalah untuk melanjutkan atau menutup dialog.
 
         // Jika pemain menekan tombol Enter atau tombol Interaksi (E) lagi:
-            if (keyHandler.enterPressed || keyHandler.interactPressed) {
+            if (keyHandler.enterPressed) {
                 System.out.println("Dialog closed by player.");
                 gameState = playState; // Kembali ke mode bermain
 

@@ -591,16 +591,15 @@ public class Player {
                         gp.gameState = gp.dialogState;   // Ubah game state menjadi dialog
                         currentNPC = npc; // Set NPC yang sedang diajak bicara
 
+                        gp.keyHandler.enterPressed = false; // Konsumsi tombol yang MEMBUKA dialog
                         this.interactionCooldown = 20;        // Cooldown untuk player
-                        gp.keyHandler.interactPressed = false; // Konsumsi tombol yang MEMBUKA dialog
                         return true; // Interaksi berhasil dimulai
                     }
                 }
             }
             // Jika tidak ada NPC yang diajak bicara, tapi tombol interaksi ditekan
-            gp.keyHandler.interactPressed = false; // Tetap konsumsi tombolnya
+            gp.keyHandler.enterPressed = false; // Reset tombol enter
             this.interactionCooldown = 5;          // Cooldown singkat
-            gp.KeyHandler.enterPressed = false; // Reset tombol enter
             return false; 
         }
         return false;
