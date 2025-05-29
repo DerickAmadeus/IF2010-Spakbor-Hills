@@ -611,6 +611,8 @@ public class Player {
             currentNPC.drawActionMenu(g2);
             if (currentNPC.isTalking) {
                 currentNPC.drawNPCDialog(g2, currentNPC.getName()); // Update dialog jika sedang berbicara
+            } else if (currentNPC.isProposed) {
+                currentNPC.drawProposingAnswer(g2, currentNPC.getName()); // Update dialog jika sedang mengajukan pertanyaan
             }
 
         } else {

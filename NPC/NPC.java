@@ -37,6 +37,7 @@ public class NPC {
     private boolean showActionMenu = false;
     private String[] actions = {"Talk", "Give Item", "View Status", "Propose", "Marry", "Leave"};
     private int selectedActionIndex = 0;
+    private String[] proposingAnswers = {"AAWWWWWWWWWWW SO SWEEETTTT. AKU MAUUUUUUUUUU", "Dih Effort Dulu Bang"}; // Contoh jawaban untuk pertanyaan pernikahan
 
 
 
@@ -49,6 +50,7 @@ public class NPC {
     private Item[] hatedItems;
     private String relationship;
     public boolean isTalking = false;
+    public boolean isProposed = false;
 
 
     public NPC(GamePanel gp, String name, String spawnMapName, int tileX, int tileY, Item[] loveditems, Item[] likedItems, Item[] hatedItems) {
@@ -215,7 +217,7 @@ public class NPC {
     }
 
     public void drawSubwindow(Graphics2D g2, int frameX, int frameY, int frameWidth, int frameHeight) {
-        Color c = new Color(150,75,0, 255);
+        Color c = new Color(53,33,0, 255);
         g2.setColor(c);
         g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
         c = new Color(255,255,255);
@@ -240,6 +242,7 @@ public class NPC {
         String statusText = "NPC: " + name;
         int textWidth = metrics.stringWidth(statusText);
         int textHeight = metrics.getHeight();
+        statusText += " (" + (relationship != null ? relationship : "Single") + ")";
         
         // Gambar latar belakang untuk teks
         g2.setColor(new Color(0, 0, 0, 150)); // Hitam transparan
@@ -255,8 +258,13 @@ public class NPC {
         g2.setFont(new Font("Arial", Font.PLAIN, 14));
         String heartPointsText = "Heart Points: " + heartPoints;
 
-        g2.setColor(Color.WHITE);
+        if (heartPoints == 100) {
+            g2.setColor(Color.pink);
+        } else {
+            g2.setColor(Color.WHITE);
+        }
         g2.drawString(heartPointsText, frameX + 20, frameY + 80);
+        g2.setColor(Color.WHITE);
 
 
         // Gambar loved items
@@ -356,7 +364,7 @@ public class NPC {
             y += fm.getHeight() + 8; // spacing antar section
             }
         } else {
-            String hatedItemsText = "Hated Items: Semua item yang tidak disukai.";
+            String hatedItemsText = "Hated Items: Seluruh item yang bukan merupakan lovedItems dan likedItems.";
             String[] words = hatedItemsText.split(" ");
             StringBuilder line = new StringBuilder();
             for (String word : words) {
@@ -429,19 +437,6 @@ public class NPC {
         return actions[selectedActionIndex]; // Mengembalikan aksi yang sedang dipilih
     }
 
-    public void performAction(String action) {
-        switch (action) {
-            case "Give Item":
-                // giveItem();
-                break;
-            case "View Status":
-                // viewStatus();
-                break;
-            default:
-                System.out.println("Aksi tidak dikenali: " + action);
-        }
-    }
-
 
     public void drawNPCDialog(Graphics2D g2, String speakerName) {
         int x = gp.tileSize * 1;
@@ -464,6 +459,30 @@ public class NPC {
     }
 
 
+    public void drawProposingAnswer(Graphics2D g2, String speakerName) {
+        int x = gp.tileSize * 1;
+        int y = gp.tileSize * 8;
+        int width = gp.tileSize * 14;
+        int height = gp.tileSize * 3;
+
+        drawSubwindow(g2, x, y, width, height);
+
+        g2.setFont(new Font("Arial", Font.PLAIN, 20));
+        g2.setColor(Color.WHITE);
+        g2.drawString(speakerName + ":", x + 20, y + 35);
+        
+        // Gambar pertanyaan pernikahan
+        // Gambar pilihan jawaban
+        if (heartPoints >= 100) {
+            g2.drawString(proposingAnswers[0], x + 20, y + 100); // Jawaban positif
+            relationship = "Proposed"; // Set hubungan menjadi Married
+        } else {
+            g2.drawString(proposingAnswers[1], x + 20, y + 100); // Jawaban negatif
+        }
+        
+    }
+
+
 
 
 
@@ -472,5 +491,12 @@ public class NPC {
 
     public String getName() {
         return name;
+    }
+
+    public void addHeartPoints(int points) {
+        heartPoints += points;
+        if (heartPoints > 100) {
+            heartPoints = 100; // Maksimal 100
+        }
     }
 }

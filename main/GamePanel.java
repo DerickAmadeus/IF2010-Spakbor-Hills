@@ -594,15 +594,20 @@ public class GamePanel extends JPanel implements Runnable {
                 }
 
                 keyHandler.enterPressed = false;
+            } else if (player.currentNPC != null && player.currentNPC.isProposed) {
+                player.currentNPC.isProposed = false;
+                keyHandler.enterPressed = false;
             } else {
-                // Di sini untuk handle pemilihan aksi (Talk/Leave/Trade)
                 String action = player.currentNPC.confirmAction();
                 if (action.equalsIgnoreCase("Talk")) {
                     player.currentNPC.isTalking = true;
                     player.currentNPC.currentDialogueIndex = 0;
+                    player.currentNPC.addHeartPoints(20);
                     // player.currentNPC.showActionMenu = false;
                 } else if (action.equalsIgnoreCase("Leave")) {
                     gameState = playState;
+                } else if (action.equalsIgnoreCase("Propose")){
+                    player.currentNPC.isProposed = true;
                 }
                 keyHandler.enterPressed = false;
             }
