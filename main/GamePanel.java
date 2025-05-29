@@ -583,16 +583,32 @@ public class GamePanel extends JPanel implements Runnable {
         // Input utama yang ditunggu adalah untuk melanjutkan atau menutup dialog.
 
         // Jika pemain menekan tombol Enter atau tombol Interaksi (E) lagi:
-            if (keyHandler.enterPressed) {
-                if (player.currentNPC.confirmAction().equals("Leave")){
-                    gameState = playState; // Kembali ke playState jika dialog selesai
-                } else {
-                    // player.currentNPC.performAction(); // Lakukan aksi yang dipilih oleh pemain
+        if (keyHandler.enterPressed) {
+            if (player.currentNPC != null && player.currentNPC.isTalking) {
+                player.currentNPC.currentDialogueIndex++;
+
+                if (player.currentNPC.currentDialogueIndex >= player.currentNPC.dialogues.length) {
+                    player.currentNPC.currentDialogueIndex = 0;
+                    player.currentNPC.isTalking = false;
+                    // player.currentNPC.showActionMenu = true;
                 }
-                keyHandler.enterPressed = false; // Reset tombol Enter setelah digunakan
 
-
+                keyHandler.enterPressed = false;
+            } else {
+                // Di sini untuk handle pemilihan aksi (Talk/Leave/Trade)
+                String action = player.currentNPC.confirmAction();
+                if (action.equalsIgnoreCase("Talk")) {
+                    player.currentNPC.isTalking = true;
+                    player.currentNPC.currentDialogueIndex = 0;
+                    // player.currentNPC.showActionMenu = false;
+                } else if (action.equalsIgnoreCase("Leave")) {
+                    gameState = playState;
+                }
+                keyHandler.enterPressed = false;
             }
+        }
+
+
         }
         if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(
@@ -706,7 +722,6 @@ public class GamePanel extends JPanel implements Runnable {
                 drop.update();
             }
         }
-        System.out.println(gameState);
     }
 
     public Graphics2D getGraphics2D(){

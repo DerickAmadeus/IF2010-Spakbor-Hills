@@ -575,7 +575,6 @@ public class Player {
         }*/
 
         // Cooldown sudah diatur di metode update() setelah memanggil interact()
-        gp.addMinutes(60);
     }
 
 
@@ -607,9 +606,13 @@ public class Player {
 
     public void dialogNPC(Graphics2D g2) {
         if (currentNPC != null) {
-            System.out.println("Player: Dialog with NPC: " + currentNPC.getName());
+            // System.out.println("Player: Dialog with NPC: " + currentNPC.getName());
             currentNPC.showStatus(g2);
             currentNPC.drawActionMenu(g2);
+            if (currentNPC.isTalking) {
+                currentNPC.drawNPCDialog(g2, currentNPC.getName()); // Update dialog jika sedang berbicara
+            }
+
         } else {
             System.out.println("Player: No NPC to talk to.");
         }

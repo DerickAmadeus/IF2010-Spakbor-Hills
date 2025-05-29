@@ -26,7 +26,7 @@ public class NPC {
 
     // Dialog
     public String[] dialogues;
-    private int currentDialogueIndex = 0;
+    public int currentDialogueIndex = 0;
 
     // Variabel untuk animasi (sudah ada)
     private BufferedImage[] idleFrames;
@@ -35,7 +35,7 @@ public class NPC {
     private final int ANIMATION_SPEED = 15;
     private final int IDLE_FRAME_COUNT = 6; // Anda set 6, sebelumnya saya contohkan 8
     private boolean showActionMenu = false;
-    private String[] actions = {"Talk", "Give Item", "View Status", "Leave"};
+    private String[] actions = {"Talk", "Give Item", "View Status", "Propose", "Marry", "Leave"};
     private int selectedActionIndex = 0;
 
 
@@ -48,6 +48,8 @@ public class NPC {
     private Item[] likedItems;
     private Item[] hatedItems;
     private String relationship;
+    public boolean isTalking = false;
+
 
     public NPC(GamePanel gp, String name, String spawnMapName, int tileX, int tileY, Item[] loveditems, Item[] likedItems, Item[] hatedItems) {
         this.gp = gp;
@@ -82,7 +84,7 @@ public class NPC {
 
     private void setDefaultDialogues() {
         // Contoh dialog, bisa Anda kembangkan per NPC
-        if (this.name.equalsIgnoreCase("Villager")) {
+        if (this.name.equalsIgnoreCase("MT")) {
             dialogues = new String[]{
                 "Halo, petualang muda!",
                 "Desa kami damai berkat para pahlawan sepertimu.",
@@ -213,7 +215,7 @@ public class NPC {
     }
 
     public void drawSubwindow(Graphics2D g2, int frameX, int frameY, int frameWidth, int frameHeight) {
-        Color c = new Color(150,75,0, 210);
+        Color c = new Color(150,75,0, 255);
         g2.setColor(c);
         g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
         c = new Color(255,255,255);
@@ -381,36 +383,31 @@ public class NPC {
     public void drawActionMenu(Graphics2D g2) {
         int frameX = gp.tileSize * 1;
         int frameY = gp.tileSize * 8;
-        int frameWidth = gp.tileSize * 14; // Dua kali lebar untuk menampung teks
-        int frameHeight = gp.tileSize * 3; // Satu tile per action
+        int frameWidth = gp.tileSize * 14;
+        int frameHeight = gp.tileSize * 3;
 
         drawSubwindow(g2, frameX, frameY, frameWidth, frameHeight);
 
         g2.setFont(new Font("Arial", Font.BOLD, 20));
-        g2.setColor(Color.WHITE);
-
-        // Hitung total lebar semua teks actions + jarak antar actions
         FontMetrics fm = g2.getFontMetrics();
-        int totalTextWidth = 0;
-        int padding = 40; // Jarak antar action
-        for (String action : actions) {
-            totalTextWidth += fm.stringWidth(action);
-        }
-        int totalWidth = totalTextWidth + padding * (actions.length - 1);
 
-        // Mulai dari tengah frame
-        int startX = frameX + (frameWidth - totalWidth) / 2;
-        int y = frameY + gp.tileSize * 2;
+        int cols = 3;
+        int rows = 2;
+        int cellWidth = frameWidth / cols;
+        int cellHeight = frameHeight / rows;
 
-        int x = startX;
         for (int i = 0; i < actions.length; i++) {
+            int col = i % cols;
+            int row = i / cols;
+            int x = frameX + col * cellWidth + (cellWidth - fm.stringWidth(actions[i])) / 2;
+            int y = frameY + row * cellHeight + cellHeight / 2 + fm.getAscent() / 2;
+
             if (i == selectedActionIndex) {
-            g2.setColor(Color.YELLOW);
+                g2.setColor(Color.YELLOW);
             } else {
-            g2.setColor(Color.WHITE);
+                g2.setColor(Color.WHITE);
             }
             g2.drawString(actions[i], x, y);
-            x += fm.stringWidth(actions[i]) + padding;
         }
     }
 
@@ -431,6 +428,42 @@ public class NPC {
     public String confirmAction() {
         return actions[selectedActionIndex]; // Mengembalikan aksi yang sedang dipilih
     }
+
+    public void performAction(String action) {
+        switch (action) {
+            case "Give Item":
+                // giveItem();
+                break;
+            case "View Status":
+                // viewStatus();
+                break;
+            default:
+                System.out.println("Aksi tidak dikenali: " + action);
+        }
+    }
+
+
+    public void drawNPCDialog(Graphics2D g2, String speakerName) {
+        int x = gp.tileSize * 1;
+        int y = gp.tileSize * 8;
+        int width = gp.tileSize * 14;
+        int height = gp.tileSize * 3;
+
+        drawSubwindow(g2, x, y, width, height);
+
+        g2.setFont(new Font("Arial", Font.PLAIN, 20));
+        g2.setColor(Color.WHITE);
+        g2.drawString(speakerName + ":", x + 20, y + 35);
+        g2.drawString(dialogues[currentDialogueIndex], x + 20, y + 70);
+
+        if (currentDialogueIndex >= dialogues.length) {
+            currentDialogueIndex = 0; // Reset dialog jika sudah selesai
+            isTalking = false; // Selesai berbicara
+            showActionMenu = true; // Tampilkan menu aksi setelah dialog selesai
+        }
+    }
+
+
 
 
 
