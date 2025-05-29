@@ -614,7 +614,7 @@ public class Player {
             currentNPC.showStatus(g2);
             currentNPC.drawActionMenu(g2);
             if (currentNPC.isTalking) {
-                currentNPC.drawNPCDialog(g2, currentNPC.getName()); // Update dialog jika sedang berbicara
+                chatting(g2); // Update dialog jika sedang berbicara
             } else if (currentNPC.isProposed) {
                 currentNPC.drawProposingAnswer(g2, currentNPC.getName()); // Update dialog jika sedang mengajukan pertanyaan
             }
@@ -883,7 +883,7 @@ public class Player {
         isSleeping = false; // Reset isSleeping after sleeping action
     }
 
-      public void fishing() {
+    public void fishing() {
         if (equippedItem != null && equippedItem.getName().equals("Fishing Rod") && 
             energy >= -15 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState != gp.fishingState) {
             Tile tileToFish = gp.map.getTile(interactionArea.x, interactionArea.y);
@@ -894,5 +894,9 @@ public class Player {
                 keyH.enterPressed = false;
             } 
         }
+    }
+
+    public void chatting(Graphics2D g2) {
+        currentNPC.drawNPCDialog(g2, currentNPC.getName());
     }
 }

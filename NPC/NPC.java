@@ -37,7 +37,7 @@ public class NPC {
     private boolean showActionMenu = false;
     private String[] actions = {"Talk", "Give Item", "View Status", "Propose", "Marry", "Leave"};
     private int selectedActionIndex = 0;
-    private String[] proposingAnswers = {"AAWWWWWWWWWWW SO SWEEETTTT. AKU MAUUUUUUUUUU", "Dih Effort Dulu Bang"}; // Contoh jawaban untuk pertanyaan pernikahan
+    private String[] proposingAnswers = {"AAWWWWWWWWWWW SO SWEEETTTT. AKU MAUUUUUUUUUU", "Dih Effort Dulu Bang","Dah kau lamar bang aku", "Dah nikah kita"}; // Contoh jawaban untuk pertanyaan pernikahan
 
 
 
@@ -473,11 +473,13 @@ public class NPC {
         
         // Gambar pertanyaan pernikahan
         // Gambar pilihan jawaban
-        if (heartPoints >= 100) {
+        if (heartPoints >= 150 && relationship != "Married") {
             g2.drawString(proposingAnswers[0], x + 20, y + 100); // Jawaban positif
-            relationship = "Proposed"; // Set hubungan menjadi Married
+            relationship = "Proposed"; // Set hubungan menjadi "Proposed"
+        } else if (relationship == "Married") {
+            g2.drawString(proposingAnswers[3], x + 20, y + 100); // Jawaban sudah menikah
         } else {
-            g2.drawString(proposingAnswers[1], x + 20, y + 100); // Jawaban negatif
+            g2.drawString(proposingAnswers[1], x + 20, y + 100); // Jawaban menolak
         }
         
     }
@@ -495,8 +497,8 @@ public class NPC {
 
     public void addHeartPoints(int points) {
         heartPoints += points;
-        if (heartPoints > 100) {
-            heartPoints = 100; // Maksimal 100
+        if (heartPoints > 150) {
+            heartPoints = 150; // Maksimal 100
         }
     }
 }
