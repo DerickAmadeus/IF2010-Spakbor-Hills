@@ -17,8 +17,7 @@ public class Inventory<T extends Item> {
     private int scrollOffset = 0;
     private final int ITEMS_PER_ROW = 5;
     private final int SLOT_SIZE = 64;
-
-    private final int VIEWPORT_HEIGHT = 300; // Tinggi area tampilan inventory (sama seperti height drawRect)
+    private final int VIEWPORT_HEIGHT = 300; 
     private final int MAX_ROWS_ON_SCREEN = VIEWPORT_HEIGHT / SLOT_SIZE;
 
     // selecting
@@ -247,6 +246,29 @@ public class Inventory<T extends Item> {
 
     public Integer getItemCount(T item) {
         return items.getOrDefault(item, 0);
+    }
+
+    public boolean hasItem(T item) {
+        return items.containsKey(item) && items.get(item) > 0;
+    }
+
+    public boolean hasItemOfClass(Class<?> itemClass, int amount) {
+        for (T item : items.keySet()) {
+            if (itemClass.isInstance(item) && items.get(item) >= amount) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public HashMap<Item, Integer> getAllItemOfClass(Class<?> itemClass) {
+        HashMap<Item, Integer> container = new HashMap<>();
+        for (Item item : items.keySet()) {
+            if (itemClass.isInstance(item)) {
+                container.put(item, items.get(item));
+            }
+        }
+        return container;
     }
 
     public void addItem(T item, int count) {

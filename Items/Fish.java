@@ -108,5 +108,18 @@ public class Fish extends Item implements Sellable, Edible{
         double harga = factorSeason * factorTime * factorWeather * factorLocation * C;
         return (int) Math.round(harga);
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
+        Fish fish = (Fish) o;
+
+        return this.getName().equals(fish.getName()); // Atau sesuaikan dengan ID unik yang kamu punya
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getName().hashCode(); // Atau kombinasi field yang unik
+    }
 }

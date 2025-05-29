@@ -82,8 +82,8 @@ public class KeyHandler implements KeyListener{
         }
 
         if (gp.gameState == gp.fishingState) {
-            gp.handleFishingPasswordInput(code);
-            return; // Jangan lanjut ke input lainnya saat sedang input password
+            gp.handleFishingInput(code);
+            return;
         }
     }
     

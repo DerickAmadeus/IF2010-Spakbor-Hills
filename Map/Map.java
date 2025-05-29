@@ -602,6 +602,9 @@ public class Map {
                         }
                         wet.updateImageBasedOnState(gp);
                     }
+                } else if (tiles != null && tiles instanceof Stove) {
+                    Stove stove = (Stove) tiles;
+                    stove.update(gp);
                 }
             }
         }

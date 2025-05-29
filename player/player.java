@@ -66,7 +66,10 @@ public class Player {
 
         loadInitialEquipment();
         loadInitialSeeds();
-        loadInitialFood();
+        loadInitialCrops();
+        for (int i = 0; i < gp.allFishes.length; i++) {
+            inventory.addItem(gp.allFishes[i], (i + 10) * 121 % 100);
+        }
 
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
@@ -113,7 +116,7 @@ public class Player {
         inventory.addItem(grape, 3);
     }
 
-    /*public void loadInitialCrops() {
+    public void loadInitialCrops() {
         Crops parsnip = new Crops("Parsnip", "Sayuran akar musim semi", 35, 50, 1);
         Crops cauliflower = new Crops("Cauliflower", "Sayuran bunga putih", 150, 200, 1);
         Crops potato = new Crops("Potato", "Umbi penghasil karbohidrat", 80, 0, 1);
@@ -125,11 +128,13 @@ public class Player {
         Crops cranberry = new Crops("Cranberry", "Buah musim gugur asam", 25, 0, 10);
         Crops pumpkin = new Crops("Pumpkin", "Buah besar untuk musim gugur", 250, 300, 1);
         Crops grape = new Crops("Grape", "Buah ungu yang bisa dijadikan wine", 10, 100, 20);
+        Misc firewood = new Misc("Firewood", "ini firewood", 20, 40);
+        Misc coal = new Misc("Coal", "ini coal", 20, 40);
 
         inventory.addItem(parsnip, 1);
         inventory.addItem(cauliflower, 1);
-        inventory.addItem(potato, 2);
-        inventory.addItem(wheat, 3);
+        inventory.addItem(potato, 212);
+        inventory.addItem(wheat, 131);
         inventory.addItem(blueberry, 2);
         inventory.addItem(tomato, 2);
         inventory.addItem(hotPepper, 2);
@@ -137,9 +142,11 @@ public class Player {
         inventory.addItem(cranberry, 2);
         inventory.addItem(pumpkin, 2);
         inventory.addItem(grape, 2);
-    }*/
+        inventory.addItem(firewood, 21);
+        inventory.addItem(coal, 12);
+    }
 
-    public void loadInitialFood() {
+    /*public void loadInitialFood() {
         Food fishChips = new Food("Fish n' Chips", "Makanan goreng yang gurih", 135, 150, 50);
         Food baguette = new Food("Baguette", "Roti khas Prancis", 80, 100, 25);
         Food sashimi = new Food("Sashimi", "Irisan ikan mentah segar", 275, 300, 70);
@@ -152,7 +159,8 @@ public class Player {
         Food fishSandwich = new Food("Fish Sandwich", "Sandwich isi ikan", 180, 200, 50);
         Food legendSpakbor = new Food("The Legends of Spakbor", "Mitos yang bisa dimakan", 2000, 0, 100);
         Food pigHead = new Food("Cooked Pig's Head", "Kepala babi panggang spesial", 0, 1000, 100);
-
+        Misc firewood = new Misc("Firewood", "ini firewood", 20, 40);
+        Misc coal = new Misc("Coal", "ini coal", 20, 40);
         inventory.addItem(fishChips, 2);
         inventory.addItem(baguette, 3);
         inventory.addItem(sashimi, 1);
@@ -165,7 +173,10 @@ public class Player {
         inventory.addItem(fishSandwich, 1);
         inventory.addItem(legendSpakbor, 1);
         inventory.addItem(pigHead, 1);
-    }
+        inventory.addItem(firewood, 21);
+        inventory.addItem(coal, 1);
+
+    }*/
 
     public void loadInitialEquipment() {
         Equipment wateringCan = new Equipment("Watering Can", "Untuk menyiram tanaman.", 10, 10);
@@ -559,21 +570,24 @@ public class Player {
         } else if(tileToInteract.getTileName().toLowerCase().equals("bed")) {
             System.out.println("Player : Interacting with a bed");
             sleeping();
-        
-        }else {
+        } else {
             System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
             // setEnergy(getEnergy()+10); // Mungkin tidak perlu untuk interaksi umum
         }
-        for (int rainyDays : gp.rainDaysInSeason) {
-            System.out.println(rainyDays);
+        if (gp.activeStove != null) {
+            System.out.println(String.format("hari %d jam %d:%d", gp.activeStove.timestampDay, gp.activeStove.timestampHour, gp.activeStove.timestampMinute));
+        }
+        if (gp.debugMode) {
+            for (int rainyDays : gp.rainDaysInSeason) {
+                System.out.println(rainyDays);
+            }
+            gp.addMinutes(60);
         }
         /*for (Fish f : gp.allFishes) {
             System.out.println(f.getName() + ": " + f.getHargaJual());
         }*/
 
-        // Cooldown sudah diatur di metode update() setelah memanggil interact()
         System.out.println(tileToInteract.getClass().getSimpleName());
-        gp.addMinutes(60);
     }
 
 
@@ -610,6 +624,8 @@ public class Player {
             this.location = "Farm Map";
         } else if (locationID == 1) {
             this.location = "Forest River";
+        } else if (locationID == 3) {
+            this.location = "Player's House";
         }
 
     }
@@ -799,18 +815,21 @@ public class Player {
         }
     }
     public void cooking() {
-        if (energy >= -10 && (keyH.enterPressed || keyH.fpressed) && interactionCooldown == 0 && gp.gameState != gp.fishingState) {
+        if (energy >= -10 && (keyH.enterPressed || keyH.fpressed) && interactionCooldown == 0 && gp.gameState != gp.cookingState) {
             Tile check = gp.map.getTile(interactionArea.x, interactionArea.y);
             if (check != null && check instanceof Stove) {
-                Stove stove = (Stove) check;
-                if(keyH.enterPressed) {
-                    gp.gameState = gp.cookingState;
-                    keyH.enterPressed = false;
-                } else if (keyH.fpressed) {
-                    gp.gameState = gp.fuelState;
-                    keyH.fpressed = false;
+                if(gp.activeStove == null || (gp.activeStove != null && gp.activeStove.getFood() == null)) {
+                    gp.activeStove = (Stove) check;
+                    if(keyH.enterPressed) {
+                        gp.gameState = gp.cookingState;
+                        keyH.enterPressed = false;
+                    } else if (keyH.fpressed) {
+                        gp.gameState = gp.fuelState;
+                        keyH.fpressed = false;
+                    }
+                } else {
+                    System.out.println("Stove is Cooking.. Please use later!");
                 }
-                setEnergy(getEnergy() - 5);
             }
         }
     }
