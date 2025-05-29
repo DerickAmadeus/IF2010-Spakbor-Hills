@@ -53,8 +53,8 @@ public class Player {
     private Tile tile; 
     private String farmName;
 
-    private String playerName;
-    private String gender;
+    private String playerName = null;
+    private String gender = null;
 
     // Cooldown for interaction to prevent multiple interactions from a single long key press
     private int interactionCooldown = 0;
@@ -65,8 +65,6 @@ public class Player {
         this.energy = MAX_ENERGY;
         this.inventory = new Inventory<>(gp);
         this.farmName = farmName;
-        this.playerName = playerName;
-        this.gender = gender;
 
         loadInitialEquipment();
         loadInitialSeeds();
@@ -113,6 +111,10 @@ public class Player {
         inventory.addItem(cranberry, 2);
         inventory.addItem(pumpkin, 1);
         inventory.addItem(grape, 3);
+        Misc firewood = new Misc("Firewood", "ini firewood", 20, 40);
+        Misc coal = new Misc("Coal", "ini coal", 20, 40);
+        inventory.addItem(firewood, 4);
+        inventory.addItem(coal, 2);
     }
 
     /* public void loadInitialCrops() {
