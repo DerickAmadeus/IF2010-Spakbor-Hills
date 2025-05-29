@@ -58,6 +58,7 @@ public class Player {
 
     // Cooldown for interaction to prevent multiple interactions from a single long key press
     private int interactionCooldown = 0;
+    boolean isSleeping = false; // tambahkan di kelas player atau tempat yang sesuai
 
     public Player(GamePanel gp, KeyHandler keyH, String farmName) {
         this.gp = gp;
@@ -606,6 +607,9 @@ public class Player {
 
     public void dialogNPC(Graphics2D g2) {
         if (currentNPC != null) {
+            if (energy <= -20){
+                gp.gameState = gp.playState ; // Jika energi -20, masuk ke sleepState
+            }
             // System.out.println("Player: Dialog with NPC: " + currentNPC.getName());
             currentNPC.showStatus(g2);
             currentNPC.drawActionMenu(g2);
@@ -840,6 +844,7 @@ public class Player {
         }
         g2.drawString(gp.fishingInput, frameX + 20, frameY + 90);
     }
+
     public void sleeping() {
         int energyRecover = 0;
         if (energy < 0) {
@@ -862,9 +867,11 @@ public class Player {
             } else {
                 System.out.println("Player: Can only sleep during play state.");
             }
-        } else if (energy == -20) {
+        } else if (energy == -20 && gp.gameState == gp.playState) {
             gp.startSleepingSequence();
             setEnergy(energyRecover);
+            System.out.println("Player: Energy is at minimum, sleeping to recover energy.");
+            System.out.println("hehe");
         } 
         if (gp.gameHour == 2){
             gp.startSleepingSequence();
@@ -873,6 +880,7 @@ public class Player {
             //System.out.println("Player: Energy is already full, no need to sleep.");
 
         }
+        isSleeping = false; // Reset isSleeping after sleeping action
     }
 
       public void fishing() {
