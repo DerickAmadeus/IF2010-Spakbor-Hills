@@ -70,11 +70,6 @@ public class Player {
 
         loadInitialEquipment();
         loadInitialSeeds();
-        loadInitialCrops();
-        for (int i = 0; i < gp.allFishes.length; i++) {
-            inventory.addItem(gp.allFishes[i], (i + 10) * 121 % 100);
-        }
-
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
 
@@ -120,7 +115,7 @@ public class Player {
         inventory.addItem(grape, 3);
     }
 
-    public void loadInitialCrops() {
+    /* public void loadInitialCrops() {
         Crops parsnip = new Crops("Parsnip", "Sayuran akar musim semi", 35, 50, 1);
         Crops cauliflower = new Crops("Cauliflower", "Sayuran bunga putih", 150, 200, 1);
         Crops potato = new Crops("Potato", "Umbi penghasil karbohidrat", 80, 0, 1);
@@ -148,7 +143,7 @@ public class Player {
         inventory.addItem(grape, 2);
         inventory.addItem(firewood, 21);
         inventory.addItem(coal, 12);
-    }
+    } */
 
     /*public void loadInitialFood() {
         Food fishChips = new Food("Fish n' Chips", "Makanan goreng yang gurih", 135, 150, 50);
