@@ -53,6 +53,8 @@ public class Player {
     private Tile tile; 
     private String farmName;
 
+    private String playerName;
+    private String gender;
 
     // Cooldown for interaction to prevent multiple interactions from a single long key press
     private int interactionCooldown = 0;
@@ -63,6 +65,8 @@ public class Player {
         this.energy = MAX_ENERGY;
         this.inventory = new Inventory<>(gp);
         this.farmName = farmName;
+        this.playerName = playerName;
+        this.gender = gender;
 
         loadInitialEquipment();
         loadInitialSeeds();
@@ -600,6 +604,14 @@ public class Player {
         return farmName;
     }
 
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
     public String getLocation() {
         return location;
     }
@@ -615,6 +627,14 @@ public class Player {
 
     public void setFarmName(String farmName) {
         this.farmName = farmName;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public int getEnergy() {
