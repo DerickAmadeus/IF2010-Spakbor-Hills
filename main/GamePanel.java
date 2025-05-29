@@ -920,7 +920,7 @@ public class GamePanel extends JPanel implements Runnable {
             player.sleeping();
         }
         long now = System.currentTimeMillis();
-        if (now - lastRealTime >= REAL_TIME_INTERVAL && gameState != fishingState) {
+        if (now - lastRealTime >= REAL_TIME_INTERVAL && gameState != fishingState && gameState >= playState) {
             gameMinute += 5;
             if (gameMinute >= 60) {
                 gameMinute = 0;
