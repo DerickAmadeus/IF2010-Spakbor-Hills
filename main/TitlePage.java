@@ -85,10 +85,11 @@ public class TitlePage {
         y += gp.tileSize * 4;
         g2.setColor(Color.black);
         g2.drawString(text, x + 5, y + 5);
-        g2.setColor(Color.white);
+        g2.setColor(commandNumber == 0 ? Color.yellow : Color.white);
         g2.drawString(text, x, y);
 
         if (commandNumber == 0){
+            g2.setColor(Color.yellow);
             g2.drawString(">", x - gp.tileSize, y);
             // if(gp.keyHandler.enterPressed){
             //     gp.gameState = gp.farmNameInputState;
@@ -102,10 +103,11 @@ public class TitlePage {
         y += gp.tileSize;
         g2.setColor(Color.black);
         g2.drawString(text, x + 5, y + 5);
-        g2.setColor(Color.white);
+        g2.setColor(commandNumber == 1 ? Color.yellow : Color.white);
         g2.drawString(text, x, y);
 
         if (commandNumber == 1){
+            g2.setColor(Color.yellow);
             g2.drawString(">", x - gp.tileSize, y);
         }
 
@@ -115,10 +117,11 @@ public class TitlePage {
         y += gp.tileSize;
         g2.setColor(Color.black);
         g2.drawString(text, x + 5, y + 5);
-        g2.setColor(Color.white);
+        g2.setColor(commandNumber == 2 ? Color.yellow : Color.white);
         g2.drawString(text, x, y);
 
         if (commandNumber == 2){
+            g2.setColor(Color.yellow);
             g2.drawString(">", x - gp.tileSize, y);
         }
 
@@ -128,10 +131,11 @@ public class TitlePage {
         y += gp.tileSize;
         g2.setColor(Color.black);
         g2.drawString(text, x + 5, y + 5);
-        g2.setColor(Color.white);
+        g2.setColor(commandNumber == 3 ? Color.yellow : Color.white);
         g2.drawString(text, x, y);
 
         if (commandNumber == 3){
+            g2.setColor(Color.yellow);
             g2.drawString(">", x - gp.tileSize, y);
         }
     }

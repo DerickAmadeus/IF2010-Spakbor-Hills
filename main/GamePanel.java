@@ -19,8 +19,9 @@ import player.Player;
 public class GamePanel extends JPanel implements Runnable {
     
     //Game State
-    public final int titleState = -3;
-    public final int farmNameInputState = -2;
+    public final int titleState = -4;
+    public final int farmNameInputState = -3;
+    public final int playerNameInputState = -2;
     public final int helpState = -1;
     public final int playState = 0;
     public final int pauseState = 1;
@@ -82,6 +83,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final TitlePage  titlePage  = new TitlePage(this);
     public final FarmName  farmName  = new FarmName(this);
     public CollisionChecker cChecker = new CollisionChecker(this); // Collision checker for player movement
+    public final PlayerInput playerInput = new PlayerInput(this);
     public Help help = new Help(this);
     public Player player; // Player object
     private BufferedImage backgroundImage; // Background image for the game\
@@ -491,19 +493,42 @@ public class GamePanel extends JPanel implements Runnable {
                 }
                 else if(titlePage.commandNumber == 0){
                     gameState = farmNameInputState;
+                    keyHandler.enterPressed = false;
                 }
                 else if(titlePage.commandNumber == 2){
                     gameState = helpState;
+                    keyHandler.enterPressed = false;
                 }
             }
         }
         else if (gameState == farmNameInputState){
-            setRainDaysForSeason();
-            //     // if(keyHandler.enterPressed){
-        //     //   gameState = playState;
+            if (keyHandler.enterPressed) {
+                if (farmName.commandNumber == 0 && !farmName.farmNameInput.trim().isEmpty()){
+                    player.setFarmName(farmName.farmNameInput.trim());
+                    gameState = playerNameInputState;
+                } else if (farmName.commandNumber == 1){
+                    gameState = titleState;
+                }
+                keyHandler.enterPressed = false;
+            }
+            // if(keyHandler.enterPressed){
+                //  gameState = playState;
         }
-        // }   
-        
+            // }   
+            
+        else if (gameState == playerNameInputState) {
+            if (keyHandler.enterPressed){
+                if (!playerInput.playerNameInput.trim().isEmpty() && (playerInput.selectedGender.equals("Male") || playerInput.selectedGender.equals("Female"))){
+                    player.setPlayerName(playerInput.playerNameInput.trim());
+                    player.setGender(playerInput.selectedGender);
+                    gameState = playState;
+                    setRainDaysForSeason();
+                }
+                keyHandler.enterPressed = false;
+            }
+        }
+    
+
         player.update();
 
         // Potentially update other game entities or systems here
@@ -660,6 +685,12 @@ public class GamePanel extends JPanel implements Runnable {
             help.draw(g2);
             g2.dispose();
         return;
+        }
+
+        else if (gameState == playerNameInputState) {
+            playerInput.draw(g2);
+            g2.dispose();
+            return;
         }
 
 

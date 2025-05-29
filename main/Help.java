@@ -174,9 +174,10 @@ public class Help {
 
         g2.setColor(Color.BLACK);
         g2.drawString(back, backX + 5, backY + 5);
-        g2.setColor(Color.WHITE);
+        g2.setColor(commandNumber == 0 ? Color.yellow : Color.WHITE);
         
         if (commandNumber == 0){
+            g2.setColor(Color.yellow);
             g2.drawString(">", margin, backY);
         }
 

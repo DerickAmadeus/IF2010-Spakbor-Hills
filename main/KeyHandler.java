@@ -37,6 +37,7 @@ public class KeyHandler implements KeyListener{
                 } else if (gp.titlePage.commandNumber == 3) { // QUIT
                     System.exit(0);
                 }
+                enterPressed = false;
                 return;                          // abaikan input lain saat title
             }
         }
@@ -52,6 +53,11 @@ public class KeyHandler implements KeyListener{
 
         if (gp.gameState == gp.helpState) {
             gp.help.keyPressed(e);
+            return;
+        }
+
+        if (gp.gameState == gp.playerNameInputState) {
+            gp.playerInput.keyPressed(e);
             return;
         }
 
