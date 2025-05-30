@@ -1,8 +1,12 @@
 package Items;
 
+import java.awt.Graphics2D;
+import java.awt.Font;
+import java.awt.Color;
+import java.awt.BasicStroke;
 import java.util.ArrayList;
 
-//Time nya belum
+import main.GamePanel;
 import player.Player;
 
 public class Fish extends Item implements Sellable, Edible{
@@ -108,5 +112,34 @@ public class Fish extends Item implements Sellable, Edible{
         double harga = factorSeason * factorTime * factorWeather * factorLocation * C;
         return (int) Math.round(harga);
     }
+    public void fishingWin(GamePanel gp, Graphics2D g2) {
+        int x = 200, y = 100, w = 400, h = 100;
 
+        Color c = new Color(0,0,0, 210);
+        g2.setColor(c);
+        g2.fillRoundRect(x, y, w, h, 35, 35);
+        c = new Color(255,255,255);
+        g2.setColor(c);
+        g2.setStroke(new BasicStroke(5));
+        g2.drawRoundRect(x+5, y+5, w-10, h-10, 25, 25);
+
+        g2.setColor(Color.white);
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.drawImage(getIcon(), x + 20, y + 40, gp.tileSize - 2 * 10, gp.tileSize - 2 * 10, null);
+        g2.drawString("You Caught " + this.getName() + "!", x + 60, y + 60);
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Fish fish = (Fish) o;
+
+        return this.getName().equals(fish.getName()); // Atau sesuaikan dengan ID unik yang kamu punya
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getName().hashCode(); // Atau kombinasi field yang unik
+    }
 }

@@ -168,6 +168,7 @@ public class PlayerInput {
             if (!playerNameInput.trim().isEmpty() && (selectedGender=="Male"||selectedGender=="Female")) {
                 gp.player.setPlayerName(playerNameInput.trim());
                 gp.player.setGender(selectedGender);
+                gp.setRainDaysForSeason();
                 gp.gameState = gp.playState;
             }
             return;
