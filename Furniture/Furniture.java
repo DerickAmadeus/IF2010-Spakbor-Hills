@@ -15,12 +15,5 @@ abstract class Furniture extends Tile {
         super(other);
     }
     
-    
-    
-    
-    
-    
-    
-    
     abstract void Action();
 }

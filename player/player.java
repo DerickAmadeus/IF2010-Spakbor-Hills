@@ -1,18 +1,21 @@
 package player;
 
-import main.GamePanel;
-import main.KeyHandler;
-import Map.Tile;
+import Furniture.*;
+import Items.*;
+import Map.ShippingBin;
 import Map.Soil;
-import java.awt.image.BufferedImage;
+import Map.Tile;
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.BasicStroke;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import javax.imageio.ImageIO;
 
 import Furniture.Bed;
@@ -21,6 +24,9 @@ import NPC.NPC;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+
+import main.GamePanel;
+import main.KeyHandler;
 
 //error jir
 
@@ -32,6 +38,8 @@ public class Player {
     public Rectangle solidArea; // Collision area for the player
     public Rectangle interactionArea; // Area for checking interactions, will now align with a tile
     public int solidAreaDefaultX, solidAreaDefaultY;
+     public int money;
+    public int storedMoney; 
     public boolean collisionOn = false;
     GamePanel gp;
     KeyHandler keyH;
@@ -42,6 +50,9 @@ public class Player {
 
     public BufferedImage[] idleDownFrames, idleUpFrames, idleLeftFrames, idleRightFrames,
                            leftFrames, rightFrames, upFrames, downFrames;
+
+    public ShippingBin currSB;
+    public int checkerstate = 0;
 
     private int spriteCounter = 0;
     private int spriteNum = 0;
@@ -55,6 +66,8 @@ public class Player {
     private Tile tile; 
     private String farmName;
 
+    private String playerName = null;
+    private String gender = null;
 
     // Cooldown for interaction to prevent multiple interactions from a single long key press
     private int interactionCooldown = 0;
@@ -69,8 +82,6 @@ public class Player {
 
         loadInitialEquipment();
         loadInitialSeeds();
-        loadInitialFood();
-
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
 
@@ -114,9 +125,13 @@ public class Player {
         inventory.addItem(cranberry, 2);
         inventory.addItem(pumpkin, 1);
         inventory.addItem(grape, 3);
+        Misc firewood = new Misc("Firewood", "ini firewood", 20, 40);
+        Misc coal = new Misc("Coal", "ini coal", 20, 40);
+        inventory.addItem(firewood, 4);
+        inventory.addItem(coal, 2);
     }
 
-    /*public void loadInitialCrops() {
+    /* public void loadInitialCrops() {
         Crops parsnip = new Crops("Parsnip", "Sayuran akar musim semi", 35, 50, 1);
         Crops cauliflower = new Crops("Cauliflower", "Sayuran bunga putih", 150, 200, 1);
         Crops potato = new Crops("Potato", "Umbi penghasil karbohidrat", 80, 0, 1);
@@ -128,11 +143,13 @@ public class Player {
         Crops cranberry = new Crops("Cranberry", "Buah musim gugur asam", 25, 0, 10);
         Crops pumpkin = new Crops("Pumpkin", "Buah besar untuk musim gugur", 250, 300, 1);
         Crops grape = new Crops("Grape", "Buah ungu yang bisa dijadikan wine", 10, 100, 20);
+        Misc firewood = new Misc("Firewood", "ini firewood", 20, 40);
+        Misc coal = new Misc("Coal", "ini coal", 20, 40);
 
         inventory.addItem(parsnip, 1);
         inventory.addItem(cauliflower, 1);
-        inventory.addItem(potato, 2);
-        inventory.addItem(wheat, 3);
+        inventory.addItem(potato, 212);
+        inventory.addItem(wheat, 131);
         inventory.addItem(blueberry, 2);
         inventory.addItem(tomato, 2);
         inventory.addItem(hotPepper, 2);
@@ -140,9 +157,11 @@ public class Player {
         inventory.addItem(cranberry, 2);
         inventory.addItem(pumpkin, 2);
         inventory.addItem(grape, 2);
-    }*/
+        inventory.addItem(firewood, 21);
+        inventory.addItem(coal, 12);
+    } */
 
-    public void loadInitialFood() {
+    /*public void loadInitialFood() {
         Food fishChips = new Food("Fish n' Chips", "Makanan goreng yang gurih", 135, 150, 50);
         Food baguette = new Food("Baguette", "Roti khas Prancis", 80, 100, 25);
         Food sashimi = new Food("Sashimi", "Irisan ikan mentah segar", 275, 300, 70);
@@ -155,7 +174,8 @@ public class Player {
         Food fishSandwich = new Food("Fish Sandwich", "Sandwich isi ikan", 180, 200, 50);
         Food legendSpakbor = new Food("The Legends of Spakbor", "Mitos yang bisa dimakan", 2000, 0, 100);
         Food pigHead = new Food("Cooked Pig's Head", "Kepala babi panggang spesial", 0, 1000, 100);
-
+        Misc firewood = new Misc("Firewood", "ini firewood", 20, 40);
+        Misc coal = new Misc("Coal", "ini coal", 20, 40);
         inventory.addItem(fishChips, 2);
         inventory.addItem(baguette, 3);
         inventory.addItem(sashimi, 1);
@@ -168,7 +188,10 @@ public class Player {
         inventory.addItem(fishSandwich, 1);
         inventory.addItem(legendSpakbor, 1);
         inventory.addItem(pigHead, 1);
-    }
+        inventory.addItem(firewood, 21);
+        inventory.addItem(coal, 1);
+
+    }*/
 
     public void loadInitialEquipment() {
         Equipment wateringCan = new Equipment("Watering Can", "Untuk menyiram tanaman.", 10, 10);
@@ -565,13 +588,24 @@ public class Player {
         } else if(tileToInteract.getTileName().toLowerCase().equals("bed")) {
             System.out.println("Player : Interacting with a bed");
             sleeping();
-        
-        }else {
+        }  else if (tileToInteract instanceof ShippingBin) {
+            System.out.println("Player : Interacting with shipping bin");
+            ShippingBin sb = (ShippingBin) tileToInteract;
+            currSB = sb; 
+            checkerstate = 1; 
+        }
+        else {
             System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
             // setEnergy(getEnergy()+10); // Mungkin tidak perlu untuk interaksi umum
         }
-        for (int rainyDays : gp.rainDaysInSeason) {
-            System.out.println(rainyDays);
+        if (gp.activeStove != null) {
+            System.out.println(String.format("hari %d jam %d:%d", gp.activeStove.timestampDay, gp.activeStove.timestampHour, gp.activeStove.timestampMinute));
+        }
+        if (gp.debugMode) {
+            for (int rainyDays : gp.rainDaysInSeason) {
+                System.out.println(rainyDays);
+            }
+            gp.addMinutes(14400);
         }
         /*for (Fish f : gp.allFishes) {
             System.out.println(f.getName() + ": " + f.getHargaJual());
@@ -633,6 +667,10 @@ public class Player {
         inventory.drawInventory(g2);
     }
 
+    public void openShipping(Graphics2D g2) {
+        inventory.drawShipping(g2);
+    }
+
     public Item getEquippedItem() {
         return equippedItem;
     }
@@ -653,6 +691,14 @@ public class Player {
         return farmName;
     }
 
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
     public String getLocation() {
         return location;
     }
@@ -664,11 +710,22 @@ public class Player {
             this.location = "Forest River";
         } else if (locationID == 5){
             this.location = "MTHouse";
+        } else if (locationID == 3) {
+            this.location = "Player's House";
+
         }
     }
 
     public void setFarmName(String farmName) {
         this.farmName = farmName;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public int getEnergy() {
@@ -852,7 +909,7 @@ public class Player {
         int energyRecover = 0;
         if (energy < 0) {
             energyRecover = (int)(0.1 * MAX_ENERGY);
-        } else if (energy < 10 ) {
+        } else if (energy <= 10 ) {
             energyRecover = (int)(0.5 * MAX_ENERGY); 
         } else {
             energyRecover = MAX_ENERGY;
@@ -888,7 +945,7 @@ public class Player {
 
     public void fishing() {
         if (equippedItem != null && equippedItem.getName().equals("Fishing Rod") && 
-            energy >= -15 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState != gp.fishingState) {
+            energy >= -5 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState != gp.fishingState) {
             Tile tileToFish = gp.map.getTile(interactionArea.x, interactionArea.y);
             if (tileToFish != null && tileToFish.getTileName().equals("Water")) {
                 gp.gameState = gp.fishingState; 
@@ -948,5 +1005,65 @@ public Item itemsGifted = null;
     //     //     }
     //     // }
     // }
+
+
+    public void cooking() {
+        if (energy >= -10 && (keyH.enterPressed || keyH.fpressed) && interactionCooldown == 0 && gp.gameState != gp.cookingState) {
+            Tile check = gp.map.getTile(interactionArea.x, interactionArea.y);
+            if (check != null && check instanceof Stove) {
+                if(gp.activeStove == null || (gp.activeStove != null && gp.activeStove.getFood() == null)) {
+                    gp.activeStove = (Stove) check;
+                    if(keyH.enterPressed) {
+                        gp.gameState = gp.cookingState;
+                        keyH.enterPressed = false;
+                    } else if (keyH.fpressed) {
+                        gp.gameState = gp.fuelState;
+                        keyH.fpressed = false;
+                    }
+                } else {
+                    System.out.println("Stove is Cooking.. Please use later!");
+                }
+            }
+        }
+    }
+      public void watching() {
+        if (energy >= -5 && keyH.enterPressed && interactionCooldown == 0) {
+            Tile TV = gp.map.getTile(interactionArea.x, interactionArea.y);
+            if (TV != null && TV instanceof TV) {
+                gp.activeTV = (TV) TV;
+                gp.gameState = gp.watchingState;
+                keyH.enterPressed = false;
+                setEnergy(getEnergy() - 5);
+                gp.addMinutes(15);
+            } 
+        }
+    }
+
+    public void selling() {
+        System.err.println("QUetz");
+        System.err.println("acmka");
+        Item sellingItem = inventory.getSelectedItem();
+        Tile tileToSell = gp.map.getTile(interactionArea.x, interactionArea.y);
+        ShippingBin sb = (ShippingBin) tileToSell;
+        if (sb.binCount < sb.maxSlot) {
+            if (inventory.getItemCount(sellingItem) > 0) {
+                int price = sellingItem.getHargaJual();
+                if (price > 0) {
+                    inventory.removeItem(sellingItem, 1);
+                    storedMoney += price;
+                    System.out.println("Player: Sold " + sellingItem.getName() + " for " + price + " coins.");
+                    System.out.println("Player: Total money now: " + storedMoney + " coins.");
+                    sb.binCount++;
+                } else {
+                    System.out.println("Player: Cannot sell " + sellingItem.getName() + ", no selling price.");
+                }
+            } else {
+                System.out.println("Player: No " + sellingItem.getName() + " to sell.");
+            }
+        }
+        else{
+            System.out.println("Player: Shipping bin is full, cannot sell more items.");
+        }
+    }
 
 }

@@ -12,7 +12,7 @@ import javax.imageio.ImageIO;
 public class FarmName {
     GamePanel gp;
 
-    private String farmNameInput = "";
+    String farmNameInput = "";
     Font inputFarm;
     private final String farmMessage = "Enter your farm's name: ";
     private final int maxLength = 20;
@@ -86,7 +86,8 @@ public class FarmName {
 
         //back
         g2.setFont(inputFarm.deriveFont(Font.BOLD, 30F));
-        g2.setColor(Color.white);
+        // g2.setColor(Color.white);
+        g2.setColor(commandNumber == 1 ? Color.yellow : Color.white);
         int margin = 20;
         int backY  = gp.screenHeight - margin;
         int backX  = margin + (commandNumber==1 ? gp.tileSize : 0);
@@ -97,6 +98,7 @@ public class FarmName {
         g2.setColor(Color.white);
         
         if (commandNumber == 1){
+            g2.setColor(Color.yellow);
             g2.drawString(">", margin, backY);
         }
 
@@ -109,14 +111,16 @@ public class FarmName {
 
         if (keyCode == KeyEvent.VK_ESCAPE) { // ESC auto back
             gp.gameState = gp.titleState; 
+            gp.titlePage.commandNumber = 0;
             return;
         }
         else if (keyCode == KeyEvent.VK_ENTER) {
             if (commandNumber == 0 && !farmNameInput.trim().isEmpty()) {
                 gp.player.setFarmName(farmNameInput.trim());
-                gp.gameState = gp.playState;
+                gp.gameState = gp.playerNameInputState;  
                 gp.keyHandler.enterPressed = false;
             }
+
             else if(commandNumber == 1){
                 gp.gameState = gp.titleState;
                 gp.keyHandler.enterPressed = false;
