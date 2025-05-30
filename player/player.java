@@ -175,11 +175,13 @@ public class Player {
         Equipment pickaxe = new Equipment("Pickaxe", "Untuk menghancurkan batu.", 15, 15);
         Equipment hoe = new Equipment("Hoe", "Untuk mencangkul tanah.", 12, 12);
         Equipment fishingRod = new Equipment("Fishing Rod", "Untuk memancing ikan.", 19, 19);
+        Equipment ring = new Equipment("Ring", "Cincin yang memberikan keberuntungan.", 0, 0);
 
         inventory.addItem(wateringCan, 1);
         inventory.addItem(pickaxe, 1);
         inventory.addItem(hoe, 1);
         inventory.addItem(fishingRod, 1);
+        inventory.addItem(ring, 1); // Tambahkan cincin sebagai item awal
     }
 
     public void showCoordinates() {
@@ -616,7 +618,7 @@ public class Player {
             if (currentNPC.isTalking) {
                 chatting(g2); // Update dialog jika sedang berbicara
             } else if (currentNPC.isProposed) {
-                currentNPC.drawProposingAnswer(g2, currentNPC.getName()); // Update dialog jika sedang mengajukan pertanyaan
+                proposing(g2);
             }
 
         } else {
@@ -896,7 +898,30 @@ public class Player {
         }
     }
 
+public boolean energyReducedInThisChat = false;
+
     public void chatting(Graphics2D g2) {
+        if (!energyReducedInThisChat) {
+            setEnergy(getEnergy() - 10);
+            energyReducedInThisChat = true;
+        }
         currentNPC.drawNPCDialog(g2, currentNPC.getName());
+    }
+
+
+    public void proposing(Graphics2D g2) {
+        int energyUsed = 0;
+        System.out.println(energyUsed);
+        Boolean hasil = currentNPC.drawProposingAnswer(g2, currentNPC.getName());
+        System.out.println(hasil);
+        if (hasil == true) {
+            energyUsed = 10;
+        } else {
+            energyUsed = 20;
+        }
+        if (!energyReducedInThisChat) {
+            setEnergy(getEnergy() - energyUsed);
+            energyReducedInThisChat = true;
+        }
     }
 }

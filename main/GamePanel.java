@@ -603,12 +603,13 @@ public class GamePanel extends JPanel implements Runnable {
                     player.currentNPC.isTalking = true;
                     player.currentNPC.currentDialogueIndex = 0;
                     player.currentNPC.addHeartPoints(20);
-                    player.setEnergy(player.getEnergy() - 10);
+                    player.energyReducedInThisChat = false;
                     // player.currentNPC.showActionMenu = false;
                 } else if (action.equalsIgnoreCase("Leave")) {
                     gameState = playState;
                 } else if (action.equalsIgnoreCase("Propose")){
                     player.currentNPC.isProposed = true;
+                    player.energyReducedInThisChat = false;
                 }
                 keyHandler.enterPressed = false;
             }

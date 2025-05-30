@@ -258,7 +258,7 @@ public class NPC {
         g2.setFont(new Font("Arial", Font.PLAIN, 14));
         String heartPointsText = "Heart Points: " + heartPoints;
 
-        if (heartPoints == 100) {
+        if (heartPoints == 150) {
             g2.setColor(Color.pink);
         } else {
             g2.setColor(Color.WHITE);
@@ -459,7 +459,7 @@ public class NPC {
     }
 
 
-    public void drawProposingAnswer(Graphics2D g2, String speakerName) {
+    public boolean drawProposingAnswer(Graphics2D g2, String speakerName) {
         int x = gp.tileSize * 1;
         int y = gp.tileSize * 8;
         int width = gp.tileSize * 14;
@@ -473,13 +473,17 @@ public class NPC {
         
         // Gambar pertanyaan pernikahan
         // Gambar pilihan jawaban
-        if (heartPoints >= 150 && relationship != "Married") {
+        if (heartPoints >= 150 && relationship != "Married" && gp.player.getEquippedItem().getName().equals("ring")) {
             g2.drawString(proposingAnswers[0], x + 20, y + 100); // Jawaban positif
             relationship = "Proposed"; // Set hubungan menjadi "Proposed"
+            return true; // Mengembalikan true untuk menandakan bahwa pertanyaan pernikahan telah ditampilkan
         } else if (relationship == "Married") {
             g2.drawString(proposingAnswers[3], x + 20, y + 100); // Jawaban sudah menikah
+            return true;
+
         } else {
             g2.drawString(proposingAnswers[1], x + 20, y + 100); // Jawaban menolak
+            return false;
         }
         
     }
