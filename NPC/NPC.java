@@ -1,11 +1,7 @@
-// Di dalam kelas NPC.java
 package NPC;
 
 import main.GamePanel;
 import Items.*;
-
-
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,9 +9,9 @@ import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.Font; // Tambahkan untuk dialog
-import java.awt.FontMetrics; // Tambahkan untuk dialog
-import java.awt.BasicStroke; // Tambahkan untuk dialog
+import java.awt.Font; 
+import java.awt.FontMetrics; 
+import java.awt.BasicStroke; 
 
 public class NPC {
     public int worldX, worldY;
@@ -38,13 +34,9 @@ public class NPC {
     private String[] actions = {"Talk", "Give", "Propose", "Marry", "Leave"};
     public int selectedActionIndex = 0;
     private String[] proposingAnswers = {"AAWWWWWWWWWWW SO SWEEETTTT. AKU MAUUUUUUUUUU", "Dih Effort Dulu Bang","Dah kau lamar bang aku", "Dah nikah kita"}; // Contoh jawaban untuk pertanyaan pernikahan
-    public String[] giftingAnswers = {"Terima kasih!", "Aku suka ini!", "Hmmm okee.", "Aku tidak suka ini."}; // Contoh jawaban untuk pemberian item
-
-
-
-    // Variabel NPC
+    public String[] giftingAnswers = {"Wow! I love this! Thank you so much!", "I like this, thanks!", "Appreciated.", "Is this a joke..."}; 
     public String name;
-    public String spawnMapName; // Menggunakan int untuk ID map
+    public String spawnMapName; 
     private int heartPoints;
     private Item[] lovedItems;
     private Item[] likedItems;
@@ -54,7 +46,6 @@ public class NPC {
     public boolean isProposed = false;
     public boolean isGifted = false;
 
-
     public NPC(GamePanel gp, String name, String spawnMapName, int tileX, int tileY, Item[] loveditems, Item[] likedItems, Item[] hatedItems) {
         this.gp = gp;
         this.name = name;
@@ -63,14 +54,6 @@ public class NPC {
         this.likedItems = likedItems;
         this.hatedItems = hatedItems;
         this.selectedActionIndex = 0; // Inisialisasi indeks aksi yang dipilih
-
-        
-
-
-
-
-
-
         this.spawnMapName = spawnMapName;
         this.worldX = tileX * gp.tileSize;
         this.worldY = tileY * gp.tileSize;
@@ -113,8 +96,15 @@ public class NPC {
     }
 
     // Metode yang dipanggil ketika pemain berinteraksi dengan NPC ini
-
-// NPC.java
+    public Item[] getLovedItems() {
+        return lovedItems;
+    }
+    public Item[] getLikedItems() {
+        return likedItems;
+    }
+    public Item[] getHatedItems() {
+        return hatedItems;
+    }
     public void interact() {
         if (!showActionMenu) {
             showActionMenu = true;
@@ -456,7 +446,6 @@ public class NPC {
         }
     }
 
-
     public boolean drawProposingAnswer(Graphics2D g2, String speakerName) {
         int x = gp.tileSize * 1;
         int y = gp.tileSize * 8;
@@ -486,7 +475,7 @@ public class NPC {
         
     }
 
-    public int drawGifting(Graphics2D g2, String speakerName) {
+    public void drawGifting(Graphics2D g2, String speakerName, int response) {
         int x = gp.tileSize * 1;
         int y = gp.tileSize * 8;
         int width = gp.tileSize * 14;
@@ -497,15 +486,16 @@ public class NPC {
         g2.setFont(new Font("Arial", Font.PLAIN, 20));
         g2.setColor(Color.WHITE);
         g2.drawString(speakerName + ":", x + 20, y + 35);
-        return 10;
+        if (response == 1) {
+            g2.drawString(giftingAnswers[0], x + 20, y + 100); 
+        } else if (response == 2) {
+            g2.drawString(giftingAnswers[1], x + 20, y + 100); 
+        } else if (response == 3){
+            g2.drawString(giftingAnswers[3], x + 20, y + 100); 
+        } else {
+            g2.drawString(giftingAnswers[2], x + 20, y + 100); 
+        }
     }
-
-
-
-
-
-
-    
 
     public String getName() {
         return name;
@@ -514,9 +504,14 @@ public class NPC {
     public void addHeartPoints(int points) {
         heartPoints += points;
         if (heartPoints > 150) {
-            heartPoints = 150; // Maksimal 100
+            heartPoints = 150; 
         }
     }
 
-
+    public void substractHeartPoints(int points) {
+        heartPoints -= points;
+        if (heartPoints < 0) {
+            heartPoints = 0;
+        }
+    }
 }
