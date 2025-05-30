@@ -1,25 +1,24 @@
 package player;
 
-import main.GamePanel;
-import main.KeyHandler;
-import Map.Tile;
-import Map.Soil;
 import Furniture.*;
-import java.awt.image.BufferedImage;
+import Items.*;
+import Map.ShippingBin;
+import Map.Soil;
+import Map.Tile;
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.BasicStroke;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import javax.imageio.ImageIO;
-
-import Items.*;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import main.GamePanel;
+import main.KeyHandler;
 
 //error jir
 
@@ -31,6 +30,8 @@ public class Player {
     public Rectangle solidArea; // Collision area for the player
     public Rectangle interactionArea; // Area for checking interactions, will now align with a tile
     public int solidAreaDefaultX, solidAreaDefaultY;
+     public int money;
+    public int storedMoney; 
     public boolean collisionOn = false;
     GamePanel gp;
     KeyHandler keyH;
@@ -40,6 +41,9 @@ public class Player {
 
     public BufferedImage[] idleDownFrames, idleUpFrames, idleLeftFrames, idleRightFrames,
                            leftFrames, rightFrames, upFrames, downFrames;
+
+    public ShippingBin currSB;
+    public int checkerstate = 0;
 
     private int spriteCounter = 0;
     private int spriteNum = 0;
@@ -571,7 +575,13 @@ public class Player {
         } else if(tileToInteract.getTileName().toLowerCase().equals("bed")) {
             System.out.println("Player : Interacting with a bed");
             sleeping();
-        } else {
+        }  else if (tileToInteract instanceof ShippingBin) {
+            System.out.println("Player : Interacting with shipping bin");
+            ShippingBin sb = (ShippingBin) tileToInteract;
+            currSB = sb; 
+            checkerstate = 1; 
+        }
+        else {
             System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
             // setEnergy(getEnergy()+10); // Mungkin tidak perlu untuk interaksi umum
         }
@@ -594,6 +604,10 @@ public class Player {
 
     public void openInventory(Graphics2D g2) {
         inventory.drawInventory(g2);
+    }
+
+    public void openShipping(Graphics2D g2) {
+        inventory.drawShipping(g2);
     }
 
     public Item getEquippedItem() {
@@ -860,6 +874,33 @@ public class Player {
                 setEnergy(getEnergy() - 5);
                 gp.addMinutes(15);
             } 
+        }
+    }
+
+    public void selling() {
+        System.err.println("QUetz");
+        System.err.println("acmka");
+        Item sellingItem = inventory.getSelectedItem();
+        Tile tileToSell = gp.map.getTile(interactionArea.x, interactionArea.y);
+        ShippingBin sb = (ShippingBin) tileToSell;
+        if (sb.binCount < sb.maxSlot) {
+            if (inventory.getItemCount(sellingItem) > 0) {
+                int price = sellingItem.getHargaJual();
+                if (price > 0) {
+                    inventory.removeItem(sellingItem, 1);
+                    storedMoney += price;
+                    System.out.println("Player: Sold " + sellingItem.getName() + " for " + price + " coins.");
+                    System.out.println("Player: Total money now: " + storedMoney + " coins.");
+                    sb.binCount++;
+                } else {
+                    System.out.println("Player: Cannot sell " + sellingItem.getName() + ", no selling price.");
+                }
+            } else {
+                System.out.println("Player: No " + sellingItem.getName() + " to sell.");
+            }
+        }
+        else{
+            System.out.println("Player: Shipping bin is full, cannot sell more items.");
         }
     }
 }

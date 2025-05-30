@@ -455,6 +455,21 @@ public class Map {
             tileImage[174].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/E.png"));
 
 
+            //Shipping Bin
+            tileImage[175] = new Tile("Shipping Bin NI", false);
+            tileImage[175].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB1.png"));
+            tileImage[176] = new ShippingBin("Shipping Bin", false);
+            tileImage[176].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB2.png"));
+            tileImage[177] = new Tile("Shipping Bin NI", false);
+            tileImage[177].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB3.png"));
+            tileImage[178] = new Tile("Shipping Bin NI", false);
+            tileImage[178].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB4.png"));
+            tileImage[179] = new Tile("Shipping Bin NI", false);
+            tileImage[179].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB5.png"));
+            tileImage[180] = new Tile("Shipping Bin NI", false);
+            tileImage[180].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB6.png"));
+
+
 
         } catch (IOException e) {
             System.err.println("Error loading tile prototype images: " + e.getMessage());
@@ -507,6 +522,8 @@ public class Map {
             newInstance = new Stove((Stove) prototype);
         } else if (prototype instanceof TV) {
             newInstance = new TV((TV) prototype);
+        } else if (prototype instanceof  ShippingBin) {
+            newInstance = new ShippingBin((ShippingBin) prototype);
         }
         else {
             // Pastikan Tile memiliki copy constructor: public Tile(Tile other)
