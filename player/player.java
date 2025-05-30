@@ -620,7 +620,7 @@ public class Player {
             } else if (currentNPC.isProposed) {
                 proposing(g2);
             } else if (currentNPC.isGifted){
-                gifting(g2);
+                // gifting(g2);
             }
 
         } else {
@@ -931,19 +931,22 @@ public boolean energyReducedInThisChat = false;
 
 public Item itemsGifted = null;
 
-    public void gifting(Graphics2D g2) {
-        openInventory(g2);
-        // if (equippedItem != null && keyH.enterPressed && interactionCooldown == 0) {
-        //     if (currentNPC != null) {
-        //         itemsGifted = equippedItem;
-        //         currentNPC.receiveGift(itemsGifted);
-        //         inventory.removeItem(itemsGifted, 1);
-        //         System.out.println("Player: Gave " + itemsGifted.getName() + " to " + currentNPC.getName());
-        //         equipItem(null); // Un-equip item after gifting
-        //         interactionCooldown = 20; // Set cooldown after gifting
-        //     } else {
-        //         System.out.println("Player: No NPC to give gift to.");
-        //     }
-        // }
-    }
+    // public void gifting(Graphics2D g2) {
+
+    //     gp.gameState = gp.inventoryState;
+
+    //     // if (equippedItem != null && keyH.enterPressed && interactionCooldown == 0) {
+    //     //     if (currentNPC != null) {
+    //     //         itemsGifted = equippedItem;
+    //     //         currentNPC.receiveGift(itemsGifted);
+    //     //         inventory.removeItem(itemsGifted, 1);
+    //     //         System.out.println("Player: Gave " + itemsGifted.getName() + " to " + currentNPC.getName());
+    //     //         equipItem(null); // Un-equip item after gifting
+    //     //         interactionCooldown = 20; // Set cooldown after gifting
+    //     //     } else {
+    //     //         System.out.println("Player: No NPC to give gift to.");
+    //     //     }
+    //     // }
+    // }
+
 }

@@ -36,7 +36,7 @@ public class NPC {
     private final int IDLE_FRAME_COUNT = 6; // Anda set 6, sebelumnya saya contohkan 8
     private boolean showActionMenu = false;
     private String[] actions = {"Talk", "Give", "Propose", "Marry", "Leave"};
-    private int selectedActionIndex = 0;
+    public int selectedActionIndex = 0;
     private String[] proposingAnswers = {"AAWWWWWWWWWWW SO SWEEETTTT. AKU MAUUUUUUUUUU", "Dih Effort Dulu Bang","Dah kau lamar bang aku", "Dah nikah kita"}; // Contoh jawaban untuk pertanyaan pernikahan
     public String[] giftingAnswers = {"Terima kasih!", "Aku suka ini!", "Hmmm okee.", "Aku tidak suka ini."}; // Contoh jawaban untuk pemberian item
 
@@ -62,6 +62,7 @@ public class NPC {
         this.lovedItems = loveditems;
         this.likedItems = likedItems;
         this.hatedItems = hatedItems;
+        this.selectedActionIndex = 0; // Inisialisasi indeks aksi yang dipilih
 
         
 

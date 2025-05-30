@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import player.Player; 
 import NPC.NPC;
+import NPC.Seller;
 
 public class GamePanel extends JPanel implements Runnable {
     
@@ -449,11 +450,47 @@ public class GamePanel extends JPanel implements Runnable {
 
         Item[] mtHated = {};
 
+
+        // -- NPC2---
+        Item[] cLoved = {
+            getFishByName("Legend"),
+        };
+        Item[] cLiked = {
+            getFishByName("Angler"),
+            getFishByName("Crimsonfish"),
+            getFishByName("Glacierfish"),
+        };
+
+        Item[] cHated = {
+            getFishByName("Bullhead"),
+            getFishByName("Carp"),
+            getFishByName("Chub"),
+            getFishByName("Largemouth Bass"),
+            getFishByName("Rainbow Trout"),
+            getFishByName("Sturgeon"),
+            getFishByName("Midnight Carp"),
+            getFishByName("Flounder"),
+            getFishByName("Halibut"),
+            getFishByName("Octopus"),
+            getFishByName("Pufferfish"),
+            getFishByName("Sardine"),
+            getFishByName("Super Cucumber"),
+            getFishByName("Catfish"),
+            getFishByName("Salmon")
+        };
+
+        Item[] cSell ={getFishByName("Bullhead")};
+
+
         // Contoh: NPC "Villager" akan muncul di map dengan ID 0 (misalnya Farm Map)
         // pada tile (kolom 10, baris 12)
         // Parameter: GamePanel, Nama NPC, ID Map Spawn, Tile X, Tile Y
         npcArray[0] = new NPC(this, "MT", "MTHouse", 7, 3,  
                         mtLoved, mtLiked, mtHated);
+
+
+        npcArray[1] = new Seller(this, "Merchant", "MTHouse", 7, 5,  
+                        cLoved, cLiked, cHated, cSell);
 
         // Contoh: NPC "Merchant" akan muncul di map dengan ID 4 (misalnya NPC Map)
         // pada tile (kolom 5, baris 8)
@@ -578,6 +615,7 @@ public class GamePanel extends JPanel implements Runnable {
             player.sleeping();
             player.fishing();
             player.interactingWithNPC();
+
         } else if (gameState == dialogState) {
         // Saat dalam mode dialog, pemain biasanya tidak bisa bergerak.
         // Input utama yang ditunggu adalah untuk melanjutkan atau menutup dialog.
