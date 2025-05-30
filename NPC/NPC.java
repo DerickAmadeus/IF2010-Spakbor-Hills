@@ -473,7 +473,7 @@ public class NPC {
         
         // Gambar pertanyaan pernikahan
         // Gambar pilihan jawaban
-        if (heartPoints >= 150 && relationship != "Married" && gp.player.getEquippedItem().getName().equals("ring")) {
+        if (heartPoints >= 150 && relationship != "Married" && gp.player.getEquippedItem() != null && gp.player.getEquippedItem().getName().equals("ring")) {
             g2.drawString(proposingAnswers[0], x + 20, y + 100); // Jawaban positif
             relationship = "Proposed"; // Set hubungan menjadi "Proposed"
             return true; // Mengembalikan true untuk menandakan bahwa pertanyaan pernikahan telah ditampilkan

@@ -175,13 +175,13 @@ public class Player {
         Equipment pickaxe = new Equipment("Pickaxe", "Untuk menghancurkan batu.", 15, 15);
         Equipment hoe = new Equipment("Hoe", "Untuk mencangkul tanah.", 12, 12);
         Equipment fishingRod = new Equipment("Fishing Rod", "Untuk memancing ikan.", 19, 19);
-        Equipment ring = new Equipment("Ring", "Cincin yang memberikan keberuntungan.", 0, 0);
+        // Equipment ring = new Equipment("Ring", "Cincin yang memberikan keberuntungan.", 0, 0);
 
         inventory.addItem(wateringCan, 1);
         inventory.addItem(pickaxe, 1);
         inventory.addItem(hoe, 1);
         inventory.addItem(fishingRod, 1);
-        inventory.addItem(ring, 1); // Tambahkan cincin sebagai item awal
+        // inventory.addItem(ring, 1); // Tambahkan cincin sebagai item awal
     }
 
     public void showCoordinates() {
