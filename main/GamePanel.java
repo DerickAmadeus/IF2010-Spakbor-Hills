@@ -1201,9 +1201,6 @@ public class GamePanel extends JPanel implements Runnable {
                 drop.update();
             }
         }
-        if (player.currentNPC != null) {
-            System.out.println(player.currentNPC.isGifted);
-        }
     }
     public Graphics2D getGraphics2D(){
         java.awt.Graphics g = this.getGraphics();

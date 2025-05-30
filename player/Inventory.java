@@ -296,13 +296,12 @@ public class Inventory<T extends Item> {
             }
             if (gp.player.currentNPC.isGifted && validGiftingOption) {
                 g2.drawString(gifting[i], textX, textY + (i * 40));
-            } else if (!gp.player.currentNPC.isGifted){
+            } else if(gp.player.currentNPC.isGifted && !validGiftingOption) {
+                g2.drawString("You cannot gift " + item.getClass().getSimpleName() + "!", textX, textY);
+            }
+            else if (!gp.player.currentNPC.isGifted){
                 g2.drawString(options[i], textX, textY + (i * 40));
             }
-        }
-
-        if(!validGiftingOption) {
-            g2.drawString("You cannot gift " + item.getClass().getSimpleName() + "!", textX, textY);
         }
     }
 
