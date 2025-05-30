@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.awt.event.KeyEvent;
 import javax.imageio.ImageIO;
 
 import Furniture.Bed;
@@ -55,6 +55,9 @@ public class Player {
 
     private String playerName;
     private String gender;
+
+    private final String[] menu = { "Continue", "Player Info", "Statistics", "Help", "Exit" };
+    public int menuCommand = 0;
 
     // Cooldown for interaction to prevent multiple interactions from a single long key press
     private int interactionCooldown = 0;
@@ -740,19 +743,122 @@ public class Player {
         }
     }
 
-    public void harvesting() {
-        if (equippedItem == null && energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
-            Tile tileToHarvest = gp.map.getTile(interactionArea.x, interactionArea.y);
-            if (tileToHarvest != null && tileToHarvest instanceof Soil) {
-                Soil harvest = (Soil) tileToHarvest;
-                if (!harvest.canPlant() && harvest.getDaysToHarvest() == 0 && harvest.getWetCooldown() > 0) {
-                    gp.map.harvestSeedAtTile(interactionArea.x, interactionArea.y);
-                    setEnergy(getEnergy() - 5);
-                    gp.addMinutes(5);
+    public void showMenu(Graphics2D g2) {
+        if (gp.gameState == gp.menuState) {
+            int frameWidth = gp.tileSize * 12;
+            int frameHeight = gp.tileSize * 10;
+            int frameX = (gp.screenWidth  - frameWidth)  / 2;
+            int frameY = (gp.screenHeight - frameHeight) / 2;
+
+            Font menuFont;
+            try {
+                InputStream inputStream = getClass().getResourceAsStream("/main/PressStart2PRegular.ttf");
+                menuFont = Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(24f);
+            } catch (Exception e) {
+                menuFont = new Font("Arial", Font.BOLD, 24);
+            }
+            
+            Color c = new Color(0,0,0, 210);
+            g2.setColor(c);
+            g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
+            c = new Color(255,255,255);
+            g2.setColor(c);
+            g2.setStroke(new BasicStroke(5));
+            g2.drawRoundRect(frameX+5, frameY+5, frameWidth-10, frameHeight-10, 25, 25);
+
+            g2.setFont(menuFont.deriveFont(Font.BOLD, 30F));
+            String title = "GAME MENU";
+            int titleX = getX(title, g2);
+            int titleY = frameY + gp.tileSize * 2;
+            
+            // shadow
+            g2.setColor(Color.BLACK);
+            g2.drawString(title, titleX + 3, titleY + 3);
+            // title
+            g2.setColor(Color.WHITE);
+            g2.drawString(title, titleX, titleY);
+
+            // Draw menu options
+            g2.setFont(menuFont.deriveFont(Font.PLAIN, 20F));
+            for (int i = 0; i < menu.length; i++) {
+                String option = menu[i];
+                int optionX = getX(option, g2);
+                int optionY = titleY + gp.tileSize * 2 + i * gp.tileSize;
+                
+                // Shadow
+                g2.setColor(Color.BLACK);
+                g2.drawString(option, optionX + 2, optionY + 2);
+                
+                // Text color changes based on selection
+                if (i == menuCommand) {
+                    g2.setColor(Color.YELLOW);
+                    // Draw ">" pointer
+                    g2.drawString(">", optionX - gp.tileSize, optionY);
+                } else {
+                    g2.setColor(Color.WHITE);
                 }
+                
+                g2.drawString(option, optionX, optionY);
             }
         }
     }
+
+    private int getX(String text, Graphics2D g2) {
+    int length = (int)g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+    return gp.screenWidth / 2 - length / 2;
+        }
+
+    public void handleMenuKey(java.awt.event.KeyEvent e) {
+        int code = e.getKeyCode();
+        if (code == KeyEvent.VK_W || code == KeyEvent.VK_S) {
+            gp.keyHandler.upPressed = (code == KeyEvent.VK_W);
+            gp.keyHandler.downPressed = (code == KeyEvent.VK_S);
+            
+            if (gp.keyHandler.upPressed) {
+                menuCommand = (menuCommand + menu.length - 1) % menu.length;
+            } else if (gp.keyHandler.downPressed) {
+                menuCommand = (menuCommand + 1) % menu.length;
+            }
+            
+            gp.keyHandler.upPressed = false;
+            gp.keyHandler.downPressed = false;
+        } else if (code == KeyEvent.VK_ENTER) {
+            switch (menuCommand) {
+                case 0:
+                    gp.gameState = gp.playState; 
+                    break;
+                case 1:
+                    // gp.gameState = gp.playerInfoState;
+                    break;
+                case 2:
+                    // gp.gameState = gp.statisticsState;
+                    break;
+                case 3:
+                    gp.gameState = gp.helpState; 
+                    break;
+                case 4:
+                    System.exit(0); 
+                    break;
+            }
+        } else if (code == KeyEvent.VK_ESCAPE) {
+            gp.gameState = gp.playState;
+        }
+    }
+
+
+        public void harvesting() {
+            if (equippedItem == null && energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
+                Tile tileToHarvest = gp.map.getTile(interactionArea.x, interactionArea.y);
+                if (tileToHarvest != null && tileToHarvest instanceof Soil) {
+                    Soil harvest = (Soil) tileToHarvest;
+                    if (!harvest.canPlant() && harvest.getDaysToHarvest() == 0 && harvest.getWetCooldown() > 0) {
+                        gp.map.harvestSeedAtTile(interactionArea.x, interactionArea.y);
+                        setEnergy(getEnergy() - 5);
+                        gp.addMinutes(5);
+                    }
+                }
+            }
+        }
 
     public void eating() {
         Item get = inventory.getSelectedItem();

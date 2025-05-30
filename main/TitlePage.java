@@ -97,8 +97,8 @@ public class TitlePage {
             // }
         }
 
-        //LOAD GAME
-        text = "LOAD GAME";
+        //HELP
+        text = "HELP";
         x = getX(text, g2);
         y += gp.tileSize;
         g2.setColor(Color.black);
@@ -111,8 +111,8 @@ public class TitlePage {
             g2.drawString(">", x - gp.tileSize, y);
         }
 
-        //HELP
-        text = "HELP";
+        //CREDITS
+        text = "CREDITS";
         x = getX(text, g2);
         y += gp.tileSize;
         g2.setColor(Color.black);
