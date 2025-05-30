@@ -271,6 +271,7 @@ public class Inventory<T extends Item> {
         if (selectedItemIndex < 0 || selectedItemIndex >= itemContainer.size()) return;
 
         T item = itemContainer.get(selectedItemIndex);
+        boolean validGiftingOption = !(item instanceof Equipment || item instanceof Seeds);
         int x = 200, y = 100, w = 400, h = 150;
 
         drawSubwindow(g2, x, y, w, h);
@@ -281,8 +282,11 @@ public class Inventory<T extends Item> {
         int textX = x + 40;
         int textY = y + 50;
         String[] options;
+        String[] gifting;
 
         options = new String[]{"Sell", "Cancel"};
+        gifting = new String[]{"Gift", "Cancel"};
+
 
         for (int i = 0; i < options.length; i++) {
             if (i == optionCommandNum) {
@@ -290,16 +294,24 @@ public class Inventory<T extends Item> {
             } else {
                 g2.setColor(Color.white);
             }
-            g2.drawString(options[i], textX, textY + (i * 40));
+            if (gp.player.currentNPC.isGifted && validGiftingOption) {
+                g2.drawString(gifting[i], textX, textY + (i * 40));
+            } else if (!gp.player.currentNPC.isGifted){
+                g2.drawString(options[i], textX, textY + (i * 40));
+            }
+        }
+
+        if(!validGiftingOption) {
+            g2.drawString("You cannot gift " + item.getClass().getSimpleName() + "!", textX, textY);
         }
     }
 
     public void selectCurrentItemShipping() {
         int selectedIndex = slotRow * ITEMS_PER_ROW + slotCol;
         if (selectedIndex >= 0 && selectedIndex < itemContainer.size()) {
-            selectedItemIndex = selectedIndex; // ← Simpan index item
-            optionCommandNum = 0; // ← Reset opsi ke default (misal: "Equip")
-            gp.gameState = gp.shippingOptionState; // ← Pindah ke opsi
+            selectedItemIndex = selectedIndex; 
+            optionCommandNum = 0; 
+            gp.gameState = gp.shippingOptionState; 
         }
     }
 
@@ -333,7 +345,6 @@ public class Inventory<T extends Item> {
             }
         }
 
-        // Hindari cursor berada di slot kosong (misal kolom terlalu kanan di baris akhir)
         if ((slotRow * ITEMS_PER_ROW + slotCol) > maxIndex) {
             slotCol = maxIndex % ITEMS_PER_ROW;
             slotRow = maxIndex / ITEMS_PER_ROW;
@@ -342,9 +353,9 @@ public class Inventory<T extends Item> {
     public void selectCurrentItem() {
         int selectedIndex = slotRow * ITEMS_PER_ROW + slotCol;
         if (selectedIndex >= 0 && selectedIndex < itemContainer.size()) {
-            selectedItemIndex = selectedIndex; // ← Simpan index item
-            optionCommandNum = 0; // ← Reset opsi ke default (misal: "Equip")
-            gp.gameState = gp.itemOptionState; // ← Pindah ke opsi
+            selectedItemIndex = selectedIndex; 
+            optionCommandNum = 0; 
+            gp.gameState = gp.itemOptionState; 
         }
     }
 

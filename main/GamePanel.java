@@ -400,13 +400,11 @@ public class GamePanel extends JPanel implements Runnable {
                 int end = disappearTimes.get(i);
 
                 if (start <= end) {
-                    // Normal time range, e.g. 6 to 18
                     if (currentHour >= start && currentHour < end) {
                         timeMatch = true;
                         break;
                     }
                 } else {
-                    // Overnight time range, e.g. 20 to 2
                     if (currentHour >= start || currentHour < end) {
                         timeMatch = true;
                         break;
@@ -768,11 +766,7 @@ public class GamePanel extends JPanel implements Runnable {
                 }
                 keyHandler.enterPressed = false;
             }
-            // if(keyHandler.enterPressed){
-            // gameState = playState;
         }
-        // }
-
         else if (gameState == playerNameInputState) {
             if (keyHandler.enterPressed) {
                 if (!playerInput.playerNameInput.trim().isEmpty()
@@ -785,7 +779,6 @@ public class GamePanel extends JPanel implements Runnable {
                 keyHandler.enterPressed = false;
             }
         }
-
         player.update();
         for (NPC npc : npcs) {
             if (npc != null) {
@@ -820,7 +813,7 @@ public class GamePanel extends JPanel implements Runnable {
                 gameState = playState;
             }
             keyHandler.escapePressed = false; // Reset escapePressed after handling
-
+        }
         if (keyHandler.rPressed){
             if (gameState == playState) {
                 gameState = shippingState;
@@ -839,22 +832,11 @@ public class GamePanel extends JPanel implements Runnable {
             player.watering();
             player.harvesting();
             player.fishing();
-
-            if (keyHandler.escapePressed) {
-                gameState = menuState;
-                keyHandler.escapePressed = false;
-            }
-
             player.sleeping();
             player.cooking();
             player.watching();
             player.interactingWithNPC();
-
         } else if (gameState == dialogState) {
-        // Saat dalam mode dialog, pemain biasanya tidak bisa bergerak.
-        // Input utama yang ditunggu adalah untuk melanjutkan atau menutup dialog.
-
-        // Jika pemain menekan tombol Enter atau tombol Interaksi (E) lagi:
         if (keyHandler.enterPressed) {
             if (player.currentNPC != null && player.currentNPC.isTalking) {
                 player.currentNPC.currentDialogueIndex++;
@@ -870,8 +852,8 @@ public class GamePanel extends JPanel implements Runnable {
                 player.currentNPC.isProposed = false;
                 keyHandler.enterPressed = false;
             } else if (player.currentNPC != null && player.currentNPC.isGifted){
+                player.getInventory().removeItem(player.getInventory().getSelectedItem(), 1);
                 player.currentNPC.isGifted = false;
-                // player.currentNPC.showActionMenu = true;
                 keyHandler.enterPressed = false;
             }else {
                 String action = player.currentNPC.confirmAction();
@@ -887,6 +869,8 @@ public class GamePanel extends JPanel implements Runnable {
                     player.energyReducedInThisChat = false;
                 } else if (action.equalsIgnoreCase("Give")) {
                     player.currentNPC.isGifted = true;
+                    gameState = shippingState;
+                    player.energyReducedInThisChat = false;
                 }
                 keyHandler.enterPressed = false;
             }
@@ -954,6 +938,10 @@ public class GamePanel extends JPanel implements Runnable {
                         } else if (player.getInventory().optionCommandNum == 1) {
                             gameState = inventoryState; 
                         }
+                    } else if (selected instanceof Misc) {
+                        if (player.getInventory().optionCommandNum == 0) {
+                            gameState = inventoryState;
+                        }
                     }
                     keyHandler.enterPressed = false;
                 }
@@ -973,7 +961,6 @@ public class GamePanel extends JPanel implements Runnable {
             keyHandler.leftPressed = false;
             keyHandler.rightPressed = false;
 
-            // Saat tekan Enter, buka opsi untuk item yang dipilih
             if (keyHandler.enterPressed) {
                 player.getInventory().selectCurrentItemShipping();
                 keyHandler.enterPressed = false;
@@ -989,7 +976,7 @@ public class GamePanel extends JPanel implements Runnable {
                 keyHandler.downPressed = false;
             }
 
-            if (gameState == shippingOptionState) {
+            if (gameState == shippingOptionState && !player.currentNPC.isGifted) {
                 if (keyHandler.enterPressed) {
                     Item selected = player.getInventory().getSelectedItem();
                     if(!(selected instanceof Equipment)){
@@ -997,8 +984,24 @@ public class GamePanel extends JPanel implements Runnable {
                             player.selling();
                             gameState = playState;
                         } else if (player.getInventory().optionCommandNum == 1) {
-                            gameState = playState; // Cancel
+                            gameState = playState; 
                         }
+                    }
+                    keyHandler.enterPressed = false;
+                }
+            } else if (gameState == shippingOptionState && player.currentNPC.isGifted) {
+                if (keyHandler.enterPressed) {
+                    Item selected = player.getInventory().getSelectedItem();
+                    if(!(selected instanceof Equipment || selected instanceof Seeds)){
+                        if (player.getInventory().optionCommandNum == 0) {
+                            gameState = dialogState;
+                        } else if (player.getInventory().optionCommandNum == 1) {
+                            player.currentNPC.isGifted = false;
+                            gameState = dialogState; 
+                        }
+                    } else {
+                        player.currentNPC.isGifted = false;
+                        gameState = dialogState;
                     }
                     keyHandler.enterPressed = false;
                 }
@@ -1192,13 +1195,16 @@ public class GamePanel extends JPanel implements Runnable {
         } else {
             currentWeather = initialWeather[1];
         }
+        
         if (currentWeather.equals("Rainy") && !player.getLocation().equals("Player's House")) {
             for (RainDrop drop : rainDrops) {
                 drop.update();
             }
         }
+        if (player.currentNPC != null) {
+            System.out.println(player.currentNPC.isGifted);
+        }
     }
-}
     public Graphics2D getGraphics2D(){
         java.awt.Graphics g = this.getGraphics();
         if (g == null) {
@@ -1641,7 +1647,7 @@ public class GamePanel extends JPanel implements Runnable {
         }
         if (gameState == shippingState) {
             player.openShipping(g2);
-        }
+        } 
         if (gameState == shippingOptionState) {
             player.getInventory().drawShippingOptionWindow(g2);
         }
