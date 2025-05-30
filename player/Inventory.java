@@ -180,6 +180,129 @@ public class Inventory<T extends Item> {
         }
     }
 
+    public void drawShipping(Graphics2D g2) {
+        // frame
+        int frameX = gp.tileSize*9;
+        int frameY = gp.tileSize;
+        int frameWidth = gp.tileSize*6;
+        int frameHeight = gp.tileSize*5;
+        drawSubwindow(g2, frameX, frameY, frameWidth, frameHeight);
+
+        //slot
+        final int slotXStart = frameX + 20;
+        final int slotYStart = frameY + 20;
+
+        // CURSOR
+        int cursorX = slotXStart + (gp.tileSize * slotCol);
+        int cursorY = slotYStart + (gp.tileSize * (slotRow - scrollOffset));
+        int cursorWidth = gp.tileSize;
+        int cursorHeight = gp.tileSize;
+
+        // DRAW CURSOR
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
+
+        // DRAW DESC WINDOW
+        int dFrameX = frameX;
+        int dFrameY = frameY + frameHeight;
+        int dFrameWidth = frameWidth;
+        int dFrameHeight = gp.tileSize * 3;
+        drawSubwindow(g2, dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+
+        int index = 0;
+        for (T item : itemContainer) {
+            int row = index / ITEMS_PER_ROW;
+
+            if (row < scrollOffset) {
+                index++;
+                continue; // Lewati baris di atas viewport
+            }
+
+            if (row >= scrollOffset + MAX_ROWS_ON_SCREEN) {
+                break; // Hentikan kalau sudah melebihi viewport
+            }
+
+            int col = index % ITEMS_PER_ROW;
+            int itemX = slotXStart + col * gp.tileSize;
+            int itemY = slotYStart + (row - scrollOffset) * gp.tileSize; // kurangi offset agar scroll naik
+
+            if (item.getIcon() != null) {
+                int padding = 6;
+                int drawSize = gp.tileSize - 2 * padding;
+                int drawX = itemX + padding;
+                int drawY = itemY + padding;
+
+                g2.drawImage(item.getIcon(), drawX, drawY, drawSize, drawSize, null);
+            }
+
+            Integer count = getItemCount(item);
+            if (count != null && count > 1) {
+                g2.setColor(Color.white);
+                g2.setFont(new Font("Arial", Font.BOLD, 12));
+                String countStr = String.valueOf(count);
+                int stringWidth = g2.getFontMetrics().stringWidth(countStr);
+                g2.drawString(countStr, itemX + gp.tileSize - stringWidth - 4, itemY + gp.tileSize - 4);
+            }
+
+            index++;
+        }
+        // AFTER drawing all items...
+
+        // Hitung index dari cursor saat ini
+        int selectedIndex = slotRow * ITEMS_PER_ROW + slotCol;
+
+        if (selectedIndex >= 0 && selectedIndex < itemContainer.size()) {
+            T selectedItem = itemContainer.get(selectedIndex);
+            if (selectedItem != null) {
+                // Gambar nama dan deskripsi
+                g2.setColor(Color.white);
+                g2.setFont(new Font("Arial", Font.BOLD, 18));
+                g2.drawString(selectedItem.getName(), dFrameX + 20, dFrameY + 30);
+
+                g2.setFont(new Font("Arial", Font.PLAIN, 14));
+                // Bungkus teks deskripsi agar tidak keluar jendela
+                drawWrappedText(g2, Integer.toString(selectedItem.getHargaJual()), dFrameX + 20, dFrameY + 55, dFrameWidth - 40, 18);
+            }
+        }
+    }
+
+    public void drawShippingOptionWindow(Graphics2D g2) {
+        if (selectedItemIndex < 0 || selectedItemIndex >= itemContainer.size()) return;
+
+        T item = itemContainer.get(selectedItemIndex);
+        int x = 200, y = 100, w = 400, h = 150;
+
+        drawSubwindow(g2, x, y, w, h);
+
+        g2.setColor(Color.white);
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+
+        int textX = x + 40;
+        int textY = y + 50;
+        String[] options;
+
+        options = new String[]{"Sell", "Cancel"};
+
+        for (int i = 0; i < options.length; i++) {
+            if (i == optionCommandNum) {
+                g2.setColor(Color.yellow);
+            } else {
+                g2.setColor(Color.white);
+            }
+            g2.drawString(options[i], textX, textY + (i * 40));
+        }
+    }
+
+    public void selectCurrentItemShipping() {
+        int selectedIndex = slotRow * ITEMS_PER_ROW + slotCol;
+        if (selectedIndex >= 0 && selectedIndex < itemContainer.size()) {
+            selectedItemIndex = selectedIndex; // ← Simpan index item
+            optionCommandNum = 0; // ← Reset opsi ke default (misal: "Equip")
+            gp.gameState = gp.shippingOptionState; // ← Pindah ke opsi
+        }
+    }
+
     public void updateInventoryCursor(boolean up, boolean down, boolean left, boolean right) {
         int maxIndex = getItemCountTotal() - 1;
 

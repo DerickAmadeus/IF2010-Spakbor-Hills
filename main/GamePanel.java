@@ -1,23 +1,22 @@
 package main;
 
+import Furniture.*;
 import Items.*;
-import Map.Map;
-import java.awt.Color; // ← Tambahkan ini
-import java.awt.Font;
+import Map.Map; // ← Tambahkan ini
 import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-import java.io.IOException; // Importing player class from player package
-import java.util.ArrayList; // Importing map class from Map package
+import java.awt.image.BufferedImage; // Importing player class from player package
+import java.io.IOException; // Importing map class from Map package
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-
-import Furniture.*;
 import player.Player;
 import player.Recipe;
 import player.RecipeLoader; 
@@ -40,6 +39,8 @@ public class GamePanel extends JPanel implements Runnable {
     public final int fishSelectionState = 8;
     public final int watchingState = 9;
     public final int fishingWinState = 10;
+    public final int shippingState = 19;
+    public final int shippingOptionState = 20;
     public int gameState = titleState;
     public String[] initialSeason = {"Spring", "Summer", "Fall", "Winter"};
     public int currentSeasonIndex = 0;
@@ -693,6 +694,15 @@ public class GamePanel extends JPanel implements Runnable {
             }
             keyHandler.invPressed = false;
         }
+        if (keyHandler.rPressed){
+            if (gameState == playState) {
+                gameState = shippingState;
+            } else if (gameState == shippingState || gameState == shippingOptionState) {
+                gameState = playState;
+                player.checkerstate = 0;
+            }
+            keyHandler.rPressed = false;
+        }
         if (gameState == playState) {
             player.tiling();
             player.recoverLand();
@@ -773,6 +783,50 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
             player.sleeping();
+        }
+        if (gameState == shippingState) {
+            player.getInventory().updateInventoryCursor(
+                keyHandler.upPressed,
+                keyHandler.downPressed,
+                keyHandler.leftPressed,
+                keyHandler.rightPressed
+            );
+
+            keyHandler.upPressed = false;
+            keyHandler.downPressed = false;
+            keyHandler.leftPressed = false;
+            keyHandler.rightPressed = false;
+
+            // Saat tekan Enter, buka opsi untuk item yang dipilih
+            if (keyHandler.enterPressed) {
+                player.getInventory().selectCurrentItemShipping();
+                keyHandler.enterPressed = false;
+            }
+        }
+        else if (gameState == shippingOptionState) {
+            if (keyHandler.upPressed) {
+                player.getInventory().optionCommandNum = (player.getInventory().optionCommandNum - 1 + 3) % 3;
+                keyHandler.upPressed = false;
+            }
+            if (keyHandler.downPressed) {
+                player.getInventory().optionCommandNum = (player.getInventory().optionCommandNum + 1) % 3;
+                keyHandler.downPressed = false;
+            }
+
+            if (gameState == shippingOptionState) {
+                if (keyHandler.enterPressed) {
+                    Item selected = player.getInventory().getSelectedItem();
+                    if(!(selected instanceof Equipment)){
+                        if (player.getInventory().optionCommandNum == 0) {
+                            player.selling();
+                            gameState = playState;
+                        } else if (player.getInventory().optionCommandNum == 1) {
+                            gameState = playState; // Cancel
+                        }
+                    }
+                    keyHandler.enterPressed = false;
+                }
+            }
         }
         if (gameState == fishingState) {
             if(keyHandler.enterPressed) {
@@ -1385,6 +1439,12 @@ public class GamePanel extends JPanel implements Runnable {
         }
         if (gameState == itemOptionState) {
             player.getInventory().drawItemOptionWindow(g2);
+        }
+        if (gameState == shippingState) {
+            player.openShipping(g2);
+        }
+        if (gameState == shippingOptionState) {
+            player.getInventory().drawShippingOptionWindow(g2);
         }
         if (gameState == fishingState) {
             drawFishingWindow(g2);

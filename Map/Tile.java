@@ -1,11 +1,10 @@
 package Map;
 
+import Furniture.Stove;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import javax.imageio.ImageIO;
 import main.GamePanel;
-import Furniture.Stove;
-
-import java.io.IOException;
 
 public class Tile {
     private String name;
@@ -43,8 +42,11 @@ public class Tile {
         if (this instanceof Soil) {
             Soil update = (Soil) this;
             update.update(gp);
-        } if (this instanceof Stove) {
+        } else if (this instanceof Stove) {
             Stove update = (Stove) this;
+            update.update(gp);
+        } else if (this instanceof ShippingBin) {
+            ShippingBin update = (ShippingBin) this;
             update.update(gp);
         }
     }
