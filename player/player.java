@@ -17,6 +17,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.imageio.ImageIO;
+
+import Furniture.Bed;
+import Items.*;
+import NPC.NPC;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+
 import main.GamePanel;
 import main.KeyHandler;
 
@@ -38,6 +46,7 @@ public class Player {
     public String direction; // Current animation/movement state (e.g., "up", "idleDown")
     String lastMoveDirection; // Last actual direction of movement input ("up", "down", "left", "right")
     private String location;
+    public NPC currentNPC; // NPC that the player is currently interacting with, if any
 
     public BufferedImage[] idleDownFrames, idleUpFrames, idleLeftFrames, idleRightFrames,
                            leftFrames, rightFrames, upFrames, downFrames;
@@ -62,6 +71,7 @@ public class Player {
 
     // Cooldown for interaction to prevent multiple interactions from a single long key press
     private int interactionCooldown = 0;
+    boolean isSleeping = false; // tambahkan di kelas player atau tempat yang sesuai
 
     public Player(GamePanel gp, KeyHandler keyH, String farmName) {
         this.gp = gp;
@@ -188,11 +198,13 @@ public class Player {
         Equipment pickaxe = new Equipment("Pickaxe", "Untuk menghancurkan batu.", 15, 15);
         Equipment hoe = new Equipment("Hoe", "Untuk mencangkul tanah.", 12, 12);
         Equipment fishingRod = new Equipment("Fishing Rod", "Untuk memancing ikan.", 19, 19);
+        // Equipment ring = new Equipment("Ring", "Cincin yang memberikan keberuntungan.", 0, 0);
 
         inventory.addItem(wateringCan, 1);
         inventory.addItem(pickaxe, 1);
         inventory.addItem(hoe, 1);
         inventory.addItem(fishingRod, 1);
+        // inventory.addItem(ring, 1); // Tambahkan cincin sebagai item awal
     }
 
     public void showCoordinates() {
@@ -209,7 +221,7 @@ public class Player {
     public void setDefaultValues() {
         this.x = gp.tileSize * 10; // Example: Start at tile (10,10) in world coordinates
         this.y = gp.tileSize * 10; // Example: Start at tile (10,10) in world coordinates
-        this.speed = 4;
+        this.speed = 10;
         this.lastMoveDirection = "down"; // Default facing direction
         this.direction = "idleDown";     // Default animation state
         this.location = "Farm Map";
@@ -315,6 +327,7 @@ public class Player {
 
             collisionOn = false;
             gp.cChecker.checkTile(this);
+            gp.cChecker.checkNPC(this); // Cek NPC dengan interaksi
 
            // System.out.println("Collision after checkTile: " + collisionOn);
         }
@@ -598,7 +611,55 @@ public class Player {
             System.out.println(f.getName() + ": " + f.getHargaJual());
         }*/
 
-        System.out.println(tileToInteract.getClass().getSimpleName());
+        // Cooldown sudah diatur di metode update() setelah memanggil interact()
+    }
+
+
+    public boolean interactingWithNPC() {
+            // Pastikan kondisi ini benar: dipanggil saat interactPressed, cooldown 0, dan gameState == playState
+        if (gp.keyHandler.enterPressed && this.interactionCooldown == 0 && gp.gameState == gp.playState) {
+            for (NPC npc : gp.npcs) {
+                if (npc != null && npc.getSpawnMapName().equals(this.getLocation())) { // Gunakan .equals() untuk String
+                    Rectangle npcInteractionZone = npc.getInteractionTriggerAreaWorld(); // Pastikan metode ini ada di NPC
+
+                    if (this.interactionArea.intersects(npcInteractionZone)) {
+                        System.out.println("Player: Memulai interaksi dengan NPC: " + npc.name);
+                        gp.gameState = gp.dialogState;   // Ubah game state menjadi dialog
+                        currentNPC = npc; // Set NPC yang sedang diajak bicara
+
+                        gp.keyHandler.enterPressed = false; // Konsumsi tombol yang MEMBUKA dialog
+                        this.interactionCooldown = 20;        // Cooldown untuk player
+                        return true; // Interaksi berhasil dimulai
+                    }
+                }
+            }
+            // Jika tidak ada NPC yang diajak bicara, tapi tombol interaksi ditekan
+            gp.keyHandler.enterPressed = false; // Reset tombol enter
+            this.interactionCooldown = 5;          // Cooldown singkat
+            return false; 
+        }
+        return false;
+    }
+
+    public void dialogNPC(Graphics2D g2) {
+        if (currentNPC != null) {
+            if (energy <= -20){
+                gp.gameState = gp.playState ; // Jika energi -20, masuk ke sleepState
+            }
+            // System.out.println("Player: Dialog with NPC: " + currentNPC.getName());
+            currentNPC.showStatus(g2);
+            currentNPC.drawActionMenu(g2);
+            if (currentNPC.isTalking) {
+                chatting(g2); // Update dialog jika sedang berbicara
+            } else if (currentNPC.isProposed) {
+                proposing(g2);
+            } else if (currentNPC.isGifted){
+                // gifting(g2);
+            }
+
+        } else {
+            System.out.println("Player: No NPC to talk to.");
+        }
     }
 
 
@@ -647,10 +708,12 @@ public class Player {
             this.location = "Farm Map";
         } else if (locationID == 1) {
             this.location = "Forest River";
+        } else if (locationID == 5){
+            this.location = "MTHouse";
         } else if (locationID == 3) {
             this.location = "Player's House";
-        }
 
+        }
     }
 
     public void setFarmName(String farmName) {
@@ -798,6 +861,50 @@ public class Player {
             gp.addMinutes(5);
         }
     }
+
+    public void drawFishingWindow(Graphics2D g2) {
+        int frameX = gp.tileSize;
+        int frameY = gp.tileSize * 2;
+        int frameWidth = gp.tileSize * 6;
+        int frameHeight = gp.tileSize * 5;
+
+        Color backgroundColor = new Color(0, 0, 0, 210);
+        g2.setColor(backgroundColor);
+        g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
+
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(5));
+        g2.drawRoundRect(frameX + 5, frameY + 5, frameWidth - 10, frameHeight - 10, 25, 25);
+
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.drawString("Fish Caught!", frameX + 20, frameY + 50);
+        int debugY = frameY + 130;
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
+
+        if (gp.fishingTargetFish != null) {
+            g2.drawString("Attempt: " + gp.fishingAttempts + " / " + gp.maxFishingAttempts, frameX + 20, debugY);
+            debugY += 25;
+            g2.drawString("Fish: " + gp.fishingTargetFish.getName() + " (" + gp.fishingTargetFish.getRarity() + ")", frameX + 20, debugY);
+            debugY += 25;
+        } else {
+            debugY += 25;
+            g2.drawString("Mulai Memancing!!!", frameX + 20, debugY);
+            debugY += 25;
+        }
+
+        // Hint berdasarkan tebakan
+        if (gp.fishingHint != null && !gp.fishingHint.isEmpty()) {
+            g2.setColor(Color.YELLOW);
+            g2.drawString("Hint: " + gp.fishingHint, frameX + 20, debugY);
+        }
+        if (gp.debugMode) {
+            if (gp.fishingTarget != -1) {
+                g2.drawString("Target Code: " + gp.fishingTarget, frameX + 20, debugY + 25);
+            }
+        }
+        g2.drawString(gp.fishingInput, frameX + 20, frameY + 90);
+    }
+
     public void sleeping() {
         int energyRecover = 0;
         if (energy < 0) {
@@ -820,9 +927,11 @@ public class Player {
             } else {
                 System.out.println("Player: Can only sleep during play state.");
             }
-        } else if (energy == -20) {
+        } else if (energy == -20 && gp.gameState == gp.playState) {
             gp.startSleepingSequence();
             setEnergy(energyRecover);
+            System.out.println("Player: Energy is at minimum, sleeping to recover energy.");
+            System.out.println("hehe");
         } 
         if (gp.gameHour == 2){
             gp.startSleepingSequence();
@@ -831,9 +940,10 @@ public class Player {
             //System.out.println("Player: Energy is already full, no need to sleep.");
 
         }
+        isSleeping = false; // Reset isSleeping after sleeping action
     }
 
-      public void fishing() {
+    public void fishing() {
         if (equippedItem != null && equippedItem.getName().equals("Fishing Rod") && 
             energy >= -5 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState != gp.fishingState) {
             Tile tileToFish = gp.map.getTile(interactionArea.x, interactionArea.y);
@@ -845,6 +955,58 @@ public class Player {
             } 
         }
     }
+
+public boolean energyReducedInThisChat = false;
+
+    public void chatting(Graphics2D g2) {
+        if (!energyReducedInThisChat) {
+            setEnergy(getEnergy() - 10);
+            energyReducedInThisChat = true;
+            gp.addMinutes(10);
+            currentNPC.addHeartPoints(10);
+        }
+        currentNPC.drawNPCDialog(g2, currentNPC.getName());
+    }
+
+
+    public void proposing(Graphics2D g2) {
+        int energyUsed = 0;
+        System.out.println(energyUsed);
+        Boolean hasil = currentNPC.drawProposingAnswer(g2, currentNPC.getName());
+        System.out.println(hasil);
+        if (hasil == true) {
+            energyUsed = 10;
+        } else {
+            energyUsed = 20;
+        }
+        if (!energyReducedInThisChat) {
+            setEnergy(getEnergy() - energyUsed);
+            energyReducedInThisChat = true;
+        }
+    }
+
+
+public Item itemsGifted = null;
+
+    // public void gifting(Graphics2D g2) {
+
+    //     gp.gameState = gp.inventoryState;
+
+    //     // if (equippedItem != null && keyH.enterPressed && interactionCooldown == 0) {
+    //     //     if (currentNPC != null) {
+    //     //         itemsGifted = equippedItem;
+    //     //         currentNPC.receiveGift(itemsGifted);
+    //     //         inventory.removeItem(itemsGifted, 1);
+    //     //         System.out.println("Player: Gave " + itemsGifted.getName() + " to " + currentNPC.getName());
+    //     //         equipItem(null); // Un-equip item after gifting
+    //     //         interactionCooldown = 20; // Set cooldown after gifting
+    //     //     } else {
+    //     //         System.out.println("Player: No NPC to give gift to.");
+    //     //     }
+    //     // }
+    // }
+
+
     public void cooking() {
         if (energy >= -10 && (keyH.enterPressed || keyH.fpressed) && interactionCooldown == 0 && gp.gameState != gp.cookingState) {
             Tile check = gp.map.getTile(interactionArea.x, interactionArea.y);
@@ -903,4 +1065,5 @@ public class Player {
             System.out.println("Player: Shipping bin is full, cannot sell more items.");
         }
     }
+
 }

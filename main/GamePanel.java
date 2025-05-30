@@ -17,9 +17,15 @@ import java.util.HashMap;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-import player.Player;
+
+import player.Player; 
+import NPC.NPC;
+import NPC.Seller;
+
+
 import player.Recipe;
 import player.RecipeLoader; 
+
 
 public class GamePanel extends JPanel implements Runnable {
     
@@ -57,6 +63,7 @@ public class GamePanel extends JPanel implements Runnable {
     public int fishingAttempts = 0;     // Berapa kali user sudah mencoba
     public int maxFishingAttempts = 0;  // Batas percobaan sesuai rarity
     public String fishingHint = "";
+    public NPC[] npcs = loadNPCs(); // Array of NPCs in the game
 
     public Recipe[] allRecipes = RecipeLoader.loadInitialRecipes();
     public Misc[] fuels = {new Misc("Firewood", "ini firewood", 20, 40), new Misc("Coal", "ini coal", 20, 40)};
@@ -503,6 +510,93 @@ public class GamePanel extends JPanel implements Runnable {
             cookingCursorRow = maxIndex / ITEMS_PER_ROW;
         }
     }
+  
+      public Fish getFishByName(String name) {
+        if (allFishes != null && name != null) {
+            for (Fish f : allFishes) {
+                if (f != null && f.getName().equalsIgnoreCase(name)) { // equalsIgnoreCase lebih fleksibel
+                    return f;
+                }
+            }
+        }
+        System.err.println("PERINGATAN: Ikan dengan nama '" + name + "' tidak ditemukan.");
+        return null; // Atau bisa throw exception, atau kembalikan item placeholder
+    }
+
+    public NPC[] loadNPCs() {
+        NPC[] npcArray = new NPC[3]; // Ganti nama variabel agar tidak sama dengan field kelas
+
+
+        // --NPC1 ----
+        loadInitialFish();
+        Item[] mtLoved = {
+            getFishByName("Legend"),
+        };
+
+        Item[] mtLiked = {
+            getFishByName("Angler"),
+            getFishByName("Crimsonfish"),
+            getFishByName("Glacierfish"),
+        };
+
+        Item[] mtHated = {};
+
+
+        // -- NPC2---
+        Item[] cLoved = {
+            getFishByName("Legend"),
+        };
+        Item[] cLiked = {
+            getFishByName("Angler"),
+            getFishByName("Crimsonfish"),
+            getFishByName("Glacierfish"),
+        };
+
+        Item[] cHated = {
+            getFishByName("Bullhead"),
+            getFishByName("Carp"),
+            getFishByName("Chub"),
+            getFishByName("Largemouth Bass"),
+            getFishByName("Rainbow Trout"),
+            getFishByName("Sturgeon"),
+            getFishByName("Midnight Carp"),
+            getFishByName("Flounder"),
+            getFishByName("Halibut"),
+            getFishByName("Octopus"),
+            getFishByName("Pufferfish"),
+            getFishByName("Sardine"),
+            getFishByName("Super Cucumber"),
+            getFishByName("Catfish"),
+            getFishByName("Salmon")
+        };
+
+        Item[] cSell ={getFishByName("Bullhead")};
+
+
+        // Contoh: NPC "Villager" akan muncul di map dengan ID 0 (misalnya Farm Map)
+        // pada tile (kolom 10, baris 12)
+        // Parameter: GamePanel, Nama NPC, ID Map Spawn, Tile X, Tile Y
+        npcArray[0] = new NPC(this, "MT", "MTHouse", 7, 3,  
+                        mtLoved, mtLiked, mtHated);
+
+
+        npcArray[1] = new Seller(this, "Merchant", "MTHouse", 7, 5,  
+                        cLoved, cLiked, cHated, cSell);
+
+        // Contoh: NPC "Merchant" akan muncul di map dengan ID 4 (misalnya NPC Map)
+        // pada tile (kolom 5, baris 8)
+        // npcArray[1] = new NPC(this, "Merchant", "apa", 5, 8);
+
+        // // Contoh: NPC "Fisherman" akan muncul di map dengan ID 1 (misalnya Forest River)
+        // // pada tile (kolom 20, baris 15)
+        // npcArray[2] = new NPC(this, "Fisherman", "itu", 20, 15);
+
+        // Pastikan nama NPC ("Villager", "Merchant", "Fisherman") sesuai dengan
+        // nama file gambar animasi Anda (misal: Villager_idle_0.png, dst.)
+        // dan ID Map (0, 4, 1) sesuai dengan ID map di game Anda.
+
+        return npcArray;
+    }
     public void updateFuelCursor(boolean up, boolean down, boolean left, boolean right) {
         final int maxIndex = 1; 
         final int ITEMS_PER_ROW = 1;
@@ -676,6 +770,14 @@ public class GamePanel extends JPanel implements Runnable {
     
 
         player.update();
+        for (NPC npc : npcs) {
+            if (npc != null) {
+                // Hanya update NPC yang berada di map yang sama dengan pemain
+                if (npc.getSpawnMapName() == player.getLocation()) {
+                    npc.update(); // Panggil metode update() pada setiap objek NPC
+                }
+            }
+        }
 
         // Potentially update other game entities or systems here
         // e.g., map.update(), npcs.update(), etc.
@@ -714,6 +816,55 @@ public class GamePanel extends JPanel implements Runnable {
             player.sleeping();
             player.cooking();
             player.watching();
+            player.interactingWithNPC();
+
+        } else if (gameState == dialogState) {
+        // Saat dalam mode dialog, pemain biasanya tidak bisa bergerak.
+        // Input utama yang ditunggu adalah untuk melanjutkan atau menutup dialog.
+
+        // Jika pemain menekan tombol Enter atau tombol Interaksi (E) lagi:
+        if (keyHandler.enterPressed) {
+            if (player.currentNPC != null && player.currentNPC.isTalking) {
+                player.currentNPC.currentDialogueIndex++;
+
+                if (player.currentNPC.currentDialogueIndex >= player.currentNPC.dialogues.length) {
+                    player.currentNPC.currentDialogueIndex = 0;
+                    player.currentNPC.isTalking = false;
+                    // player.currentNPC.showActionMenu = true;
+                }
+
+                keyHandler.enterPressed = false;
+            } else if (player.currentNPC != null && player.currentNPC.isProposed) {
+                player.currentNPC.isProposed = false;
+                keyHandler.enterPressed = false;
+            } else if (player.currentNPC != null && player.currentNPC.isGifted){
+                player.currentNPC.isGifted = false;
+                // player.currentNPC.showActionMenu = true;
+                keyHandler.enterPressed = false;
+            
+            
+            
+            
+            }else {
+                String action = player.currentNPC.confirmAction();
+                if (action.equalsIgnoreCase("Talk")) {
+                    player.currentNPC.isTalking = true;
+                    player.currentNPC.currentDialogueIndex = 0;
+                    player.energyReducedInThisChat = false;
+                    // player.currentNPC.showActionMenu = false;
+                } else if (action.equalsIgnoreCase("Leave")) {
+                    gameState = playState;
+                } else if (action.equalsIgnoreCase("Propose")){
+                    player.currentNPC.isProposed = true;
+                    player.energyReducedInThisChat = false;
+                } else if (action.equalsIgnoreCase("Give")) {
+                    player.currentNPC.isGifted = true;
+                }
+                keyHandler.enterPressed = false;
+            }
+        }
+
+
         }
         if (gameState == inventoryState) {
             player.getInventory().updateInventoryCursor(
@@ -827,6 +978,10 @@ public class GamePanel extends JPanel implements Runnable {
                     keyHandler.enterPressed = false;
                 }
             }
+        } else if (gameState == dialogState) {
+            player.currentNPC.selectAction(keyHandler.leftPressed, keyHandler.rightPressed); // Memanggil metode selectAction pada NPC yang sedang berinteraksi
+            keyHandler.leftPressed = false;
+            keyHandler.rightPressed = false;
         }
         if (gameState == fishingState) {
             if(keyHandler.enterPressed) {
@@ -834,6 +989,7 @@ public class GamePanel extends JPanel implements Runnable {
                 keyHandler.enterPressed = false;
             }
         }
+
         if (gameState == cookingState) {
             updateCookingCursor(
                 keyHandler.upPressed,
@@ -982,6 +1138,7 @@ public class GamePanel extends JPanel implements Runnable {
             }
             player.sleeping();
         }
+
         long now = System.currentTimeMillis();
         if (now - lastRealTime >= REAL_TIME_INTERVAL && gameState != fishingState && gameState >= playState) {
             gameMinute += 5;
@@ -1015,6 +1172,16 @@ public class GamePanel extends JPanel implements Runnable {
                 drop.update();
             }
         }
+    }
+
+    public Graphics2D getGraphics2D(){
+        java.awt.Graphics g = this.getGraphics();
+        if (g == null) {
+            System.err.println("Gagal mendapatkan Graphics untuk GamePanel.");
+            return null;
+        }
+        return (java.awt.Graphics2D) g.create(); // Mengembalikan Graphics2D yang dapat digunakan untuk menggambar
+
     }
 
     public void drawFishingWindow(Graphics2D g2) {
@@ -1335,6 +1502,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
 
+
     public void paintComponent(java.awt.Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
@@ -1413,6 +1581,15 @@ public class GamePanel extends JPanel implements Runnable {
 
         player.drawPlayer(g2);
         player.drawEnergyBar(g2);
+        for (NPC npc : npcs) { // Iterasi melalui setiap NPC dalam array npcs
+            if (npc != null) { // Pastikan objek NPC tidak null (jika array mungkin tidak terisi penuh)
+                // Hanya gambar NPC jika berada di map yang sama dengan pemain
+                // Asumsi: NPC memiliki spawnMapID (int) dan map.currentMapID (int)
+                if (npc.getSpawnMapName() == player.getLocation()) {
+                    npc.draw(g2); // Panggil metode draw() pada setiap objek NPC individual
+                }
+            }
+        }
 
         if (debugMode) {
             for (TransitionData transition : transitions) {
@@ -1464,6 +1641,11 @@ public class GamePanel extends JPanel implements Runnable {
         if (gameState == fishingWinState) {
             fishingTargetFish.fishingWin(this, g2);
         }
+        if (gameState == dialogState) {
+            player.dialogNPC(g2);
+        }
+
+
     }
 
     public void startSleepingSequence() {
