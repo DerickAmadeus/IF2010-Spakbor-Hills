@@ -42,29 +42,24 @@ public class Inventory<T extends Item> {
     }
 
     public void drawInventory(Graphics2D g2) {
-        // frame
         int frameX = gp.tileSize*9;
         int frameY = gp.tileSize;
         int frameWidth = gp.tileSize*6;
         int frameHeight = gp.tileSize*5;
         drawSubwindow(g2, frameX, frameY, frameWidth, frameHeight);
 
-        //slot
         final int slotXStart = frameX + 20;
         final int slotYStart = frameY + 20;
 
-        // CURSOR
         int cursorX = slotXStart + (gp.tileSize * slotCol);
         int cursorY = slotYStart + (gp.tileSize * (slotRow - scrollOffset));
         int cursorWidth = gp.tileSize;
         int cursorHeight = gp.tileSize;
 
-        // DRAW CURSOR
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(3));
         g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
 
-        // DRAW DESC WINDOW
         int dFrameX = frameX;
         int dFrameY = frameY + frameHeight;
         int dFrameWidth = frameWidth;
@@ -77,7 +72,7 @@ public class Inventory<T extends Item> {
 
             if (row < scrollOffset) {
                 index++;
-                continue; // Lewati baris di atas viewport
+                continue; 
             }
 
             if (row >= scrollOffset + MAX_ROWS_ON_SCREEN) {
@@ -159,17 +154,23 @@ public class Inventory<T extends Item> {
         int textX = x + 40;
         int textY = y + 50;
         String[] options;
-
-        if (item instanceof Equipment) {
-            options = new String[]{"Equip/Unequip", "Cancel"};
-        } else if (item instanceof Seeds) {
-            options = new String[]{"Hold/Put Out", "Cancel"};
-        } else if (item instanceof Fish || item instanceof Crops || item instanceof Food){
-            options = new String[]{"Eat", "Cancel"};
+        if (gp.seller == null || (gp.seller != null && !gp.seller.isBuying)) {
+            if (item instanceof Equipment) {
+                options = new String[]{"Equip/Unequip", "Cancel"};
+            } else if (item instanceof Seeds) {
+                options = new String[]{"Hold/Put Out", "Cancel"};
+            } else if (item instanceof Fish || item instanceof Crops || item instanceof Food){
+                options = new String[]{"Eat", "Cancel"};
+            } else {
+                options = new String[]{"Cancel"};
+            }
         } else {
-            options = new String[]{"Cancel"};
+            if (item instanceof Buyable) {
+                options = new String[]{"Buy", "Buy All", "Cancel"};
+            } else {
+                options = new String[]{"Cancel"};
+            }
         }
-
         for (int i = 0; i < options.length; i++) {
             if (i == optionCommandNum) {
                 g2.setColor(Color.yellow);
@@ -181,29 +182,24 @@ public class Inventory<T extends Item> {
     }
 
     public void drawShipping(Graphics2D g2) {
-        // frame
         int frameX = gp.tileSize*9;
         int frameY = gp.tileSize;
         int frameWidth = gp.tileSize*6;
         int frameHeight = gp.tileSize*5;
         drawSubwindow(g2, frameX, frameY, frameWidth, frameHeight);
 
-        //slot
         final int slotXStart = frameX + 20;
         final int slotYStart = frameY + 20;
 
-        // CURSOR
         int cursorX = slotXStart + (gp.tileSize * slotCol);
         int cursorY = slotYStart + (gp.tileSize * (slotRow - scrollOffset));
         int cursorWidth = gp.tileSize;
         int cursorHeight = gp.tileSize;
 
-        // DRAW CURSOR
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(3));
         g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
 
-        // DRAW DESC WINDOW
         int dFrameX = frameX;
         int dFrameY = frameY + frameHeight;
         int dFrameWidth = frameWidth;

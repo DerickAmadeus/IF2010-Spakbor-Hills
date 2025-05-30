@@ -65,7 +65,7 @@ public class GamePanel extends JPanel implements Runnable {
     public String fishingHint = "";
 
     public NPC[] npcs = loadNPCs(); // Array of NPCs in the game
-
+    public Seller seller;
     public Recipe[] allRecipes = RecipeLoader.loadInitialRecipes();
     public Misc[] fuels = {new Misc("Firewood", "ini firewood", 20, 40), new Misc("Coal", "ini coal", 20, 40)};
     public int cookingCursorCol = 0;
@@ -591,9 +591,6 @@ public class GamePanel extends JPanel implements Runnable {
             getFishByName("Salmon")
         };
 
-        Item[] cSell ={getFishByName("Bullhead")};
-
-
         // Contoh: NPC "Villager" akan muncul di map dengan ID 0 (misalnya Farm Map)
         // pada tile (kolom 10, baris 12)
         // Parameter: GamePanel, Nama NPC, ID Map Spawn, Tile X, Tile Y
@@ -602,7 +599,7 @@ public class GamePanel extends JPanel implements Runnable {
 
 
         npcArray[1] = new Seller(this, "Merchant", "MTHouse", 7, 5,  
-                        cLoved, cLiked, cHated, cSell);
+                        cLoved, cLiked, cHated);
 
         // Contoh: NPC "Merchant" akan muncul di map dengan ID 4 (misalnya NPC Map)
         // pada tile (kolom 5, baris 8)
@@ -797,7 +794,7 @@ public class GamePanel extends JPanel implements Runnable {
             keyHandler.f1Pressed = false; // Consume the press to avoid rapid toggling
             System.out.println("Debug mode: " + (debugMode ? "ON" : "OFF"));
         }
-        if (keyHandler.invPressed) {
+        if (keyHandler.invPressed && (seller == null || (seller != null && !seller.isBuying))) {
             if (gameState == playState) {
                 gameState = inventoryState;
             } else if (gameState == inventoryState || gameState == itemOptionState) {
@@ -805,7 +802,6 @@ public class GamePanel extends JPanel implements Runnable {
             }
             keyHandler.invPressed = false;
         }
-
         if (keyHandler.escapePressed) {
             if (gameState == playState){
                 gameState = menuState;
@@ -837,46 +833,53 @@ public class GamePanel extends JPanel implements Runnable {
             player.watching();
             player.interactingWithNPC();
         } else if (gameState == dialogState) {
-        if (keyHandler.enterPressed) {
-            if (player.currentNPC != null && player.currentNPC.isTalking) {
-                player.currentNPC.currentDialogueIndex++;
+            if (keyHandler.enterPressed) {
+                if (player.currentNPC != null && player.currentNPC.isTalking) {
+                    player.currentNPC.currentDialogueIndex++;
 
-                if (player.currentNPC.currentDialogueIndex >= player.currentNPC.dialogues.length) {
-                    player.currentNPC.currentDialogueIndex = 0;
-                    player.currentNPC.isTalking = false;
-                    // player.currentNPC.showActionMenu = true;
-                }
+                    if (player.currentNPC.currentDialogueIndex >= player.currentNPC.dialogues.length) {
+                        player.currentNPC.currentDialogueIndex = 0;
+                        player.currentNPC.isTalking = false;
+                        // player.currentNPC.showActionMenu = true;
+                    }
 
-                keyHandler.enterPressed = false;
-            } else if (player.currentNPC != null && player.currentNPC.isProposed) {
-                player.currentNPC.isProposed = false;
-                keyHandler.enterPressed = false;
-            } else if (player.currentNPC != null && player.currentNPC.isGifted){
-                player.getInventory().removeItem(player.getInventory().getSelectedItem(), 1);
-                player.currentNPC.isGifted = false;
-                keyHandler.enterPressed = false;
-            }else {
-                String action = player.currentNPC.confirmAction();
-                if (action.equalsIgnoreCase("Talk")) {
-                    player.currentNPC.isTalking = true;
-                    player.currentNPC.currentDialogueIndex = 0;
-                    player.energyReducedInThisChat = false;
-                    // player.currentNPC.showActionMenu = false;
-                } else if (action.equalsIgnoreCase("Leave")) {
-                    gameState = playState;
-                } else if (action.equalsIgnoreCase("Propose")){
-                    player.currentNPC.isProposed = true;
-                    player.energyReducedInThisChat = false;
-                } else if (action.equalsIgnoreCase("Give")) {
-                    player.currentNPC.isGifted = true;
-                    gameState = shippingState;
-                    player.energyReducedInThisChat = false;
+                    keyHandler.enterPressed = false;
+                } else if (player.currentNPC != null && player.currentNPC.isProposed) {
+                    player.currentNPC.isProposed = false;
+                    keyHandler.enterPressed = false;
+                } else if (player.currentNPC != null && player.currentNPC.isGifted){
+                    player.getInventory().removeItem(player.getInventory().getSelectedItem(), 1);
+                    player.currentNPC.isGifted = false;
+                    keyHandler.enterPressed = false;
+                } else {
+                    String action = player.currentNPC.confirmAction();
+                    if (player.currentNPC != null && player.currentNPC instanceof Seller) {
+                        seller = (Seller) player.currentNPC;
+                        action = seller.confirmAction();
+                    }
+                    if (action.equalsIgnoreCase("Talk")) {
+                        player.currentNPC.isTalking = true;
+                        player.currentNPC.currentDialogueIndex = 0;
+                        player.energyReducedInThisChat = false;
+                        // player.currentNPC.showActionMenu = false;
+                    } else if (action.equalsIgnoreCase("Leave")) {
+                        gameState = playState;
+                    } else if (action.equalsIgnoreCase("Propose")){
+                        player.currentNPC.isProposed = true;
+                        player.energyReducedInThisChat = false;
+                    } else if (action.equalsIgnoreCase("Give")) {
+                        player.currentNPC.isGifted = true;
+                        gameState = shippingState;
+                        player.energyReducedInThisChat = false;
+                    } else if (seller != null && player.currentNPC instanceof Seller && action.equalsIgnoreCase("Buy") && !seller.getInventory().getItemContainer().isEmpty()) {
+                        seller.isBuying = true;
+                        gameState = inventoryState;
+                    }
+                    keyHandler.enterPressed = false;
                 }
-                keyHandler.enterPressed = false;
-            }
         }
     }
-        if (gameState == inventoryState) {
+        if (gameState == inventoryState && (seller == null || (seller != null && !seller.isBuying))) {
             player.getInventory().updateInventoryCursor(
                     keyHandler.upPressed,
                     keyHandler.downPressed,
@@ -893,8 +896,25 @@ public class GamePanel extends JPanel implements Runnable {
                 keyHandler.enterPressed = false;
             }
             player.sleeping();
-        }
-        else if (gameState == itemOptionState) {
+        } else if (gameState == inventoryState && seller != null && seller.isBuying) {
+            seller.getInventory().updateInventoryCursor(
+                    keyHandler.upPressed,
+                    keyHandler.downPressed,
+                    keyHandler.leftPressed,
+                    keyHandler.rightPressed);
+
+            keyHandler.upPressed = false;
+            keyHandler.downPressed = false;
+            keyHandler.leftPressed = false;
+            keyHandler.rightPressed = false;
+
+            if (keyHandler.enterPressed) {
+                seller.getInventory().selectCurrentItem();
+                keyHandler.enterPressed = false;
+            }
+            player.sleeping();
+
+        } else if (gameState == itemOptionState && (seller == null || (seller != null && !seller.isBuying))) {
             if (keyHandler.upPressed) {
                 player.getInventory().optionCommandNum = (player.getInventory().optionCommandNum - 1 + 3) % 3;
                 keyHandler.upPressed = false;
@@ -917,7 +937,7 @@ public class GamePanel extends JPanel implements Runnable {
                             }
                             gameState = inventoryState;
                         } else if (player.getInventory().optionCommandNum == 1) {
-                            gameState = inventoryState; // Cancel
+                            gameState = inventoryState; 
                         }
                     } else if (selected instanceof Seeds) {
                         Seeds eq = (Seeds) selected;
@@ -929,7 +949,7 @@ public class GamePanel extends JPanel implements Runnable {
                             }
                             gameState = inventoryState;
                         } else if (player.getInventory().optionCommandNum == 1) {
-                            gameState = inventoryState; // Cancel
+                            gameState = inventoryState; 
                         }
                     } else if (selected instanceof Fish || selected instanceof Crops || selected instanceof Food) {
                         if (player.getInventory().optionCommandNum == 0) {
@@ -943,6 +963,41 @@ public class GamePanel extends JPanel implements Runnable {
                             gameState = inventoryState;
                         }
                     }
+                    keyHandler.enterPressed = false;
+                }
+            }
+            player.sleeping();
+        } else if (gameState == itemOptionState && seller != null && seller.isBuying) {
+            if (keyHandler.upPressed) {
+                seller.getInventory().optionCommandNum = (seller.getInventory().optionCommandNum - 1 + 3) % 3;
+                keyHandler.upPressed = false;
+            }
+            if (keyHandler.downPressed) {
+                seller.getInventory().optionCommandNum = (seller.getInventory().optionCommandNum + 1) % 3;
+                keyHandler.downPressed = false;
+            }
+
+            if (gameState == itemOptionState) {
+                if (keyHandler.enterPressed) {
+                    Item selected = seller.getInventory().getSelectedItem();
+                    if (selected instanceof Buyable) {
+                        Buyable eq = (Buyable) selected;
+                        if (seller.getInventory().optionCommandNum == 0) {
+                            eq.buy(this, selected, 1);
+                            gameState = playState;
+                            seller.isBuying = false;
+                            seller = null;
+                        } else if (seller.getInventory().optionCommandNum == 1) {
+                            eq.buy(this, selected, seller.getInventory().getItemCount(selected));
+                            gameState = playState;
+                            seller.isBuying = false;
+                            seller = null;
+                        } else if (seller.getInventory().optionCommandNum == 2) {
+                            gameState = playState;
+                            seller.isBuying = false;
+                            seller = null;
+                        }
+                    } 
                     keyHandler.enterPressed = false;
                 }
             }
@@ -1070,7 +1125,6 @@ public class GamePanel extends JPanel implements Runnable {
                     }
 
                     if (hasAllIngredients) {
-                        // Konsumsi bahan
                         for (Item item : actualIngredientsToUse.keySet()) {
                             player.getInventory().removeItem(item, actualIngredientsToUse.get(item));
                         }
@@ -1208,8 +1262,7 @@ public class GamePanel extends JPanel implements Runnable {
             System.err.println("Gagal mendapatkan Graphics untuk GamePanel.");
             return null;
         }
-        return (java.awt.Graphics2D) g.create(); // Mengembalikan Graphics2D yang dapat digunakan untuk menggambar
-
+        return (java.awt.Graphics2D) g.create(); 
     }
 
     public void drawFishingWindow(Graphics2D g2) {
@@ -1264,7 +1317,6 @@ public class GamePanel extends JPanel implements Runnable {
             debugY += 25;
         }
 
-        // Hint berdasarkan tebakan
         if (fishingHint != null && !fishingHint.isEmpty()) {
             g2.setColor(Color.YELLOW);
             g2.drawString("Hint: " + fishingHint, frameX + 20, debugY);
@@ -1316,16 +1368,16 @@ public class GamePanel extends JPanel implements Runnable {
 
             if (row < cookingCursorOffset) {
                 index++;
-                continue; // Lewati baris di atas viewport
+                continue; 
             }
 
             if (row >= cookingCursorOffset + 300 / 64) {
-                break; // Hentikan kalau sudah melebihi viewport
+                break;
             }
 
             int col = index % 4;
             int itemX = slotXStart + col * tileSize;
-            int itemY = slotYStart + (row - cookingCursorOffset) * tileSize; // kurangi offset agar scroll naik
+            int itemY = slotYStart + (row - cookingCursorOffset) * tileSize; 
 
             if (recipe.getFood().getIcon() != null) {
                 int padding = 6;
@@ -1337,8 +1389,6 @@ public class GamePanel extends JPanel implements Runnable {
             }
             index++;
         }
-        // Hitung index recipe yang sedang dipilih
-       // Hitung index recipe yang sedang dipilih
         int selectedIndex = cookingCursorRow * 4 + cookingCursorCol;
         if (selectedIndex >= 0 && selectedIndex < allRecipes.length) {
             Recipe selectedRecipe = allRecipes[selectedIndex];
@@ -1479,7 +1529,6 @@ public class GamePanel extends JPanel implements Runnable {
         int cursorWidth = tileSize;
         int cursorHeight = tileSize;
 
-        // DRAW CURSOR
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(3));
         g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
@@ -1528,8 +1577,6 @@ public class GamePanel extends JPanel implements Runnable {
             index++;
         }
     }
-
-
 
     public void paintComponent(java.awt.Graphics g) {
         super.paintComponent(g);
@@ -1606,10 +1653,9 @@ public class GamePanel extends JPanel implements Runnable {
 
         player.drawPlayer(g2);
         player.drawEnergyBar(g2);
-        for (NPC npc : npcs) { // Iterasi melalui setiap NPC dalam array npcs
-            if (npc != null) { // Pastikan objek NPC tidak null (jika array mungkin tidak terisi penuh)
-                // Hanya gambar NPC jika berada di map yang sama dengan pemain
-                // Asumsi: NPC memiliki spawnMapID (int) dan map.currentMapID (int)
+        player.drawGoldWindow(g2);
+        for (NPC npc : npcs) {
+            if (npc != null) { 
                 if (npc.getSpawnMapName() == player.getLocation()) {
                     npc.draw(g2); // Panggil metode draw() pada setiap objek NPC individual
                 }
@@ -1636,11 +1682,15 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
 
-        if (gameState == inventoryState) {
+        if (gameState == inventoryState && (seller == null || (seller != null && !seller.isBuying))) {
             player.openInventory(g2);
+        } else if (gameState == inventoryState && seller != null && seller.isBuying) {
+            seller.getInventory().drawInventory(g2);
         }
-        if (gameState == itemOptionState) {
+        if (gameState == itemOptionState && (seller == null || (seller != null && !seller.isBuying))) {
             player.getInventory().drawItemOptionWindow(g2);
+        } else if (gameState == itemOptionState && seller != null && seller.isBuying) {
+            seller.getInventory().drawItemOptionWindow(g2);
         }
         if (gameState == shippingState) {
             player.openShipping(g2);
@@ -1675,18 +1725,12 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void startSleepingSequence() {
-        // Mengatur jam permainan ke 6 pagi
         gameHour = 5;
         gameMinute = 55;
-
-        // Mengatur hari permainan ke hari berikutnya
         gameDay++;
         daysPlayed++;
-        // Memastikan pemain tidak dalam keadaan dialog atau interaksi lainnya
         gameState = playState;
-
-        // Update peta dan transisi jika diperlukan
-        map.updateTiles(); // Update tiles setelah tidur
+        map.updateTiles(); 
 
         for (int i = 0; i <= 200; i += 10) {
             try {
@@ -1696,12 +1740,12 @@ public class GamePanel extends JPanel implements Runnable {
                     g2.setColor(new Color(0, 0, 0, i));
                     g2.fillRect(0, 0, screenWidth, screenHeight);
                     g2.dispose();
-                    Thread.sleep(30); // jeda animasi
+                    Thread.sleep(30); 
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
         }
-        repaint(); // Memanggil repaint agar tampilan map diperbarui setelah tidur
+        repaint(); 
     }
 }
