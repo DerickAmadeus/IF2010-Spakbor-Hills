@@ -452,7 +452,7 @@ public class GamePanel extends JPanel implements Runnable {
         // Contoh: NPC "Villager" akan muncul di map dengan ID 0 (misalnya Farm Map)
         // pada tile (kolom 10, baris 12)
         // Parameter: GamePanel, Nama NPC, ID Map Spawn, Tile X, Tile Y
-        npcArray[0] = new NPC(this, "MT", "MTHouse", 10, 12,  
+        npcArray[0] = new NPC(this, "MT", "MTHouse", 7, 3,  
                         mtLoved, mtLiked, mtHated);
 
         // Contoh: NPC "Merchant" akan muncul di map dengan ID 4 (misalnya NPC Map)
@@ -597,12 +597,19 @@ public class GamePanel extends JPanel implements Runnable {
             } else if (player.currentNPC != null && player.currentNPC.isProposed) {
                 player.currentNPC.isProposed = false;
                 keyHandler.enterPressed = false;
-            } else {
+            } else if (player.currentNPC != null && player.currentNPC.isGifted){
+                player.currentNPC.isGifted = false;
+                // player.currentNPC.showActionMenu = true;
+                keyHandler.enterPressed = false;
+            
+            
+            
+            
+            }else {
                 String action = player.currentNPC.confirmAction();
                 if (action.equalsIgnoreCase("Talk")) {
                     player.currentNPC.isTalking = true;
                     player.currentNPC.currentDialogueIndex = 0;
-                    player.currentNPC.addHeartPoints(20);
                     player.energyReducedInThisChat = false;
                     // player.currentNPC.showActionMenu = false;
                 } else if (action.equalsIgnoreCase("Leave")) {
@@ -610,6 +617,8 @@ public class GamePanel extends JPanel implements Runnable {
                 } else if (action.equalsIgnoreCase("Propose")){
                     player.currentNPC.isProposed = true;
                     player.energyReducedInThisChat = false;
+                } else if (action.equalsIgnoreCase("Give")) {
+                    player.currentNPC.isGifted = true;
                 }
                 keyHandler.enterPressed = false;
             }

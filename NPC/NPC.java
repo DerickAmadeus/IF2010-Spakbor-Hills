@@ -35,9 +35,10 @@ public class NPC {
     private final int ANIMATION_SPEED = 15;
     private final int IDLE_FRAME_COUNT = 6; // Anda set 6, sebelumnya saya contohkan 8
     private boolean showActionMenu = false;
-    private String[] actions = {"Talk", "Give Item", "View Status", "Propose", "Marry", "Leave"};
+    private String[] actions = {"Talk", "Give", "Propose", "Marry", "Leave"};
     private int selectedActionIndex = 0;
     private String[] proposingAnswers = {"AAWWWWWWWWWWW SO SWEEETTTT. AKU MAUUUUUUUUUU", "Dih Effort Dulu Bang","Dah kau lamar bang aku", "Dah nikah kita"}; // Contoh jawaban untuk pertanyaan pernikahan
+    public String[] giftingAnswers = {"Terima kasih!", "Aku suka ini!", "Hmmm okee.", "Aku tidak suka ini."}; // Contoh jawaban untuk pemberian item
 
 
 
@@ -51,6 +52,7 @@ public class NPC {
     private String relationship;
     public boolean isTalking = false;
     public boolean isProposed = false;
+    public boolean isGifted = false;
 
 
     public NPC(GamePanel gp, String name, String spawnMapName, int tileX, int tileY, Item[] loveditems, Item[] likedItems, Item[] hatedItems) {
@@ -240,14 +242,9 @@ public class NPC {
         g2.setFont(new Font("Arial", Font.BOLD, 16));
         FontMetrics metrics = g2.getFontMetrics();
         String statusText = "NPC: " + name;
-        int textWidth = metrics.stringWidth(statusText);
-        int textHeight = metrics.getHeight();
         statusText += " (" + (relationship != null ? relationship : "Single") + ")";
         
         // Gambar latar belakang untuk teks
-        g2.setColor(new Color(0, 0, 0, 150)); // Hitam transparan
-        g2.fillRect(10, 10, textWidth + 10, textHeight + 5);
-        
         // Gambar teks
         g2.setColor(Color.WHITE);
         g2.drawString(statusText, frameX + 20, frameY + 40);
@@ -488,6 +485,20 @@ public class NPC {
         
     }
 
+    public int drawGifting(Graphics2D g2, String speakerName) {
+        int x = gp.tileSize * 1;
+        int y = gp.tileSize * 8;
+        int width = gp.tileSize * 14;
+        int height = gp.tileSize * 3;
+
+        drawSubwindow(g2, x, y, width, height);
+
+        g2.setFont(new Font("Arial", Font.PLAIN, 20));
+        g2.setColor(Color.WHITE);
+        g2.drawString(speakerName + ":", x + 20, y + 35);
+        return 10;
+    }
+
 
 
 
@@ -505,4 +516,6 @@ public class NPC {
             heartPoints = 150; // Maksimal 100
         }
     }
+
+
 }
