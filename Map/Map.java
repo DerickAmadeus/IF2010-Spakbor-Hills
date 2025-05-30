@@ -97,8 +97,8 @@ public class Map {
             tileImage[84].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananatasair.png"));
             tileImage[85] = new Tile("grass_bawah_air_kiri", true);
             tileImage[85].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiribawahair.png"));
-            tileImage[86] = new Tile("grass_bawah_air_kanan", true);
-            tileImage[86].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananbawahair.png"));
+            tileImage[181] = new Tile("grass_bawah_air_kanan", true);
+            tileImage[181].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananbawahair.png"));
 
             // HOUSE & FLOOR
             tileImage[49] = new Tile("floor", true);

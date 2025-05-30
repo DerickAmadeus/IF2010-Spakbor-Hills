@@ -16,8 +16,9 @@ public class Main {
 
         window.setLocationRelativeTo(null); // Center the window on the screen
         window.setVisible(true); // Make the window visible
-        gamePanel.startGameThread(); // Start the game loop thread
-    }
     
+    gamePanel.startGameThread(); // Start the game loop thread
+    }
+
 }
 //gantinama

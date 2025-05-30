@@ -708,11 +708,15 @@ public class Player {
             this.location = "Farm Map";
         } else if (locationID == 1) {
             this.location = "Forest River";
+        } else if (locationID == 2) {
+            this.location = "Mountain Lake";
         } else if (locationID == 5){
             this.location = "MTHouse";
         } else if (locationID == 3) {
             this.location = "Player's House";
 
+        } else if (locationID == 4) {
+            this.location = "World Map";
         }
     }
 
