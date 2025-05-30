@@ -5,6 +5,7 @@ import Items.*;
 import Map.ShippingBin;
 import Map.Soil;
 import Map.Tile;
+import NPC.NPC;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.awt.event.KeyEvent;
 import javax.imageio.ImageIO;
-
 import Items.*;
 import NPC.NPC;
 import java.awt.Color;
@@ -1141,11 +1141,16 @@ public boolean energyReducedInThisChat = false;
     }
 
     public void selling() {
-        System.err.println("QUetz");
-        System.err.println("acmka");
         Item sellingItem = inventory.getSelectedItem();
         Tile tileToSell = gp.map.getTile(interactionArea.x, interactionArea.y);
         ShippingBin sb = (ShippingBin) tileToSell;
+        if(sb.lastday < gp.gameDay) {
+            sb.binCount = 0;
+            sb.lastday = gp.gameDay;
+            money += storedMoney;
+            storedMoney = 0;
+            System.out.println("Player: Shipping bin has been emptied, Current Money: " + money + " coins.");
+        }
         if (sb.binCount < sb.maxSlot) {
             if (inventory.getItemCount(sellingItem) > 0) {
                 int price = sellingItem.getHargaJual();
