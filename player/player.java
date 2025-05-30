@@ -5,6 +5,7 @@ import Items.*;
 import Map.ShippingBin;
 import Map.Soil;
 import Map.Tile;
+import NPC.NPC;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -17,14 +18,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.imageio.ImageIO;
-
-import Furniture.Bed;
-import Items.*;
-import NPC.NPC;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-
 import main.GamePanel;
 import main.KeyHandler;
 
@@ -1040,11 +1033,16 @@ public Item itemsGifted = null;
     }
 
     public void selling() {
-        System.err.println("QUetz");
-        System.err.println("acmka");
         Item sellingItem = inventory.getSelectedItem();
         Tile tileToSell = gp.map.getTile(interactionArea.x, interactionArea.y);
         ShippingBin sb = (ShippingBin) tileToSell;
+        if(sb.lastday < gp.gameDay) {
+            sb.binCount = 0;
+            sb.lastday = gp.gameDay;
+            money += storedMoney;
+            storedMoney = 0;
+            System.out.println("Player: Shipping bin has been emptied, Current Money: " + money + " coins.");
+        }
         if (sb.binCount < sb.maxSlot) {
             if (inventory.getItemCount(sellingItem) > 0) {
                 int price = sellingItem.getHargaJual();
