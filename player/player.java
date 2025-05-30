@@ -36,8 +36,8 @@ public class Player {
     public Rectangle solidArea; 
     public Rectangle interactionArea; 
     public int solidAreaDefaultX, solidAreaDefaultY;
-    public int money;
-    public int storedMoney; 
+    private int money;
+    private int storedMoney; 
     public boolean collisionOn = false;
     GamePanel gp;
     KeyHandler keyH;

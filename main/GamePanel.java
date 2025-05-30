@@ -976,7 +976,7 @@ public class GamePanel extends JPanel implements Runnable {
                 keyHandler.downPressed = false;
             }
 
-            if (gameState == shippingOptionState && !player.currentNPC.isGifted) {
+            if (gameState == shippingOptionState && (player.currentNPC == null || (player.currentNPC != null && !player.currentNPC.isGifted))) {
                 if (keyHandler.enterPressed) {
                     Item selected = player.getInventory().getSelectedItem();
                     if(!(selected instanceof Equipment)){
@@ -989,7 +989,7 @@ public class GamePanel extends JPanel implements Runnable {
                     }
                     keyHandler.enterPressed = false;
                 }
-            } else if (gameState == shippingOptionState && player.currentNPC.isGifted) {
+            } else if (gameState == shippingOptionState  &&  player.currentNPC != null && player.currentNPC.isGifted) {
                 if (keyHandler.enterPressed) {
                     Item selected = player.getInventory().getSelectedItem();
                     if(!(selected instanceof Equipment || selected instanceof Seeds)){
