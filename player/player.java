@@ -5,6 +5,7 @@ import Items.*;
 import Map.ShippingBin;
 import Map.Soil;
 import Map.Tile;
+import NPC.NPC;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -16,9 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.awt.event.KeyEvent;
 import javax.imageio.ImageIO;
-
-import Furniture.Bed;
 import Items.*;
 import NPC.NPC;
 import java.awt.Color;
@@ -28,25 +28,23 @@ import java.awt.Rectangle;
 import main.GamePanel;
 import main.KeyHandler;
 
-//error jir
-
 public class Player {
-    public int x, y; // Player's world X and Y coordinates
+    public int x, y; 
     public int speed;
-    public int screenX; // Player's X position on the screen (usually center)
-    public int screenY; // Player's Y position on the screen (usually center)
-    public Rectangle solidArea; // Collision area for the player
-    public Rectangle interactionArea; // Area for checking interactions, will now align with a tile
+    public int screenX; 
+    public int screenY; 
+    public Rectangle solidArea; 
+    public Rectangle interactionArea; 
     public int solidAreaDefaultX, solidAreaDefaultY;
-     public int money;
-    public int storedMoney; 
+    private int money;
+    private int storedMoney; 
     public boolean collisionOn = false;
     GamePanel gp;
     KeyHandler keyH;
-    public String direction; // Current animation/movement state (e.g., "up", "idleDown")
-    String lastMoveDirection; // Last actual direction of movement input ("up", "down", "left", "right")
+    public String direction; 
+    String lastMoveDirection; 
     private String location;
-    public NPC currentNPC; // NPC that the player is currently interacting with, if any
+    public NPC currentNPC; 
 
     public BufferedImage[] idleDownFrames, idleUpFrames, idleLeftFrames, idleRightFrames,
                            leftFrames, rightFrames, upFrames, downFrames;
@@ -56,7 +54,7 @@ public class Player {
 
     private int spriteCounter = 0;
     private int spriteNum = 0;
-    private final int ANIMATION_SPEED = 10; // Frames per animation sprite
+    private final int ANIMATION_SPEED = 10;
     private boolean isActuallyMoving = false;
     private Inventory<Item> inventory;
     private Item equippedItem;
@@ -69,9 +67,11 @@ public class Player {
     private String playerName = null;
     private String gender = null;
 
-    // Cooldown for interaction to prevent multiple interactions from a single long key press
+    private final String[] menu = { "Continue", "Player Info", "Statistics", "Help", "Exit" };
+    public int menuCommand = 0;
+
     private int interactionCooldown = 0;
-    boolean isSleeping = false; // tambahkan di kelas player atau tempat yang sesuai
+    boolean isSleeping = false; 
 
     public Player(GamePanel gp, KeyHandler keyH, String farmName) {
         this.gp = gp;
@@ -129,6 +129,10 @@ public class Player {
         Misc coal = new Misc("Coal", "ini coal", 20, 40);
         inventory.addItem(firewood, 4);
         inventory.addItem(coal, 2);
+        inventory.addItem(gp.allFishes[gp.allFishes.length-1], 2);
+        inventory.addItem(gp.allFishes[gp.allFishes.length-2], 2);
+        inventory.addItem(gp.allFishes[gp.allFishes.length-3], 2);
+        inventory.addItem(gp.allFishes[gp.allFishes.length-4], 2);
     }
 
     /* public void loadInitialCrops() {
@@ -307,7 +311,6 @@ public class Player {
         boolean isAttemptingMoveByKeyPress = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
 
         if (isAttemptingMoveByKeyPress && gp.gameState == gp.playState) {
-            // ... (logika pergerakan yang sudah ada)
             if (keyH.upPressed) { direction = "up"; lastMoveDirection = "up"; }
             else if (keyH.downPressed) { direction = "down"; lastMoveDirection = "down"; }
             else if (keyH.leftPressed) { direction = "left"; lastMoveDirection = "left"; }
@@ -337,15 +340,12 @@ public class Player {
         int worldPixelHeight = gp.map.currentMapWorldRow * gp.tileSize;
 
         if (x < 0) x = 0;
-        if (x + gp.tileSize > worldPixelWidth) x = worldPixelWidth - gp.tileSize; // Kanan
+        if (x + gp.tileSize > worldPixelWidth) x = worldPixelWidth - gp.tileSize; 
         if (y < 0) y = 0;
-        if (y + gp.tileSize > worldPixelHeight) y = worldPixelHeight - gp.tileSize; // Bawah
+        if (y + gp.tileSize > worldPixelHeight) y = worldPixelHeight - gp.tileSize; 
 
-
-        // ... (sisa logika update pemain, termasuk interactionArea, animasi, dll.)
-         // Update interaction area
-        int playerCurrentTileCol = (x + solidArea.x + solidArea.width / 2) / gp.tileSize; // Pusat solid area
-        int playerCurrentTileRow = (y + solidArea.y + solidArea.height / 2) / gp.tileSize; // Pusat solid area
+        int playerCurrentTileCol = (x + solidArea.x + solidArea.width / 2) / gp.tileSize; 
+        int playerCurrentTileRow = (y + solidArea.y + solidArea.height / 2) / gp.tileSize; 
 
         int targetTileCol = playerCurrentTileCol;
         int targetTileRow = playerCurrentTileRow;
@@ -359,18 +359,15 @@ public class Player {
 
         interactionArea.x = targetTileCol * gp.tileSize;
         interactionArea.y = targetTileRow * gp.tileSize;
-        // interactionArea.width dan height sudah gp.tileSize
-
 
         if (keyH.interactPressed && interactionCooldown == 0) {
             interact();
             keyH.interactPressed = false;
-            interactionCooldown = 15; // Cooldown kecil setelah interaksi tombol E
+            interactionCooldown = 15; 
         }
 
 
         if (isAttemptingMoveByKeyPress && !collisionOn && isActuallyMoving) {
-            // 'direction' sudah diatur untuk animasi berjalan
         } else {
             switch (lastMoveDirection) {
                 case "up":    direction = "idleUp";    break;
@@ -423,7 +420,7 @@ public class Player {
         if (currentFrames != null && currentFrames.length > 0 && spriteNum < currentFrames.length) {
             image = currentFrames[spriteNum];
         } else if (idleDownFrames != null && idleDownFrames.length > 0) {
-            image = idleDownFrames[0]; // Fallback to first frame of idleDown
+            image = idleDownFrames[0]; 
         }
 
 
@@ -434,28 +431,20 @@ public class Player {
         }
         g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
 
-        // DEBUG: Draw Solid Area and Interaction Area
         if (gp.debugMode) {
-            // Draw Solid Area (relative to player's screen position)
-            g2.setColor(new Color(255, 0, 0, 100)); // Semi-transparent red
+            g2.setColor(new Color(255, 0, 0, 100)); 
             g2.fillRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
-
-            // Draw Interaction Area (needs to be converted from world to screen coordinates)
-            // Since interactionArea.x and .y are already world coordinates of the target tile,
-            // the conversion to screen coordinates remains the same.
-            g2.setColor(new Color(0, 255, 0, 100)); // Semi-transparent green
+            g2.setColor(new Color(0, 255, 0, 100)); 
             int interactionScreenX = interactionArea.x - x + screenX;
             int interactionScreenY = interactionArea.y - y + screenY;
             g2.fillRect(interactionScreenX, interactionScreenY, interactionArea.width, interactionArea.height);
         }
         if (equippedItem != null && equippedItem.getIcon() != null) {
-            int handX = screenX + gp.tileSize / 2; // posisi relatif tangan
+            int handX = screenX + gp.tileSize / 2; 
             int handY = screenY + gp.tileSize / 2;
 
-            // Gambar item
             g2.drawImage(equippedItem.getIcon(), handX, handY, gp.tileSize / 2, gp.tileSize / 2, null);
 
-            // Dapatkan jumlah item di inventory
             Integer count = inventory.getItemCount(equippedItem);
             if (count != null && count > 1) {
                 g2.setColor(Color.white);
@@ -474,15 +463,12 @@ public class Player {
         int barWidth = 200;
         int barHeight = 30;
 
-        // Hitung proporsi energi
         double percent = (double) energy / MAX_ENERGY;
         int energyWidth = (int) (barWidth * percent);
 
-        // Gambar background bar (gelap)
         g2.setColor(Color.darkGray);
         g2.fillRoundRect(barX, barY, barWidth, barHeight, 10, 10);
 
-        // Tentukan warna berdasarkan persentase energi
         Color energyColor;
         if (percent > 0.5) {
             energyColor = Color.green;
@@ -494,15 +480,12 @@ public class Player {
             energyColor = Color.red;
         }
 
-        // Gambar bar energi dengan warna yang sesuai
         g2.setColor(energyColor);
         g2.fillRoundRect(barX, barY, energyWidth, barHeight, 10, 10);
 
-        // Gambar border luar
         g2.setColor(Color.black);
         g2.drawRoundRect(barX, barY, barWidth, barHeight, 10, 10);
 
-        // Tampilkan teks energi (di tengah bar)
         g2.setColor(Color.white);
         g2.setFont(g2.getFont().deriveFont(Font.BOLD, 18f));
         String energyText = energy + " / " + MAX_ENERGY;
@@ -511,68 +494,55 @@ public class Player {
         g2.drawString(energyText, textX, textY);
     }
     public void drawNotification(Graphics2D g2, String message, int x, int y) {
-        // Ukuran padding dan margin
         int paddingX = 15;
         int paddingY = 10;
 
-        // Set font notifikasi
         g2.setFont(new Font("Arial", Font.PLAIN, 20));
         FontMetrics fm = g2.getFontMetrics();
         int textWidth = fm.stringWidth(message);
         int textHeight = fm.getHeight();
 
-        // Hitung ukuran box berdasarkan teks
         int boxWidth = textWidth + paddingX * 2;
         int boxHeight = textHeight + paddingY * 2;
 
-        // Gambar background semi-transparan
-        Color backgroundColor = new Color(0, 0, 0, 180); // Transparansi lebih ringan
+        Color backgroundColor = new Color(0, 0, 0, 180); 
         g2.setColor(backgroundColor);
         g2.fillRoundRect(x, y, boxWidth, boxHeight, 20, 20);
 
-        // Gambar border putih
         g2.setColor(Color.WHITE);
         g2.setStroke(new BasicStroke(3));
         g2.drawRoundRect(x, y, boxWidth, boxHeight, 20, 20);
 
-        // Gambar teks di dalam box (dengan posisi teks disesuaikan)
         g2.setColor(Color.WHITE);
         int textX = x + paddingX;
         int textY = y + paddingY + fm.getAscent();
         g2.drawString(message, textX, textY);
     }
 
-
-    // Getters
     public int getX() { return x; }
     public int getY() { return y; }
     public int getSpeed() { return speed; }
     public Rectangle getSolidArea() { return solidArea; }
-    public String getDirectionForCollision() { return direction; } // Current intended move direction for collision
-    public String getLastMoveDirection() { return lastMoveDirection; } // Last direction player moved or faced
-    public Rectangle getInteractionArea() { return interactionArea; } // The tile-aligned interaction area
+    public String getDirectionForCollision() { return direction; } 
+    public String getLastMoveDirection() { return lastMoveDirection; } 
+    public Rectangle getInteractionArea() { return interactionArea; } 
     public Inventory<Item> getInventory() { return inventory;}
     public static int getMaxEnergy() { return MAX_ENERGY; }
 
 
-    // Action method for interaction
     public void interact() {
-        // Variabel tile sekarang menjadi lokal
         Tile tileToInteract = gp.map.getTile(interactionArea.x, interactionArea.y);
         if (tileToInteract == null) {
             System.out.println("Player: No tile found at interaction area (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ").");
             return;
         }
 
-        // Pastikan Tile.java punya getTileName() atau ganti dengan getName()
         System.out.println("Player: Interacting with tile at: (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ") Name: " + tileToInteract.getTileName());
 
-        // Gunakan instanceof untuk pengecekan tipe yang lebih aman
         if (tileToInteract instanceof Soil) {
             System.out.println("Player: Interacting with Soil tile.");
-            Soil soilTile = (Soil) tileToInteract; // Casting aman setelah instanceof
+            Soil soilTile = (Soil) tileToInteract; 
             if (soilTile.getSeedPlanted() != null) {
-                //System.out.println("Player: Ada tanaman -> " + soilTile.getSeedPlanted().getName());
                 System.out.println("Tile index:" + (soilTile.getSeedPlanted().getTileIndex() - 13) + "Wet Index:" + soilTile.getSeedPlanted().getWetIndex());
                 System.out.println("wet cooldown: " + soilTile.getWetCooldown());
                 System.out.println("days: " + soilTile.getDaysToHarvest());
@@ -582,9 +552,8 @@ public class Player {
                 System.out.println("Player: Tanah ini kosong (tidak ada bibit).");
             }
 
-        } else if (tileToInteract.getTileName().toLowerCase().contains("door")) { // Contoh interaksi dengan pintu
+        } else if (tileToInteract.getTileName().toLowerCase().contains("door")) { 
             System.out.println("Player: Interacting with a door.");
-            // Logika pindah map atau masuk gedung
         } else if(tileToInteract.getTileName().toLowerCase().equals("bed")) {
             System.out.println("Player : Interacting with a bed");
             sleeping();
@@ -596,7 +565,6 @@ public class Player {
         }
         else {
             System.out.println("Player: No specific interaction for this tile (" + tileToInteract.getTileName() + ").");
-            // setEnergy(getEnergy()+10); // Mungkin tidak perlu untuk interaksi umum
         }
         if (gp.activeStove != null) {
             System.out.println(String.format("hari %d jam %d:%d", gp.activeStove.timestampDay, gp.activeStove.timestampHour, gp.activeStove.timestampMinute));
@@ -611,7 +579,6 @@ public class Player {
             System.out.println(f.getName() + ": " + f.getHargaJual());
         }*/
 
-        // Cooldown sudah diatur di metode update() setelah memanggil interact()
     }
 
 
@@ -626,7 +593,6 @@ public class Player {
                         System.out.println("Player: Memulai interaksi dengan NPC: " + npc.name);
                         gp.gameState = gp.dialogState;   // Ubah game state menjadi dialog
                         currentNPC = npc; // Set NPC yang sedang diajak bicara
-
                         gp.keyHandler.enterPressed = false; // Konsumsi tombol yang MEMBUKA dialog
                         this.interactionCooldown = 20;        // Cooldown untuk player
                         return true; // Interaksi berhasil dimulai
@@ -650,11 +616,11 @@ public class Player {
             currentNPC.showStatus(g2);
             currentNPC.drawActionMenu(g2);
             if (currentNPC.isTalking) {
-                chatting(g2); // Update dialog jika sedang berbicara
+                chatting(g2); 
             } else if (currentNPC.isProposed) {
                 proposing(g2);
             } else if (currentNPC.isGifted){
-                // gifting(g2);
+                gifting(g2);
             }
 
         } else {
@@ -835,19 +801,122 @@ public class Player {
         }
     }
 
-    public void harvesting() {
-        if (equippedItem == null && energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
-            Tile tileToHarvest = gp.map.getTile(interactionArea.x, interactionArea.y);
-            if (tileToHarvest != null && tileToHarvest instanceof Soil) {
-                Soil harvest = (Soil) tileToHarvest;
-                if (!harvest.canPlant() && harvest.getDaysToHarvest() == 0 && harvest.getWetCooldown() > 0) {
-                    gp.map.harvestSeedAtTile(interactionArea.x, interactionArea.y);
-                    setEnergy(getEnergy() - 5);
-                    gp.addMinutes(5);
+    public void showMenu(Graphics2D g2) {
+        if (gp.gameState == gp.menuState) {
+            int frameWidth = gp.tileSize * 12;
+            int frameHeight = gp.tileSize * 10;
+            int frameX = (gp.screenWidth  - frameWidth)  / 2;
+            int frameY = (gp.screenHeight - frameHeight) / 2;
+
+            Font menuFont;
+            try {
+                InputStream inputStream = getClass().getResourceAsStream("/main/PressStart2PRegular.ttf");
+                menuFont = Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(24f);
+            } catch (Exception e) {
+                menuFont = new Font("Arial", Font.BOLD, 24);
+            }
+            
+            Color c = new Color(0,0,0, 210);
+            g2.setColor(c);
+            g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
+            c = new Color(255,255,255);
+            g2.setColor(c);
+            g2.setStroke(new BasicStroke(5));
+            g2.drawRoundRect(frameX+5, frameY+5, frameWidth-10, frameHeight-10, 25, 25);
+
+            g2.setFont(menuFont.deriveFont(Font.BOLD, 30F));
+            String title = "GAME MENU";
+            int titleX = getX(title, g2);
+            int titleY = frameY + gp.tileSize * 2;
+            
+            // shadow
+            g2.setColor(Color.BLACK);
+            g2.drawString(title, titleX + 3, titleY + 3);
+            // title
+            g2.setColor(Color.WHITE);
+            g2.drawString(title, titleX, titleY);
+
+            // Draw menu options
+            g2.setFont(menuFont.deriveFont(Font.PLAIN, 20F));
+            for (int i = 0; i < menu.length; i++) {
+                String option = menu[i];
+                int optionX = getX(option, g2);
+                int optionY = titleY + gp.tileSize * 2 + i * gp.tileSize;
+                
+                // Shadow
+                g2.setColor(Color.BLACK);
+                g2.drawString(option, optionX + 2, optionY + 2);
+                
+                // Text color changes based on selection
+                if (i == menuCommand) {
+                    g2.setColor(Color.YELLOW);
+                    // Draw ">" pointer
+                    g2.drawString(">", optionX - gp.tileSize, optionY);
+                } else {
+                    g2.setColor(Color.WHITE);
                 }
+                
+                g2.drawString(option, optionX, optionY);
             }
         }
     }
+
+    private int getX(String text, Graphics2D g2) {
+    int length = (int)g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+    return gp.screenWidth / 2 - length / 2;
+        }
+
+    public void handleMenuKey(java.awt.event.KeyEvent e) {
+        int code = e.getKeyCode();
+        if (code == KeyEvent.VK_W || code == KeyEvent.VK_S) {
+            gp.keyHandler.upPressed = (code == KeyEvent.VK_W);
+            gp.keyHandler.downPressed = (code == KeyEvent.VK_S);
+            
+            if (gp.keyHandler.upPressed) {
+                menuCommand = (menuCommand + menu.length - 1) % menu.length;
+            } else if (gp.keyHandler.downPressed) {
+                menuCommand = (menuCommand + 1) % menu.length;
+            }
+            
+            gp.keyHandler.upPressed = false;
+            gp.keyHandler.downPressed = false;
+        } else if (code == KeyEvent.VK_ENTER) {
+            switch (menuCommand) {
+                case 0:
+                    gp.gameState = gp.playState; 
+                    break;
+                case 1:
+                    // gp.gameState = gp.playerInfoState;
+                    break;
+                case 2:
+                    // gp.gameState = gp.statisticsState;
+                    break;
+                case 3:
+                    gp.gameState = gp.helpState; 
+                    break;
+                case 4:
+                    System.exit(0); 
+                    break;
+            }
+        } else if (code == KeyEvent.VK_ESCAPE) {
+            gp.gameState = gp.playState;
+        }
+    }
+
+
+        public void harvesting() {
+            if (equippedItem == null && energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
+                Tile tileToHarvest = gp.map.getTile(interactionArea.x, interactionArea.y);
+                if (tileToHarvest != null && tileToHarvest instanceof Soil) {
+                    Soil harvest = (Soil) tileToHarvest;
+                    if (!harvest.canPlant() && harvest.getDaysToHarvest() == 0 && harvest.getWetCooldown() > 0) {
+                        gp.map.harvestSeedAtTile(interactionArea.x, interactionArea.y);
+                        setEnergy(getEnergy() - 5);
+                        gp.addMinutes(5);
+                    }
+                }
+            }
+        }
 
     public void eating() {
         Item get = inventory.getSelectedItem();
@@ -989,27 +1058,59 @@ public boolean energyReducedInThisChat = false;
         }
     }
 
-
-public Item itemsGifted = null;
-
-    // public void gifting(Graphics2D g2) {
-
-    //     gp.gameState = gp.inventoryState;
-
-    //     // if (equippedItem != null && keyH.enterPressed && interactionCooldown == 0) {
-    //     //     if (currentNPC != null) {
-    //     //         itemsGifted = equippedItem;
-    //     //         currentNPC.receiveGift(itemsGifted);
-    //     //         inventory.removeItem(itemsGifted, 1);
-    //     //         System.out.println("Player: Gave " + itemsGifted.getName() + " to " + currentNPC.getName());
-    //     //         equipItem(null); // Un-equip item after gifting
-    //     //         interactionCooldown = 20; // Set cooldown after gifting
-    //     //     } else {
-    //     //         System.out.println("Player: No NPC to give gift to.");
-    //     //     }
-    //     // }
-    // }
-
+     public void gifting(Graphics2D g2) {
+        if (currentNPC != null) {
+            Item[] loved = currentNPC.getLovedItems();
+            Item[] liked = currentNPC.getLikedItems();
+            Item[] hated = currentNPC.getHatedItems();
+            int response = 0;
+            Item selectedItem;
+            if (inventory.getSelectedItem() != null) {
+                selectedItem = inventory.getSelectedItem();
+                for (Item item : loved) {
+                    if (item != null && item.getName().equals(selectedItem.getName())) {
+                        response = 1;
+                    }
+                }
+                for (Item item : liked) {
+                    if (item != null && item.getName().equals(selectedItem.getName())) {
+                        response = 2;
+                    }
+                }
+                for (Item item : hated) {
+                    if (item != null && item.getName().equals(selectedItem.getName())) {
+                        response = 3;
+                    }
+                }
+                if (currentNPC.getName().equals("MT") && response == 0) { //Nanti ganti Mayor Tadi ya kalo dah kelar
+                    response = 3;
+                }
+                if (inventory.optionCommandNum == 0) {
+                    if (!energyReducedInThisChat) {
+                        setEnergy(getEnergy() - 5);
+                        energyReducedInThisChat = true;
+                        gp.addMinutes(10);
+                        switch (response) {
+                            case 1:
+                                currentNPC.addHeartPoints(25);
+                                break;
+                           case 2:
+                                currentNPC.addHeartPoints(20);
+                                break;
+                           case 3:
+                                currentNPC.substractHeartPoints(25);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    currentNPC.drawGifting(g2, currentNPC.getName(), response);
+                }
+            }
+        } else {
+            System.out.println("Player: No NPC to give gift to.");
+        }
+    }
 
     public void cooking() {
         if (energy >= -10 && (keyH.enterPressed || keyH.fpressed) && interactionCooldown == 0 && gp.gameState != gp.cookingState) {
@@ -1044,11 +1145,16 @@ public Item itemsGifted = null;
     }
 
     public void selling() {
-        System.err.println("QUetz");
-        System.err.println("acmka");
         Item sellingItem = inventory.getSelectedItem();
         Tile tileToSell = gp.map.getTile(interactionArea.x, interactionArea.y);
         ShippingBin sb = (ShippingBin) tileToSell;
+        if(sb.lastday < gp.gameDay) {
+            sb.binCount = 0;
+            sb.lastday = gp.gameDay;
+            money += storedMoney;
+            storedMoney = 0;
+            System.out.println("Player: Shipping bin has been emptied, Current Money: " + money + " coins.");
+        }
         if (sb.binCount < sb.maxSlot) {
             if (inventory.getItemCount(sellingItem) > 0) {
                 int price = sellingItem.getHargaJual();
