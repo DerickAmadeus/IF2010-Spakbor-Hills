@@ -1198,7 +1198,7 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
     }
-
+}
     public Graphics2D getGraphics2D(){
         java.awt.Graphics g = this.getGraphics();
         if (g == null) {
