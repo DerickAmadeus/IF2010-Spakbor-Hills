@@ -1,6 +1,7 @@
 package NPC;
 
 import main.GamePanel;
+import player.Inventory;
 import Items.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -16,20 +17,17 @@ import java.awt.BasicStroke;
 public class NPC {
     public int worldX, worldY;
     public Rectangle hitbox;
-    public Rectangle interactionTriggerArea; // Area di sekitar NPC untuk memicu interaksi
+    public Rectangle interactionTriggerArea; 
 
     GamePanel gp;
 
-    // Dialog
     public String[] dialogues;
     public int currentDialogueIndex = 0;
-
-    // Variabel untuk animasi (sudah ada)
     private BufferedImage[] idleFrames;
     private int spriteCounter = 0;
     private int spriteNum = 0;
     private final int ANIMATION_SPEED = 15;
-    private final int IDLE_FRAME_COUNT = 6; // Anda set 6, sebelumnya saya contohkan 8
+    private final int IDLE_FRAME_COUNT = 6; 
     private boolean showActionMenu = false;
     private String[] actions = {"Talk", "Give", "Propose", "Marry", "Leave"};
     public int selectedActionIndex = 0;
@@ -42,6 +40,7 @@ public class NPC {
     private Item[] likedItems;
     private Item[] hatedItems;
     private String relationship;
+    private Inventory<Item> inventory = new Inventory<>(gp);
     public boolean isTalking = false;
     public boolean isProposed = false;
     public boolean isGifted = false;
@@ -53,25 +52,19 @@ public class NPC {
         this.lovedItems = loveditems;
         this.likedItems = likedItems;
         this.hatedItems = hatedItems;
-        this.selectedActionIndex = 0; // Inisialisasi indeks aksi yang dipilih
+        this.selectedActionIndex = 0; 
         this.spawnMapName = spawnMapName;
         this.worldX = tileX * gp.tileSize;
         this.worldY = tileY * gp.tileSize;
-        this.hitbox = new Rectangle(0, 0, gp.tileSize, gp.tileSize); // Hitbox relatif terhadap worldX, worldY
+        this.hitbox = new Rectangle(0, 0, gp.tileSize, gp.tileSize); 
 
-        // Tentukan area interaksi NPC dalam koordinat dunia.
-        // Contoh: Sama dengan hitboxnya, atau sedikit lebih besar.
-        // Di sini kita buat sama dengan hitbox NPC.
+    
         this.interactionTriggerArea = new Rectangle(worldX, worldY, gp.tileSize, gp.tileSize);
-        // Jika ingin lebih besar, contoh:
-        // this.interactionTriggerArea = new Rectangle(worldX - gp.tileSize / 2, worldY - gp.tileSize / 2, gp.tileSize * 2, gp.tileSize * 2);
-
         loadIdleAnimation();
-        setDefaultDialogues(); // Inisialisasi dialog default untuk NPC
+        setDefaultDialogues(); 
     }
 
     private void setDefaultDialogues() {
-        // Contoh dialog, bisa Anda kembangkan per NPC
         if (this.name.equalsIgnoreCase("MT")) {
             dialogues = new String[]{
                 "Halo, petualang muda!",
@@ -95,7 +88,6 @@ public class NPC {
         }
     }
 
-    // Metode yang dipanggil ketika pemain berinteraksi dengan NPC ini
     public Item[] getLovedItems() {
         return lovedItems;
     }
@@ -115,13 +107,10 @@ public class NPC {
 
     private void loadIdleAnimation() {
         idleFrames = new BufferedImage[IDLE_FRAME_COUNT];
-        // Anda menyebutkan IDLE_FRAME_COUNT = 6, jadi pastikan ada 6 frame (0-5)
-        // Path diubah menjadi /npc/<NamaNPC>/idle_<nomorFrame>.png
-        // jika Anda memiliki folder terpisah untuk setiap NPC
+
         System.out.println("Loading animation for NPC: " + name);
         for (int i = 0; i < IDLE_FRAME_COUNT; i++) {
-            String imagePath = "/NPC/" + name + "/idle_" + i + ".png"; // Path dengan subfolder per NPC
-            // Jika tidak ada subfolder, gunakan: String imagePath = "/NPC/" + name + "_idle_" + i + ".png";
+            String imagePath = "/NPC/" + name + "/idle_" + i + ".png"; 
             try {
                 InputStream is = getClass().getResourceAsStream(imagePath);
                 if (is == null) {
@@ -231,7 +220,6 @@ public class NPC {
         // Metode ini bisa digunakan untuk menampilkan status NPC, misalnya saat dialog
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Arial", Font.BOLD, 16));
-        FontMetrics metrics = g2.getFontMetrics();
         String statusText = "NPC: " + name;
         statusText += " (" + (relationship != null ? relationship : "Single") + ")";
         
