@@ -188,6 +188,8 @@ public class Inventory<T extends Item> {
         int frameHeight = gp.tileSize*5;
         drawSubwindow(g2, frameX, frameY, frameWidth, frameHeight);
 
+        if(itemContainer.isEmpty()) return;
+
         final int slotXStart = frameX + 20;
         final int slotYStart = frameY + 20;
 
@@ -222,6 +224,7 @@ public class Inventory<T extends Item> {
             int col = index % ITEMS_PER_ROW;
             int itemX = slotXStart + col * gp.tileSize;
             int itemY = slotYStart + (row - scrollOffset) * gp.tileSize; // kurangi offset agar scroll naik
+            
 
             if (item.getIcon() != null) {
                 int padding = 6;
@@ -231,6 +234,7 @@ public class Inventory<T extends Item> {
 
                 g2.drawImage(item.getIcon(), drawX, drawY, drawSize, drawSize, null);
             }
+            
 
             Integer count = getItemCount(item);
             if (count != null && count > 1) {
@@ -293,8 +297,11 @@ public class Inventory<T extends Item> {
             }
             if(gp.player.currentNPC == null){
                 if(!validSellingOption && gp.player.currentNPC == null){
-                g2.drawString("You cannot sell " + item.getClass().getSimpleName() + "!", textX, textY);
-            }
+                    g2.drawString("You cannot sell " + item.getClass().getSimpleName() + "!", textX, textY);
+                }
+                else if (gp.player.currentNPC == null || !gp.player.currentNPC.isGifted){
+                    g2.drawString(options[i], textX, textY + (i * 40));
+                }
             }
             else{
                 if (gp.player.currentNPC != null && gp.player.currentNPC.isGifted && validGiftingOption) {
@@ -428,5 +435,87 @@ public class Inventory<T extends Item> {
 
     public ArrayList<T> getItemContainer() {
         return itemContainer;
+    }
+
+    public HashMap<T, Integer> getItems() {
+        return items;
+    }
+
+    public void drawBinInventory(Graphics2D g2) {
+        int frameX = gp.tileSize*9;
+        int frameY = gp.tileSize;
+        int frameWidth = gp.tileSize*6;
+        int frameHeight = gp.tileSize*5;
+        drawSubwindow(g2, frameX, frameY, frameWidth, frameHeight);
+
+        final int slotXStart = frameX + 20;
+        final int slotYStart = frameY + 20;
+
+        int cursorX = slotXStart + (gp.tileSize * slotCol);
+        int cursorY = slotYStart + (gp.tileSize * (slotRow - scrollOffset));
+        int cursorWidth = gp.tileSize;
+        int cursorHeight = gp.tileSize;
+
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
+
+        int dFrameX = frameX;
+        int dFrameY = frameY + frameHeight;
+        int dFrameWidth = frameWidth;
+        int dFrameHeight = gp.tileSize * 3;
+        drawSubwindow(g2, dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+
+        int index = 0;
+        for (T item : itemContainer) {
+            int row = index / ITEMS_PER_ROW;
+
+            if (row < scrollOffset) {
+                index++;
+                continue; 
+            }
+
+            if (row >= scrollOffset + MAX_ROWS_ON_SCREEN) {
+                break; 
+            }
+
+            int col = index % ITEMS_PER_ROW;
+            int itemX = slotXStart + col * gp.tileSize;
+            int itemY = slotYStart + (row - scrollOffset) * gp.tileSize; 
+
+            if (item.getIcon() != null) {
+                int padding = 6;
+                int drawSize = gp.tileSize - 2 * padding;
+                int drawX = itemX + padding;
+                int drawY = itemY + padding;
+
+                g2.drawImage(item.getIcon(), drawX, drawY, drawSize, drawSize, null);
+            }
+
+            Integer count = getItemCount(item);
+            if (count != null && count > 1) {
+                g2.setColor(Color.white);
+                g2.setFont(new Font("Arial", Font.BOLD, 12));
+                String countStr = String.valueOf(count);
+                int stringWidth = g2.getFontMetrics().stringWidth(countStr);
+                g2.drawString(countStr, itemX + gp.tileSize - stringWidth - 4, itemY + gp.tileSize - 4);
+            }
+
+            index++;
+        }
+
+        int selectedIndex = slotRow * ITEMS_PER_ROW + slotCol;
+
+        if (selectedIndex >= 0 && selectedIndex < itemContainer.size()) {
+            T selectedItem = itemContainer.get(selectedIndex);
+            if (selectedItem != null) {
+                g2.setColor(Color.white);
+                g2.setFont(new Font("Arial", Font.BOLD, 18));
+                g2.drawString(selectedItem.getName(), dFrameX + 20, dFrameY + 30);
+
+                g2.setFont(new Font("Arial", Font.PLAIN, 14));
+                drawWrappedText(g2, selectedItem.getDesc(), dFrameX + 20, dFrameY + 55, dFrameWidth - 40, 18);
+            }
+        }
     }
 }

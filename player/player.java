@@ -6,8 +6,6 @@ import Map.ShippingBin;
 import Map.Soil;
 import Map.Tile;
 import NPC.NPC;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -18,6 +16,8 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import javax.imageio.ImageIO;
 import main.GamePanel;
 import main.KeyHandler;
@@ -99,6 +99,8 @@ public class Player {
         interactionArea = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
         setDefaultValues();
         getPlayerImage();
+
+        currSB = new ShippingBin("Shipping Bin", false, gp);
     }
 
     public void loadInitialItems() {
@@ -624,7 +626,13 @@ public class Player {
     }
 
     public void setMoney(int amount) {
-        this.money = amount; 
+        if (money - amount >= 0) {
+            this.money = amount;
+        } 
+    }
+
+    public void setMoneyX(int amount){
+        this.money = amount;
     }
 
     public int getEnergy() {
@@ -1089,6 +1097,7 @@ public boolean energyReducedInThisChat = false;
         Item sellingItem = inventory.getSelectedItem();
         Tile tileToSell = gp.map.getTile(interactionArea.x, interactionArea.y);
         ShippingBin sb = (ShippingBin) tileToSell;
+        currSB = sb;
         if(sb.lastday < gp.gameDay) {
             sb.binCount = 0;
             sb.lastday = gp.gameDay;
@@ -1105,6 +1114,8 @@ public boolean energyReducedInThisChat = false;
                     System.out.println("Player: Sold " + sellingItem.getName() + " for " + price + " coins.");
                     System.out.println("Player: Total money now: " + storedMoney + " coins.");
                     sb.binCount++;
+                    sb.addItem(sellingItem, 1);
+                    currSB = sb;
                 } else {
                     System.out.println("Player: Cannot sell " + sellingItem.getName() + ", no selling price.");
                 }

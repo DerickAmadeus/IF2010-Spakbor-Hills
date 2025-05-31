@@ -464,7 +464,7 @@ public class Map {
             tileImage[177].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB3.png"));
             tileImage[178] = new Tile("Shipping Bin NI", false);
             tileImage[178].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB4.png"));
-            tileImage[179] = new ShippingBin("Shipping Bin", false);
+            tileImage[179] = new ShippingBin("Shipping Bin", false, gp);
             tileImage[179].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB5.png"));
             tileImage[180] = new Tile("Shipping Bin NI", false);
             tileImage[180].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB6.png"));

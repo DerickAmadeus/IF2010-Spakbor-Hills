@@ -7,9 +7,9 @@ import Map.ShippingBin;
 import Map.Tile;
 import NPC.NPC;
 import NPC.Seller;
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.AlphaComposite;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle; // Importing player class from player package
@@ -22,14 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-
 import main.menu.InGameHelp;
 import main.menu.PlayerInfo;
 import main.menu.Statistics;
-import player.Player; 
-import NPC.NPC;
-import NPC.Seller;
-
+import player.Player;
 import player.Recipe;
 import player.RecipeLoader; 
 
@@ -55,6 +51,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int inGameHelpState  = 11;
     public final int playerInfoState  = 12;
     public final int statisticsState = 13;
+    public final int viewShippingState = 18;
     public final int shippingState = 19;
     public final int shippingOptionState = 20;
     public final int cutsceneState = 21;
@@ -785,17 +782,20 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
+        System.out.println("Game State: " + gameState);
         if(gameDay > lastday) {
             System.out.println("******************");
             System.out.println("Day Has Been Reset.");
             System.out.println("Current Player Money: " + player.getMoney());
             System.out.println("Current Player Stored Money: " + player.getStoredMoney());
             lastday = gameDay;
-            player.setMoney(player.getMoney() + player.getStoredMoney());
+            player.currSB.clearBin();
+            player.setMoneyX(player.getMoney() + player.getStoredMoney());
             player.setStoredMoney(0);
             System.out.println("____________________");
             System.out.println("Player: Stored money. New stored money: " + player.getStoredMoney());
             System.out.println("Player: Money added from stored money. Current money: " + player.getMoney());
+            System.out.println("Emptied Shipping Bin");
             System.out.println("******************");
         }
 
@@ -903,7 +903,40 @@ public class GamePanel extends JPanel implements Runnable {
                 System.out.println("Tidak ada interaksi shipping bin yang tersedia di sini.");
             }
         }
-          
+        if (keyHandler.tPressed){
+            Rectangle soliddArea = new Rectangle(8, 16, 32, 32);
+            int playerCurrentTileCol = (player.x + soliddArea.x + soliddArea.width / 2) / tileSize; 
+            int playerCurrentTileRow = (player.y + soliddArea.y + soliddArea.height / 2) / tileSize;
+            int targetTileCol = playerCurrentTileCol;
+            int targetTileRow = playerCurrentTileRow;
+
+            String lastMoveDirectionz = player.getLastMoveDirection();
+
+            switch (lastMoveDirectionz) {
+                case "up": targetTileRow--; break;
+                case "down": targetTileRow++; break;
+                case "left": targetTileCol--; break;
+                case "right": targetTileCol++; break;
+            }
+
+            Rectangle interactionAreaz = new Rectangle(0, 0, tileSize, tileSize);
+            interactionAreaz.x = targetTileCol * tileSize;
+            interactionAreaz.y = targetTileRow * tileSize;
+
+            Tile tileToInteractz = map.getTile(interactionAreaz.x, interactionAreaz.y);
+
+            if (tileToInteractz instanceof ShippingBin){
+                if (gameState == playState) {
+                    gameState = viewShippingState;
+                } else if (gameState == viewShippingState) {
+                    gameState = playState;
+                }
+                keyHandler.tPressed = false;
+            }
+            else{
+                System.out.println("Tidak ada interaksi shipping bin yang tersedia di sini.");
+            }
+        }
         if (gameState == playState) {
             player.tiling();
             player.recoverLand();
@@ -1094,6 +1127,23 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
             player.sleeping();
+        }
+        if (gameState == viewShippingState) {
+            player.currSB.getInventory().updateInventoryCursor(
+                keyHandler.upPressed,
+                keyHandler.downPressed,
+                keyHandler.leftPressed,
+                keyHandler.rightPressed
+            );
+
+            keyHandler.upPressed = false;
+            keyHandler.downPressed = false;
+            keyHandler.leftPressed = false;
+            keyHandler.rightPressed = false;
+
+            if (keyHandler.enterPressed) {
+                keyHandler.enterPressed = false;
+            }
         }
         if (gameState == shippingState) {
             player.getInventory().updateInventoryCursor(
@@ -1803,6 +1853,9 @@ public class GamePanel extends JPanel implements Runnable {
         } 
         if (gameState == shippingOptionState) {
             player.getInventory().drawShippingOptionWindow(g2);
+        }
+        if (gameState == viewShippingState) {
+            player.currSB.getInventory().drawShipping(g2);
         }
         if (gameState == fishingState) {
             drawFishingWindow(g2);

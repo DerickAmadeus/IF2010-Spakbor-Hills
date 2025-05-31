@@ -5,7 +5,7 @@ import java.awt.event.KeyListener;
 
 
 public class KeyHandler implements KeyListener{
-    public boolean enterPressed, upPressed, downPressed, leftPressed, rightPressed, interactPressed, f1Pressed, invPressed, fpressed ,escapePressed, rPressed; // Boolean flags for key states
+    public boolean enterPressed, upPressed, downPressed, leftPressed, rightPressed, interactPressed, f1Pressed, invPressed, fpressed ,escapePressed, rPressed, tPressed; // Boolean flags for key states
     public boolean input0, input9;
     GamePanel gp; // Reference to the GamePanel
 
@@ -91,6 +91,8 @@ public class KeyHandler implements KeyListener{
                 escapePressed = true;
             } else if (code == KeyEvent.VK_R) {
                 rPressed = true; 
+            } else if (code == KeyEvent.VK_T) {
+                tPressed = true;
             }
         }
 
@@ -143,6 +145,8 @@ public class KeyHandler implements KeyListener{
             escapePressed = false;
         } else if (code == KeyEvent.VK_R) {
             rPressed = false;
+        } else if (code == KeyEvent.VK_T) {
+            tPressed = false;
         }
     }
 }
