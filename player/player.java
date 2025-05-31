@@ -941,6 +941,7 @@ public boolean energyReducedInThisChat = false;
             energyReducedInThisChat = true;
             gp.addMinutes(10);
             currentNPC.addHeartPoints(10);
+            currentNPC.chattingFrequency++;
         }
         currentNPC.drawNPCDialog(g2, currentNPC.getName());
     }
@@ -1018,12 +1019,15 @@ public boolean energyReducedInThisChat = false;
                         switch (response) {
                             case 1:
                                 currentNPC.addHeartPoints(25);
+                                currentNPC.giftingFrequency++;
                                 break;
                            case 2:
                                 currentNPC.addHeartPoints(20);
+                                currentNPC.giftingFrequency++;
                                 break;
                            case 3:
                                 currentNPC.substractHeartPoints(25);
+                                currentNPC.giftingFrequency++;
                                 break;
                             default:
                                 break;

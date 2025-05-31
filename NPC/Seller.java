@@ -17,11 +17,14 @@ public class Seller extends NPC{
         super(gp, name, spawnMapName, tileX, tileY, loveditems, likedItems, hatedItems);
         String[] actions = {"Talk", "Give", "Propose", "Marry", "Leave", "Buy"};
         this.setActions(actions);
-        loadInitialSeeds();
-        loadInitialCrops();
-        loadInitialFood();
-        loadMisc();
-        loadProposalRing();
+        if (name == "Emily"){ 
+            loadInitialSeeds();
+            loadInitialCrops();
+            loadInitialFood();
+            loadProposalRing();
+        } else if (name == "Caroline"){
+            loadMisc();
+        }
     }
 
     public Inventory<Item> getInventory() {
