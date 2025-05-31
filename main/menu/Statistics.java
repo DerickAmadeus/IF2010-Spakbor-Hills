@@ -56,11 +56,12 @@ public class Statistics {
         int titleY = frameY + gp.tileSize * 2 - 40;
         g2.drawString(title, titleX, titleY);
 
-        g2.setFont(helpFont.deriveFont(Font.PLAIN, 14F));
+        //konten
+        g2.setFont(helpFont.deriveFont(Font.PLAIN, 10F));
         g2.setColor(Color.WHITE);
 
         int lx = frameX + gp.tileSize;                 // margin kiri dalam kotak
-        int ly = titleY + gp.tileSize;
+        int ly = titleY + gp.tileSize / 2;
 
         Player p = gp.player;                      // referensi pemain
         String[] rows = {
@@ -73,11 +74,11 @@ public class Statistics {
             "   - Chatting Frequency    : ",
             "   - Gifting Frequency     : ",
             "   - Visiting Frequency    :",
-            "Crops harvested        : ",
+            "Crops harvested        : " + p.cropsHarvested,
             "Fish caught :",
-            "   - Common    : ",
-            "   - Regular   : ",
-            "   - Legendary : ",
+            "   - Common    : " + p.fishCaughtCommon,
+            "   - Regular   : " + p.fishCaughtRegular,
+            "   - Legendary : " + p.fishCaughtLegendary,
         };
 
         for (String line : rows) {
