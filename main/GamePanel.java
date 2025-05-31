@@ -9,6 +9,7 @@ import NPC.NPC;
 import NPC.Seller;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.AlphaComposite;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle; // Importing player class from player package
@@ -54,6 +55,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int playerInfoState  = 12;
     public final int shippingState = 19;
     public final int shippingOptionState = 20;
+    public final int cutsceneState = 21;
     public int gameState = titleState;
     public String[] initialSeason = { "Spring", "Summer", "Fall", "Winter" };
     public int currentSeasonIndex = 0;
@@ -337,7 +339,7 @@ public class GamePanel extends JPanel implements Runnable {
                         new ArrayList<>(Arrays.asList("Mountain Lake")), "Common",
                         new ArrayList<>(Arrays.asList(0)), new ArrayList<>(Arrays.asList(24))),
                 new Fish("Carp", "Ini Carp.", 50, 50, any, both,
-                        new ArrayList<>(Arrays.asList("Mountain Lake", "Pond")), "Common",
+                        new ArrayList<>(Arrays.asList("Mountain Lake", "Farm Map")), "Common",
                         new ArrayList<>(Arrays.asList(0)), new ArrayList<>(Arrays.asList(24))),
                 new Fish("Chub", "Ikan Chub, cukup umum.", 50, 50, any, both,
                         new ArrayList<>(Arrays.asList("Forest River", "Mountain Lake")), "Common",
@@ -352,7 +354,7 @@ public class GamePanel extends JPanel implements Runnable {
                         new ArrayList<>(Arrays.asList("Mountain Lake")), "Regular",
                         new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(18))),
                 new Fish("Midnight Carp", "Ikan malam dari danau atau kolam.", 150, 150, midnightCarpSeason, both,
-                        new ArrayList<>(Arrays.asList("Mountain Lake", "Pond")), "Regular",
+                        new ArrayList<>(Arrays.asList("Mountain Lake", "Farm Map")), "Regular",
                         new ArrayList<>(Arrays.asList(20)), new ArrayList<>(Arrays.asList(2))),
                 new Fish("Flounder", "Ikan pipih dari laut.", 90, 90, flounderSeason, both,
                         new ArrayList<>(Arrays.asList("Ocean")), "Regular",
@@ -373,13 +375,13 @@ public class GamePanel extends JPanel implements Runnable {
                         new ArrayList<>(Arrays.asList("Ocean")), "Regular",
                         new ArrayList<>(Arrays.asList(18)), new ArrayList<>(Arrays.asList(2))),
                 new Fish("Catfish", "Ikan lele liar saat hujan.", 130, 130, catfishSeason, rainy,
-                        new ArrayList<>(Arrays.asList("Forest River", "Pond")), "Regular",
+                        new ArrayList<>(Arrays.asList("Forest River", "Farm Map")), "Regular",
                         new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(22))),
                 new Fish("Salmon", "Ikan migrasi dari sungai.", 120, 120, fall, both,
                         new ArrayList<>(Arrays.asList("Forest River")), "Regular",
                         new ArrayList<>(Arrays.asList(6)), new ArrayList<>(Arrays.asList(18))),
                 new Fish("Angler", "Ikan legendaris yang hanya muncul di musim gugur.", 1000, 1000, fall, both,
-                        new ArrayList<>(Arrays.asList("Pond")), "Legendary",
+                        new ArrayList<>(Arrays.asList("Farm Map")), "Legendary",
                         new ArrayList<>(Arrays.asList(8)), new ArrayList<>(Arrays.asList(20))),
                 new Fish("Crimsonfish", "Ikan legendaris dari laut tropis.", 1000, 1000, summer, both,
                         new ArrayList<>(Arrays.asList("Ocean")), "Legendary",
@@ -399,13 +401,14 @@ public class GamePanel extends JPanel implements Runnable {
         return fishlist;
     }
 
-    public Fish[] filterFishesBySeasonAndWeather(String season, String weather, int gameHour) {
+    public Fish[] filterFishesBySeasonAndWeather(String season, String weather, String location, int gameHour) {
         ArrayList<Fish> filtered = new ArrayList<>();
         int currentHour = gameHour;
 
         for (Fish fish : allFishes) {
             boolean seasonMatch = fish.getSeason().contains(season);
             boolean weatherMatch = fish.getWeather().contains(weather);
+            boolean locationMatch = fish.getLocation().contains(location);
             boolean timeMatch = false;
 
             ArrayList<Integer> appearTimes = fish.getAppearTime();
@@ -428,7 +431,7 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
-            if (seasonMatch && weatherMatch && timeMatch) {
+            if (seasonMatch && weatherMatch && locationMatch && timeMatch) {
                 filtered.add(fish);
             }
         }
@@ -442,7 +445,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         if (fishingTarget == -1) {
             // Setikan ikan dan password saat pertama kali masuk ke fishingState
-            Fish[] currentFish = filterFishesBySeasonAndWeather(currentSeason, currentWeather, gameHour);
+            Fish[] currentFish = filterFishesBySeasonAndWeather(currentSeason, currentWeather, player.getLocation(), gameHour);
             for (Fish fish : currentFish) {
                 System.out.println(fish.getName());
             }
@@ -476,6 +479,28 @@ public class GamePanel extends JPanel implements Runnable {
         } else if (code == KeyEvent.VK_ENTER && fishingInput != null && !fishingInput.isEmpty()) {
             if (fishingInput.equals(String.valueOf(fishingTarget))) {
                 player.getInventory().addItem(fishingTargetFish, 1);
+                player.fishCaught += 1;
+                switch (fishingTargetFish.getRarity()) {
+                    case "Common":
+                        player.fishCaughtCommon += 1;    
+                        break;
+                    case "Regular":
+                        player.fishCaughtRegular += 1;    
+                        break;
+                    case "Legendary":
+                        player.fishCaughtLegendary += 1;    
+                        break;
+                    default:
+                        break;
+                }
+                if (player.fishCaught >= 10) {
+                    allRecipes[2].setUnlockInfo(true);
+                }
+                if (fishingTargetFish.getName().equals("Pufferfish")) {
+                    allRecipes[3].setUnlockInfo(true);
+                } else if (fishingTargetFish.getName().equals("Legend")) {
+                    allRecipes[10].setUnlockInfo(true);
+                }
                 System.out.println("Selamat!! Kamu dapat: " + fishingTargetFish.getName());
                 dapet = true;
                 gameState = fishingWinState;
@@ -758,10 +783,17 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update() {
         if(gameDay > lastday) {
+            System.out.println("******************");
+            System.out.println("Day Has Been Reset.");
+            System.out.println("Current Player Money: " + player.getMoney());
+            System.out.println("Current Player Stored Money: " + player.getStoredMoney());
             lastday = gameDay;
             player.setMoney(player.getMoney() + player.getStoredMoney());
             player.setStoredMoney(0);
+            System.out.println("____________________");
+            System.out.println("Player: Stored money. New stored money: " + player.getStoredMoney());
             System.out.println("Player: Money added from stored money. Current money: " + player.getMoney());
+            System.out.println("******************");
         }
 
         if (gameState == titleState) {
@@ -900,6 +932,10 @@ public class GamePanel extends JPanel implements Runnable {
                     player.getInventory().removeItem(player.getInventory().getSelectedItem(), 1);
                     player.currentNPC.isGifted = false;
                     keyHandler.enterPressed = false;
+                } else if (player.currentNPC != null && player.currentNPC.isMarried){
+                    player.currentNPC.isMarried = false;
+                    keyHandler.enterPressed = false;
+
                 } else {
                     String action = player.currentNPC.confirmAction();
                     if (player.currentNPC != null && player.currentNPC instanceof Seller) {
@@ -920,7 +956,11 @@ public class GamePanel extends JPanel implements Runnable {
                         player.currentNPC.isGifted = true;
                         gameState = shippingState;
                         player.energyReducedInThisChat = false;
-                    } else if (seller != null && player.currentNPC instanceof Seller && action.equalsIgnoreCase("Buy") && !seller.getInventory().getItemContainer().isEmpty()) {
+                    } else if (action.equalsIgnoreCase("Marry")){
+                        player.currentNPC.isMarried = true;
+                        player.energyReducedInThisChat = false;
+
+                    }else if (seller != null && player.currentNPC instanceof Seller && action.equalsIgnoreCase("Buy") && !seller.getInventory().getItemContainer().isEmpty()) {
                         seller.isBuying = true;
                         gameState = inventoryState;
                     }
@@ -1091,6 +1131,9 @@ public class GamePanel extends JPanel implements Runnable {
                             gameState = playState; 
                         }
                     }
+                    else {
+                        gameState = playState;
+                    }
                     keyHandler.enterPressed = false;
                 }
             } else if (gameState == shippingOptionState  &&  player.currentNPC != null && player.currentNPC.isGifted) {
@@ -1139,6 +1182,11 @@ public class GamePanel extends JPanel implements Runnable {
                 keyHandler.enterPressed = false;
 
                 Recipe selectedRecipe = allRecipes[cookingCursorRow * 4 + cookingCursorCol];
+                if (!selectedRecipe.getUnlockInfo()) {
+                    // Resep belum terbuka, tidak bisa memasak
+                    gameState = playState;
+                    return;
+                }
 
                 if (activeStove != null && activeStove.getFuel() != null && activeStove.getcookingFuel() > 0) {
                     String fuelName = activeStove.getFuel().getName();
@@ -1397,17 +1445,14 @@ public class GamePanel extends JPanel implements Runnable {
 
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
-        //slot
         final int slotXStart = frameX + 20;
         final int slotYStart = frameY + 20;
 
-        // CURSOR
         int cursorX = slotXStart + (tileSize * cookingCursorCol);
         int cursorY = slotYStart + (tileSize * (cookingCursorRow - cookingCursorOffset));
         int cursorWidth = tileSize;
         int cursorHeight = tileSize;
 
-        // DRAW CURSOR
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(3));
         g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10); 
@@ -1434,7 +1479,14 @@ public class GamePanel extends JPanel implements Runnable {
                 int drawX = itemX + padding;
                 int drawY = itemY + padding;
 
+                if (recipe.getUnlockInfo()) {
+                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f)); // normal
+                } else {
+                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f)); // lebih transparan
+                }
+
                 g2.drawImage(recipe.getFood().getIcon(), drawX, drawY, drawSize, drawSize, null);
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f)); // reset ke normal
             }
             index++;
         }
@@ -1442,7 +1494,6 @@ public class GamePanel extends JPanel implements Runnable {
         if (selectedIndex >= 0 && selectedIndex < allRecipes.length) {
             Recipe selectedRecipe = allRecipes[selectedIndex];
 
-            // Posisi awal panel kanan
             int detailX = frameX + 370;
             int detailY = frameY + 20;
             int detailGapY = tileSize;
@@ -1476,7 +1527,7 @@ public class GamePanel extends JPanel implements Runnable {
                 g2.drawString(displayName + " x" + amount, iconX + iconSize + 10, iconY + 24);
                 ingIndex++;
             }
-            }
+        }
     }
    public void drawFuelWindow(Graphics2D g2) {
         int frameX = tileSize;
@@ -1803,5 +1854,47 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
         repaint(); 
+    }
+
+    public void triggerWeddingDayEvent(Player player, NPC spouse) {
+        System.out.println("Wedding event triggered with " + spouse.getName() + "!");
+
+        // (Opsional) gameState = cutsceneState;
+
+        // 1. Logika untuk memindahkan pemain dan pasangan ke rumah
+        int playerHouseMapID = 3; // ID Peta Rumah Pemain (sesuaikan jika berbeda)
+        int playerHouseSpawnTileX = 7; // Contoh koordinat tile X di dalam rumah
+        int playerHouseSpawnTileY = 10; // Contoh koordinat tile Y di dalam rumah
+
+        // Konversi ke koordinat pixel
+        int targetPlayerPixelX = playerHouseSpawnTileX * tileSize;
+        int targetPlayerPixelY = playerHouseSpawnTileY * tileSize;
+
+        this.map.loadMapByID(playerHouseMapID); // Muat peta rumah
+
+        player.x = targetPlayerPixelX;          // Atur posisi X pemain
+        player.y = targetPlayerPixelY;          // Atur posisi Y pemain
+        player.setLocation(playerHouseMapID);   // Update nama lokasi pemain
+        player.direction = "down";              // Atur arah default pemain
+        player.collisionOn = false;
+
+        // (Opsional) Atur posisi NPC pasangan jika perlu
+        // spouse.x = ...; spouse.y = ...; spouse.setLocation(playerHouseMapID);
+
+        // 2. Skip waktu ke malam hari
+        this.gameHour = 22;
+        this.gameMinute = 0;
+
+        // 3. Pulihkan energi pemain
+        player.setEnergy(Player.getMaxEnergy());
+
+        // 4. Selesaikan event dan kembali ke playState
+        this.gameState = playState;
+        player.currentNPC = null; // Bersihkan NPC yang sedang diajak bicara
+        player.energyReducedInThisChat = false; // Reset flag energi untuk interaksi berikutnya
+
+        System.out.println("Wedding event concluded. Player is at home. Time: " + gameHour + ":" + gameMinute);
+        // Anda mungkin perlu memanggil repaint() jika perubahan tidak langsung terlihat
+        // atau jika Anda tidak berada dalam loop game utama saat ini (meskipun seharusnya berada).
     }
 }

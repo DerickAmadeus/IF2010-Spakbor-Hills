@@ -22,7 +22,13 @@ public class Food extends Item implements Sellable, Buyable, Edible{
             gp.player.setMoney(gp.player.getMoney() - (item.getHargaBeli() * amount));
             gp.player.getInventory().addItem(item, amount);
             gp.seller.getInventory().removeItem(item, amount);
+            gp.player.totalExpenditure += (item.getHargaBeli() * amount);
             System.out.println("Bought " + getName());
+            if (item.getName().equals("Fish n' Chips")) {
+                gp.allRecipes[0].setUnlockInfo(true);
+            } else if (item.getName().equals("Fish Sandwich")) {
+                gp.allRecipes[9].setUnlockInfo(true);
+            }
         }
     }
 

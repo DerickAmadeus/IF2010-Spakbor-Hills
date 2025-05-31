@@ -62,4 +62,5 @@ public class TransitionData {
     public void startCooldown() {
         this.cooldownFrames = DEFAULT_COOLDOWN;
     }
+
 }
