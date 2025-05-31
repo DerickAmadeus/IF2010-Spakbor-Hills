@@ -73,34 +73,44 @@ public class NPC {
     }
 
     private void setDefaultDialogues() {
-        if (this.name.equalsIgnoreCase("MT")) {
+        if (this.name.equalsIgnoreCase("Mayor Tadi")) {
             dialogues = new String[] {
-                    "Halo, petualang muda!",
-                    "Desa kami damai berkat para pahlawan sepertimu.",
-                    "Sudahkah kamu mencoba memancing di danau?"
+                    "Spakbor Hills is becoming quite classy, isn't it? Of course, it's all thanks to my high standards.",
+                    "Hmph, an item like that... you'd best not show it to me. My taste is only for the finest and rarest things.",
+                    "As mayor, I am always on the lookout for something... special. Something that reflects the opulence of Spakbor Hills."
             };
         } else if (this.name.equalsIgnoreCase("Caroline")) {
             dialogues = new String[] {
-                    "Barang baru datang! Mau lihat?",
-                    "Aku punya penawaran spesial untukmu hari ini.",
-                    "Jangan ragu untuk bertanya jika ada yang menarik."
-            };
-        } else if (this.name.equalsIgnoreCase("Dasco")) {
-            dialogues = new String[] {
-                    "Let's go Gambling!",
-                    "I can't stop winning!",
-                    "Gacor Kanggg!!!!!"
+                    "This piece of scrap wood? In my hands, it can become a work of art! Recycling is important, you know.",
+                    "I'm working on a new order. Oh, by the way, if you have any spare Firewood or Coal, I can always make good use of them.",
+                    "Spicy food? Oh dear, please no! My stomach would protest immediately. I prefer something plain."
             };
         } else if (this.name.equalsIgnoreCase("Emily")) {
             dialogues = new String[] {
-                    "Barang baru datang! Mau lihat?",
-                    "Aku punya penawaran spesial untukmu hari ini.",
-                    "Jangan ragu untuk bertanya jika ada yang menarik."
+                    "Welcome! Today's special is made with ingredients straight from my own garden. Fresh and healthy!",
+                    "New seeds? I'd be delighted to plant them! Or perhaps some fresh fish? That would be a wonderful addition to today's soup.",
+                    "Feel free to look around the store. Besides food, we also have plenty of tools and other things you might need!"
+            };
+        } else if (this.name.equalsIgnoreCase("Dasco")) {
+            dialogues = new String[] {
+                    "Welcome to my world,where luxury and luck meet. Care to try your fortune?",
+                    "I can't stop winning!",
+                    "GACOR KANGGG!!!!!"
+            };
+        } else if (this.name.equalsIgnoreCase("Abigail")) {
+            dialogues = new String[] {
+                "Time for an adventure! I'm planning to explore the northern caves today. I'll need a lot of energy!",
+                "Fruits are the best source of energy! Blueberries, Melons... anything sweet and refreshing will do!",
+                "Vegetables? Hmm, no thanks. I'd rather save my pack space for fruits. They're much more convenient for hiking!"
+            };
+        } else if (this.name.equalsIgnoreCase("Perry")) {
+            dialogues = new String[] {
+                "Oh, hello... Sorry, I was just trying to find some inspiration for... the next chapter. Spakbor Hills is so peaceful.",
+                "My novel? Someone's reading it? That's... a relief. Thank you for asking.",
+                "I quite enjoy strolling around here looking for berries. As for fish... I'm sorry, I'm not really... fond of their smell."
             };
         } else {
-            dialogues = new String[] {
-                "hmmm, siapa kamu?"
-            };
+            dialogues = new String[] { "Hello there! How can I help you today?" };
         }
     }
 
@@ -233,7 +243,7 @@ public class NPC {
         int frameX = gp.tileSize * 9;
         int frameY = gp.tileSize;
         int frameWidth = gp.tileSize * 6;
-        int frameHeight = gp.tileSize * 5;
+        int frameHeight = gp.tileSize * 8;
         drawSubwindow(g2, frameX, frameY, frameWidth, frameHeight);
 
         g2.setColor(Color.WHITE);
@@ -420,24 +430,58 @@ public class NPC {
     }
 
     public void drawNPCDialog(Graphics2D g2, String speakerName) {
+        // Ukuran dan posisi jendela dialog
         int x = gp.tileSize * 1;
         int y = gp.tileSize * 8;
         int width = gp.tileSize * 14;
         int height = gp.tileSize * 3;
 
+        // Gambar latar belakang dialog
         drawSubwindow(g2, x, y, width, height);
 
+        // Atur font dan warna teks
         g2.setFont(new Font("Arial", Font.PLAIN, 20));
         g2.setColor(Color.WHITE);
-        g2.drawString(speakerName + ":", x + 20, y + 35);
-        g2.drawString(dialogues[currentDialogueIndex], x + 20, y + 70);
 
-        if (currentDialogueIndex >= dialogues.length) {
+        // Padding teks
+        int paddingX = 20;
+        int paddingY = 30;
+
+        // Gambar nama pembicara
+        g2.drawString(speakerName + ":", x + paddingX, y + paddingY);
+
+        // Cek apakah indeks dialog valid
+        if (currentDialogueIndex < dialogues.length) {
+            // Word wrap dialog agar tidak keluar border
+            String dialog = dialogues[currentDialogueIndex];
+            FontMetrics fm = g2.getFontMetrics();
+            int maxWidth = width - 2 * paddingX;
+            int lineHeight = fm.getHeight();
+            int drawY = y + paddingY + 30;
+            String[] words = dialog.split(" ");
+            StringBuilder line = new StringBuilder();
+            for (String word : words) {
+                String testLine = line.length() == 0 ? word : line + " " + word;
+                if (fm.stringWidth(testLine) > maxWidth) {
+                    g2.drawString(line.toString(), x + paddingX, drawY);
+                    drawY += lineHeight;
+                    line = new StringBuilder(word);
+                } else {
+                    if (line.length() > 0) line.append(" ");
+                    line.append(word);
+                }
+            }
+            if (line.length() > 0) {
+                g2.drawString(line.toString(), x + paddingX, drawY);
+            }
+        } else {
+            // Reset dialog jika sudah selesai
             currentDialogueIndex = 0;
             isTalking = false;
             showActionMenu = true;
         }
     }
+
 
     public boolean drawProposingAnswer(Graphics2D g2, String speakerName) {
         int x = gp.tileSize * 1;
