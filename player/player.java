@@ -47,9 +47,6 @@ public class Player {
     public int checkerstate = 0;
     private int lastday = 1;
     private NPC partner;
-
-
-    private int lastday = 1;
     private int spriteCounter = 0;
     private int spriteNum = 0;
     private final int ANIMATION_SPEED = 10;
