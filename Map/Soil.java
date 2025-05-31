@@ -102,6 +102,13 @@ public class Soil extends Tile {
     public void harvest(GamePanel gp, Player player) {
         Crops[] crops = loadInitialCrops();
         player.getInventory().addItem(crops[seedPlanted.getTileIndex() - 13], crops[seedPlanted.getTileIndex() - 13].getJumlahPerPanen());
+        player.cropsHarvested += crops[seedPlanted.getTileIndex() - 13].getJumlahPerPanen();
+        if (player.cropsHarvested > 0) {
+            gp.allRecipes[6].setUnlockInfo(true);
+        }
+        if (crops[seedPlanted.getTileIndex() - 13].getName().equals("Hot Pepper")) {
+            gp.allRecipes[7].setUnlockInfo(true);
+        }
         seedPlanted = null;
         updateImageBasedOnState(gp);
     }

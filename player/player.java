@@ -28,7 +28,7 @@ public class Player {
     public Rectangle solidArea; 
     public Rectangle interactionArea; 
     public int solidAreaDefaultX, solidAreaDefaultY;
-    private int money = 999999;
+    private int money = 1000;
     private int storedMoney = 0; 
     public boolean collisionOn = false;
     GamePanel gp;
@@ -43,8 +43,8 @@ public class Player {
     public BufferedImage goldIcon;
     public ShippingBin currSB;
     public int checkerstate = 0;
-    private int lastday = 1;
 
+    private int lastday = 1;
     private int spriteCounter = 0;
     private int spriteNum = 0;
     private final int ANIMATION_SPEED = 10;
@@ -64,7 +64,15 @@ public class Player {
     public int menuCommand = 0;
 
     private int interactionCooldown = 0;
-    boolean isSleeping = false; 
+    boolean isSleeping = false;
+    
+    public int totalIncome = 0;
+    public int totalExpenditure = 0;
+    public int cropsHarvested = 0;
+    public int fishCaught = 0;
+    public int fishCaughtCommon = 0;
+    public int fishCaughtRegular = 0;
+    public int fishCaughtLegendary = 0;
 
     public Player(GamePanel gp, KeyHandler keyH, String farmName) {
         this.gp = gp;
@@ -73,7 +81,7 @@ public class Player {
         this.inventory = new Inventory<>(gp);
         this.farmName = farmName;
 
-        loadInitialEquipment();
+        loadInitialItems();
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
 
@@ -91,50 +99,19 @@ public class Player {
         getPlayerImage();
     }
 
-    public void loadInitialFood() {
-        Food fishChips = new Food("Fish n' Chips", "Makanan goreng yang gurih", 135, 150, 50);
-        Food baguette = new Food("Baguette", "Roti khas Prancis", 80, 100, 25);
-        Food sashimi = new Food("Sashimi", "Irisan ikan mentah segar", 275, 300, 70);
-        Food fugu = new Food("Fugu", "Ikan buntal beracun namun lezat", 135, 0, 50);
-        Food wine = new Food("Wine", "Minuman hasil fermentasi anggur", 90, 100, 20);
-        Food pumpkinPie = new Food("Pumpkin Pie", "Pai labu manis dan lembut", 100, 120, 35);
-        Food veggieSoup = new Food("Veggie Soup", "Sup sehat dari sayuran", 120, 140, 40);
-        Food fishStew = new Food("Fish Stew", "Semur ikan hangat", 260, 280, 70);
-        Food spakborSalad = new Food("Spakbor Salad", "Salad legendaris dari sayuran terbaik", 250, 0, 70);
-        Food fishSandwich = new Food("Fish Sandwich", "Sandwich isi ikan", 180, 200, 50);
-        Food legendSpakbor = new Food("The Legends of Spakbor", "Mitos yang bisa dimakan", 2000, 0, 100);
-        Food pigHead = new Food("Cooked Pig's Head", "Kepala babi panggang spesial", 0, 1000, 100);
-        Misc firewood = new Misc("Firewood", "ini firewood", 20, 40);
-        Misc coal = new Misc("Coal", "ini coal", 20, 40);
-        inventory.addItem(fishChips, 2);
-        inventory.addItem(baguette, 3);
-        inventory.addItem(sashimi, 1);
-        inventory.addItem(fugu, 1);
-        inventory.addItem(wine, 2);
-        inventory.addItem(pumpkinPie, 2);
-        inventory.addItem(veggieSoup, 2);
-        inventory.addItem(fishStew, 1);
-        inventory.addItem(spakborSalad, 1);
-        inventory.addItem(fishSandwich, 1);
-        inventory.addItem(legendSpakbor, 1);
-        inventory.addItem(pigHead, 1);
-        inventory.addItem(firewood, 21);
-        inventory.addItem(coal, 1);
-
-    }
-
-    public void loadInitialEquipment() {
+    public void loadInitialItems() {
+        ArrayList<String> spring = new ArrayList<>(Arrays.asList("Spring"));
         Equipment wateringCan = new Equipment("Watering Can", "Untuk menyiram tanaman.", 10, 10);
         Equipment pickaxe = new Equipment("Pickaxe", "Untuk menghancurkan batu.", 15, 15);
         Equipment hoe = new Equipment("Hoe", "Untuk mencangkul tanah.", 12, 12);
         Equipment fishingRod = new Equipment("Fishing Rod", "Untuk memancing ikan.", 19, 19);
-        // Equipment ring = new Equipment("Ring", "Cincin yang memberikan keberuntungan.", 0, 0);
+        Seeds parsnip = new Seeds("Parsnip Seeds", "Grows quickly in Spring", 10, 20, 1, spring, 13);
 
         inventory.addItem(wateringCan, 1);
         inventory.addItem(pickaxe, 1);
         inventory.addItem(hoe, 1);
         inventory.addItem(fishingRod, 1);
-        // inventory.addItem(ring, 1); // Tambahkan cincin sebagai item awal
+        inventory.addItem(parsnip, 15);
     }
 
     public void showCoordinates() {
@@ -455,6 +432,20 @@ public class Player {
     public Inventory<Item> getInventory() { return inventory;}
     public static int getMaxEnergy() { return MAX_ENERGY; }
 
+    public void printStats() {
+        System.out.println("=== Player Statistics ===");
+        System.out.println("Total Income: " + totalIncome);
+        System.out.println("Total Expenditure: " + totalExpenditure);
+        System.out.println("Average Total Income: " + (int) totalIncome/4);
+        System.out.println("Average Total Expenditure: " + (int) totalExpenditure/4);
+        System.out.println("Days played: " + gp.daysPlayed);
+        System.out.println("Crops Harvested: " + cropsHarvested);
+        System.out.println("Fish Caught: " + fishCaught);
+        System.out.println("  - Common: " + fishCaughtCommon);
+        System.out.println("  - Regular: " + fishCaughtRegular);
+        System.out.println("  - Legendary: " + fishCaughtLegendary);
+        System.out.println("==========================");
+    }
 
     public void interact() {
         Tile tileToInteract = gp.map.getTile(interactionArea.x, interactionArea.y);
@@ -497,8 +488,9 @@ public class Player {
             for (int rainyDays : gp.rainDaysInSeason) {
                 System.out.println(rainyDays);
             }
-            gp.addMinutes(14400);
+            gp.addMinutes(1440);
         }
+        printStats();
         /*for (Fish f : gp.allFishes) {
             System.out.println(f.getName() + ": " + f.getHargaJual());
         }*/
@@ -647,7 +639,7 @@ public class Player {
 
     public void tiling() {
         if (equippedItem != null && equippedItem.getName().equals("Hoe") && 
-            energy >= -15 && keyH.enterPressed) {
+            energy >= -15 && keyH.enterPressed && location.equals("Farm Map")) {
             Tile tileToTill = gp.map.getTile(interactionArea.x, interactionArea.y);
             if (tileToTill != null && tileToTill.getTileName().equals("grass")) { 
                 gp.map.setTileType(interactionArea.x, interactionArea.y, 10); 
@@ -663,7 +655,7 @@ public class Player {
 
     public void recoverLand() {
         if (equippedItem != null && equippedItem.getName().equals("Pickaxe") && 
-            energy >= -15 && keyH.enterPressed) {
+            energy >= -15 && keyH.enterPressed && location.equals("Farm Map")) {
             Tile tileToTill = gp.map.getTile(interactionArea.x, interactionArea.y);
             if (tileToTill != null && tileToTill.getTileName().equals("soil")) { 
                 Soil recoverable = (Soil) tileToTill;
@@ -681,7 +673,7 @@ public class Player {
 
     public void planting() {
         if (equippedItem != null && equippedItem instanceof Seeds && 
-            energy >= -15 && keyH.enterPressed && gp.gameState == gp.playState) {
+            energy >= -15 && keyH.enterPressed && gp.gameState == gp.playState && location.equals("Farm Map")) {
             Tile tileToPlantOn = gp.map.getTile(interactionArea.x, interactionArea.y);
             boolean isLast = false;
             if (tileToPlantOn instanceof Soil) {
@@ -713,7 +705,7 @@ public class Player {
 
     public void watering() {
         if (equippedItem != null && equippedItem.getName().equals("Watering Can") && 
-            energy >= -15 && keyH.enterPressed) {
+            energy >= -15 && keyH.enterPressed && location.equals("Farm Map")) {
             Tile tileToWater = gp.map.getTile(interactionArea.x, interactionArea.y);
             if (tileToWater != null && tileToWater instanceof Soil) { 
                 Soil watered = (Soil) tileToWater;
@@ -819,9 +811,8 @@ public class Player {
     }
 
     public void harvesting() {
-
-        if (equippedItem == null && energy >= -15 && keyH.enterPressed) {
-            Tile tileToHarvest = gp.map.getTile(interactionArea.x, interactionArea.y);
+        if (equippedItem == null && energy >= -15 && keyH.enterPressed && location.equals("Farm Map")) {
+            Tile tileToHarvest = gp.map.getTile(interactionArea.x, interactionArea.y );
             if (tileToHarvest != null && tileToHarvest instanceof Soil) {
                 Soil harvest = (Soil) tileToHarvest;
                 if (!harvest.canPlant() && harvest.getDaysToHarvest() == 0 && harvest.getWetCooldown() > 0) {

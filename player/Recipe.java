@@ -8,7 +8,6 @@ public class Recipe {
     private Food food;
     private HashMap<Item, Integer> ingredients;
     private boolean unlockInfo = false;
-    private boolean canCook = false;
 
     public Recipe(String itemID, Food food) {
         this.itemID = itemID;
@@ -34,12 +33,5 @@ public class Recipe {
     
     public void setUnlockInfo(boolean info) {
         unlockInfo = info;    
-    }
-    public boolean getCanCook() {
-        return canCook;
-    }
-    
-    public void setCanCook(boolean info) {
-        canCook = info;    
     }
 }
