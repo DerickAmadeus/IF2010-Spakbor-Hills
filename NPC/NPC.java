@@ -50,6 +50,9 @@ public class NPC {
     public boolean isProposed = false;
     public boolean isGifted = false;
     public boolean isMarried = false;
+    public int chattingFrequency; // Frequency of chatting with the player
+    public int giftingFrequency; // Counter to track the frequency of chatting
+    public int visitingFrequency; // Counter to track the frequency of visiting
 
     public NPC(GamePanel gp, String name, String spawnMapName, int tileX, int tileY, Item[] loveditems,
             Item[] likedItems, Item[] hatedItems) {
@@ -66,6 +69,10 @@ public class NPC {
         this.worldY = tileY * gp.tileSize;
         this.hitbox = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
         daysCanMarry = 0; // Default value, can be set later
+        chattingFrequency = 0; // Frequency of chatting with the player
+        giftingFrequency = 0; // Counter to track the frequency of chatting
+        visitingFrequency = 0; // Counter to track the frequency of visiting
+
 
         this.interactionTriggerArea = new Rectangle(worldX, worldY, gp.tileSize, gp.tileSize);
         loadIdleAnimation();
