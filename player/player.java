@@ -12,19 +12,11 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.awt.event.KeyEvent;
 import javax.imageio.ImageIO;
-import Items.*;
-import NPC.NPC;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-
 import main.GamePanel;
 import main.KeyHandler;
 
@@ -36,11 +28,11 @@ public class Player {
     public Rectangle solidArea; 
     public Rectangle interactionArea; 
     public int solidAreaDefaultX, solidAreaDefaultY;
-    private int money;
-    private int storedMoney; 
+    private int money = 999999;
+    private int storedMoney = 0; 
     public boolean collisionOn = false;
     GamePanel gp;
-    KeyHandler keyH;
+    KeyHandler keyH; 
     public String direction; 
     String lastMoveDirection; 
     private String location;
@@ -48,9 +40,10 @@ public class Player {
 
     public BufferedImage[] idleDownFrames, idleUpFrames, idleLeftFrames, idleRightFrames,
                            leftFrames, rightFrames, upFrames, downFrames;
-
+    public BufferedImage goldIcon;
     public ShippingBin currSB;
     public int checkerstate = 0;
+    private int lastday = 1;
 
     private int spriteCounter = 0;
     private int spriteNum = 0;
@@ -81,91 +74,24 @@ public class Player {
         this.farmName = farmName;
 
         loadInitialEquipment();
-        loadInitialSeeds();
         this.screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         this.screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
 
         solidArea = new Rectangle(8, 16, 32, 32);
         solidAreaDefaultX = solidArea.x;
         solidAreaDefaultY = solidArea.y;
+        try {
+            goldIcon = ImageIO.read(getClass().getResourceAsStream("/main/Gold.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         interactionArea = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
         setDefaultValues();
         getPlayerImage();
     }
 
-    public void loadInitialSeeds() {
-        ArrayList<String> spring = new ArrayList<>(Arrays.asList("Spring"));
-        ArrayList<String> summer = new ArrayList<>(Arrays.asList("Summer"));
-        ArrayList<String> fall = new ArrayList<>(Arrays.asList("Fall"));
-        ArrayList<String> wheatSeason = new ArrayList<>(Arrays.asList("Spring", "Fall"));
-
-        Seeds parsnip = new Seeds("Parsnip Seeds", "Grows quickly in Spring", 10, 20, 1, spring, 13);
-        Seeds cauliflower = new Seeds("Cauliflower Seeds", "Takes time but valuable", 40, 80, 5, spring, 14);
-        Seeds potato = new Seeds("Potato Seeds", "Produces multiple potatoes", 25, 50, 3, spring, 15);
-        Seeds wheat = new Seeds("Wheat Seeds", "Spring wheat crop", 30, 60, 1, wheatSeason, 16);
-
-        Seeds blueberry = new Seeds("Blueberry Seeds", "Produces blueberries", 40, 80, 7, summer, 17);
-        Seeds tomato = new Seeds("Tomato Seeds", "Popular summer crop", 25, 50, 3, summer, 18);
-        Seeds hotPepper = new Seeds("Hot Pepper Seeds", "Grows quickly", 20, 40, 1, summer, 19);
-        Seeds melon = new Seeds("Melon Seeds", "Large summer fruit", 40, 80, 4, summer, 20);
-
-        Seeds cranberry = new Seeds("Cranberry Seeds", "Multiple harvests", 50, 100, 2, fall, 21);
-        Seeds pumpkin = new Seeds("Pumpkin Seeds", "Big and valuable", 75, 150, 7, fall, 22);
-        Seeds grape = new Seeds("Grape Seeds", "Climbing vine fruit", 30, 60, 3, fall, 23);
-
-        inventory.addItem(parsnip, 5);
-        inventory.addItem(cauliflower, 2);
-        inventory.addItem(potato, 4);
-        inventory.addItem(wheat, 3);
-        inventory.addItem(blueberry, 2);
-        inventory.addItem(tomato, 6);
-        inventory.addItem(hotPepper, 3);
-        inventory.addItem(melon, 1);
-        inventory.addItem(cranberry, 2);
-        inventory.addItem(pumpkin, 1);
-        inventory.addItem(grape, 3);
-        Misc firewood = new Misc("Firewood", "ini firewood", 20, 40);
-        Misc coal = new Misc("Coal", "ini coal", 20, 40);
-        inventory.addItem(firewood, 4);
-        inventory.addItem(coal, 2);
-        inventory.addItem(gp.allFishes[gp.allFishes.length-1], 2);
-        inventory.addItem(gp.allFishes[gp.allFishes.length-2], 2);
-        inventory.addItem(gp.allFishes[gp.allFishes.length-3], 2);
-        inventory.addItem(gp.allFishes[gp.allFishes.length-4], 2);
-    }
-
-    /* public void loadInitialCrops() {
-        Crops parsnip = new Crops("Parsnip", "Sayuran akar musim semi", 35, 50, 1);
-        Crops cauliflower = new Crops("Cauliflower", "Sayuran bunga putih", 150, 200, 1);
-        Crops potato = new Crops("Potato", "Umbi penghasil karbohidrat", 80, 0, 1);
-        Crops wheat = new Crops("Wheat", "Serealia untuk dijadikan tepung", 30, 50, 3);
-        Crops blueberry = new Crops("Blueberry", "Buah kecil biru musim panas", 40, 150, 3);
-        Crops tomato = new Crops("Tomato", "Buah merah serbaguna", 60, 90, 1);
-        Crops hotPepper = new Crops("Hot Pepper", "Cabai pedas untuk musim panas", 40, 0, 1);
-        Crops melon = new Crops("Melon", "Buah musim panas besar dan manis", 250, 0, 1);
-        Crops cranberry = new Crops("Cranberry", "Buah musim gugur asam", 25, 0, 10);
-        Crops pumpkin = new Crops("Pumpkin", "Buah besar untuk musim gugur", 250, 300, 1);
-        Crops grape = new Crops("Grape", "Buah ungu yang bisa dijadikan wine", 10, 100, 20);
-        Misc firewood = new Misc("Firewood", "ini firewood", 20, 40);
-        Misc coal = new Misc("Coal", "ini coal", 20, 40);
-
-        inventory.addItem(parsnip, 1);
-        inventory.addItem(cauliflower, 1);
-        inventory.addItem(potato, 212);
-        inventory.addItem(wheat, 131);
-        inventory.addItem(blueberry, 2);
-        inventory.addItem(tomato, 2);
-        inventory.addItem(hotPepper, 2);
-        inventory.addItem(melon, 2);
-        inventory.addItem(cranberry, 2);
-        inventory.addItem(pumpkin, 2);
-        inventory.addItem(grape, 2);
-        inventory.addItem(firewood, 21);
-        inventory.addItem(coal, 12);
-    } */
-
-    /*public void loadInitialFood() {
+    public void loadInitialFood() {
         Food fishChips = new Food("Fish n' Chips", "Makanan goreng yang gurih", 135, 150, 50);
         Food baguette = new Food("Baguette", "Roti khas Prancis", 80, 100, 25);
         Food sashimi = new Food("Sashimi", "Irisan ikan mentah segar", 275, 300, 70);
@@ -195,7 +121,7 @@ public class Player {
         inventory.addItem(firewood, 21);
         inventory.addItem(coal, 1);
 
-    }*/
+    }
 
     public void loadInitialEquipment() {
         Equipment wateringCan = new Equipment("Watering Can", "Untuk menyiram tanaman.", 10, 10);
@@ -220,14 +146,12 @@ public class Player {
 
     }
 
-//test
-
     public void setDefaultValues() {
-        this.x = gp.tileSize * 10; // Example: Start at tile (10,10) in world coordinates
-        this.y = gp.tileSize * 10; // Example: Start at tile (10,10) in world coordinates
+        this.x = gp.tileSize * 10; 
+        this.y = gp.tileSize * 10; 
         this.speed = 10;
-        this.lastMoveDirection = "down"; // Default facing direction
-        this.direction = "idleDown";     // Default animation state
+        this.lastMoveDirection = "down";
+        this.direction = "idleDown";
         this.location = "Farm Map";
     }
 
@@ -295,18 +219,14 @@ public class Player {
         return placeholder;
     }
 
-
     public void update() {
-        // System.out.println("Player Update Start - Keys: U=" + keyH.upPressed + " D=" + keyH.downPressed + " L=" + keyH.leftPressed + " R=" + keyH.rightPressed +
-        //            " | collisionOn: " + collisionOn + " | direction: " + direction + " | lastMoveDirection: " + lastMoveDirection);
-        // System.out.println("Current GameState in Player: " + gp.gameState + " | playState is: " + gp.playState);
-
         String prevAnimationState = direction;
         isActuallyMoving = false;
 
         if (interactionCooldown > 0) {
             interactionCooldown--;
         }
+
 
         boolean isAttemptingMoveByKeyPress = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
 
@@ -327,15 +247,11 @@ public class Player {
                     case "right": x += speed; isActuallyMoving = true; break;
                 }
             }
-
             collisionOn = false;
             gp.cChecker.checkTile(this);
-            gp.cChecker.checkNPC(this); // Cek NPC dengan interaksi
-
-           // System.out.println("Collision after checkTile: " + collisionOn);
+            gp.cChecker.checkNPC(this); 
         }
 
-        // Terapkan batas dunia menggunakan dimensi peta saat ini
         int worldPixelWidth = gp.map.currentMapWorldCol * gp.tileSize;
         int worldPixelHeight = gp.map.currentMapWorldRow * gp.tileSize;
 
@@ -346,7 +262,6 @@ public class Player {
 
         int playerCurrentTileCol = (x + solidArea.x + solidArea.width / 2) / gp.tileSize; 
         int playerCurrentTileRow = (y + solidArea.y + solidArea.height / 2) / gp.tileSize; 
-
         int targetTileCol = playerCurrentTileCol;
         int targetTileRow = playerCurrentTileRow;
 
@@ -365,7 +280,6 @@ public class Player {
             keyH.interactPressed = false;
             interactionCooldown = 15; 
         }
-
 
         if (isAttemptingMoveByKeyPress && !collisionOn && isActuallyMoving) {
         } else {
@@ -493,30 +407,42 @@ public class Player {
         int textY = barY + barHeight - 8;
         g2.drawString(energyText, textX, textY);
     }
-    public void drawNotification(Graphics2D g2, String message, int x, int y) {
-        int paddingX = 15;
-        int paddingY = 10;
+    public void drawGoldWindow(Graphics2D g2) {
+        int barX = 20;
+        int barY = 20;
+        int barHeight = 30;
+        int margin = 4;
 
-        g2.setFont(new Font("Arial", Font.PLAIN, 20));
+        int frameX = barX;
+        int frameY = barY + barHeight + margin;
+        int frameHeight = 24;
+
+        g2.setFont(g2.getFont().deriveFont(Font.BOLD, 14f));
         FontMetrics fm = g2.getFontMetrics();
-        int textWidth = fm.stringWidth(message);
-        int textHeight = fm.getHeight();
 
-        int boxWidth = textWidth + paddingX * 2;
-        int boxHeight = textHeight + paddingY * 2;
+        String goldAmountText = String.valueOf(money);
+        int textPadding = 6;
 
-        Color backgroundColor = new Color(0, 0, 0, 180); 
-        g2.setColor(backgroundColor);
-        g2.fillRoundRect(x, y, boxWidth, boxHeight, 20, 20);
+        int iconSize = 16;
+        int iconPadding = 4;
 
-        g2.setColor(Color.WHITE);
-        g2.setStroke(new BasicStroke(3));
-        g2.drawRoundRect(x, y, boxWidth, boxHeight, 20, 20);
+        int frameWidth = iconPadding + iconSize + iconPadding + fm.stringWidth(goldAmountText) + textPadding;
 
-        g2.setColor(Color.WHITE);
-        int textX = x + paddingX;
-        int textY = y + paddingY + fm.getAscent();
-        g2.drawString(message, textX, textY);
+        g2.setColor(new Color(0, 0, 0, 180));
+        g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 10, 10);
+
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(2));
+        g2.drawRoundRect(frameX + 2, frameY + 2, frameWidth - 4, frameHeight - 4, 10, 10);
+
+        if (goldIcon != null) {
+            g2.drawImage(goldIcon, frameX + iconPadding, frameY + (frameHeight - iconSize) / 2, iconSize, iconSize, null);
+        }
+
+        g2.setColor(Color.yellow);
+        int textX = frameX + iconPadding + iconSize + iconPadding;
+        int textY = frameY + frameHeight - 7;
+        g2.drawString(goldAmountText, textX, textY);
     }
 
     public int getX() { return x; }
@@ -536,9 +462,7 @@ public class Player {
             System.out.println("Player: No tile found at interaction area (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ").");
             return;
         }
-
         System.out.println("Player: Interacting with tile at: (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ") Name: " + tileToInteract.getTileName());
-
         if (tileToInteract instanceof Soil) {
             System.out.println("Player: Interacting with Soil tile.");
             Soil soilTile = (Soil) tileToInteract; 
@@ -578,30 +502,26 @@ public class Player {
         /*for (Fish f : gp.allFishes) {
             System.out.println(f.getName() + ": " + f.getHargaJual());
         }*/
-
     }
 
 
     public boolean interactingWithNPC() {
-            // Pastikan kondisi ini benar: dipanggil saat interactPressed, cooldown 0, dan gameState == playState
         if (gp.keyHandler.enterPressed && this.interactionCooldown == 0 && gp.gameState == gp.playState) {
             for (NPC npc : gp.npcs) {
-                if (npc != null && npc.getSpawnMapName().equals(this.getLocation())) { // Gunakan .equals() untuk String
-                    Rectangle npcInteractionZone = npc.getInteractionTriggerAreaWorld(); // Pastikan metode ini ada di NPC
-
+                if (npc != null && npc.getSpawnMapName().equals(this.getLocation())) { 
+                    Rectangle npcInteractionZone = npc.getInteractionTriggerAreaWorld(); 
                     if (this.interactionArea.intersects(npcInteractionZone)) {
                         System.out.println("Player: Memulai interaksi dengan NPC: " + npc.name);
-                        gp.gameState = gp.dialogState;   // Ubah game state menjadi dialog
-                        currentNPC = npc; // Set NPC yang sedang diajak bicara
-                        gp.keyHandler.enterPressed = false; // Konsumsi tombol yang MEMBUKA dialog
-                        this.interactionCooldown = 20;        // Cooldown untuk player
-                        return true; // Interaksi berhasil dimulai
+                        gp.gameState = gp.dialogState;
+                        currentNPC = npc;
+                        gp.keyHandler.enterPressed = false; 
+                        this.interactionCooldown = 20;       
+                        return true; 
                     }
                 }
             }
-            // Jika tidak ada NPC yang diajak bicara, tapi tombol interaksi ditekan
-            gp.keyHandler.enterPressed = false; // Reset tombol enter
-            this.interactionCooldown = 5;          // Cooldown singkat
+            gp.keyHandler.enterPressed = false;
+            this.interactionCooldown = 5;          
             return false; 
         }
         return false;
@@ -610,9 +530,8 @@ public class Player {
     public void dialogNPC(Graphics2D g2) {
         if (currentNPC != null) {
             if (energy <= -20){
-                gp.gameState = gp.playState ; // Jika energi -20, masuk ke sleepState
+                gp.gameState = gp.playState ; 
             }
-            // System.out.println("Player: Dialog with NPC: " + currentNPC.getName());
             currentNPC.showStatus(g2);
             currentNPC.drawActionMenu(g2);
             if (currentNPC.isTalking) {
@@ -628,7 +547,6 @@ public class Player {
         }
     }
 
-
     public void openInventory(Graphics2D g2) {
         inventory.drawInventory(g2);
     }
@@ -640,15 +558,13 @@ public class Player {
     public Item getEquippedItem() {
         return equippedItem;
     }
+
     public void equipItem(Item item) {
         if (item == null) {
-            // Unequip: kosongkan equipment
             equippedItem = null;
             System.out.println("Unequipped.");
             return;
         }
-
-        // Equip item baru
         equippedItem = item;
         System.out.println("Equipped: " + item.getName());
     }
@@ -674,11 +590,24 @@ public class Player {
             this.location = "Farm Map";
         } else if (locationID == 1) {
             this.location = "Forest River";
+        } else if (locationID == 2) {
+            this.location = "Mountain Lake";
         } else if (locationID == 5){
             this.location = "MTHouse";
         } else if (locationID == 3) {
             this.location = "Player's House";
-
+        } else if (locationID == 4) {
+            this.location = "World Map";
+        } else if (locationID == 6) {
+            this.location = "Caroline's House";
+        } else if (locationID == 7) {
+            this.location = "Perry's House";
+        } else if (locationID == 8) {
+            this.location = "Dasco's House";
+        } else if (locationID == 10) {
+            this.location = "Emily's Store";
+        } else if (locationID == 9) {
+            this.location = "Abigail's House";
         }
     }
 
@@ -694,50 +623,54 @@ public class Player {
         this.gender = gender;
     }
 
+    public int getMoney() {
+        return money;
+    }
+
+    public void setMoney(int amount) {
+        if (money - amount >= 0) { 
+            this.money = amount; 
+        }
+    }
+
     public int getEnergy() {
         return energy;
     }
 
     public void setEnergy(int newEnergyValue) {
-        int oldEnergy = this.energy; // Simpan energi saat ini sebelum diubah
-
-        // Terapkan nilai energi baru, dengan batasan MAX_ENERGY dan minimal -20
         if (newEnergyValue > MAX_ENERGY) {
             this.energy = MAX_ENERGY;
-        } else if (newEnergyValue < -20) { // Jika kalkulasi akan membuatnya jauh di bawah -20
-            this.energy = -20; // Batasi minimal di -20
+        } else if (newEnergyValue < -20) { 
+            this.energy = -20; 
         } else {
             this.energy = newEnergyValue;
         }
-
-        // Periksa kondisi auto-sleep jika energi baru saja turun ke/di bawah -20
-        // dan pemain sedang dalam kondisi bisa bermain (playState).
-
     }
 
     public void tiling() {
         if (equippedItem != null && equippedItem.getName().equals("Hoe") && 
-            energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
+            energy >= -15 && keyH.enterPressed) {
             Tile tileToTill = gp.map.getTile(interactionArea.x, interactionArea.y);
-            if (tileToTill != null && tileToTill.getTileName().equals("grass")) { // Pastikan nama "grass" konsisten
-                gp.map.setTileType(interactionArea.x, interactionArea.y, 10); // ID 10 adalah Soil kosong
+            if (tileToTill != null && tileToTill.getTileName().equals("grass")) { 
+                gp.map.setTileType(interactionArea.x, interactionArea.y, 10); 
                 setEnergy(getEnergy() - 5);
                 gp.addMinutes(5);
                 System.out.println("Player: Tilled grass at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
             } else if (tileToTill != null) {
                 System.out.println("Player: Cannot till " + tileToTill.getTileName());
             }
+            
         }
     }
 
     public void recoverLand() {
         if (equippedItem != null && equippedItem.getName().equals("Pickaxe") && 
-            energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
+            energy >= -15 && keyH.enterPressed) {
             Tile tileToTill = gp.map.getTile(interactionArea.x, interactionArea.y);
-            if (tileToTill != null && tileToTill.getTileName().equals("soil")) { // Pastikan nama "grass" konsisten
+            if (tileToTill != null && tileToTill.getTileName().equals("soil")) { 
                 Soil recoverable = (Soil) tileToTill;
                 if (recoverable.canPlant()) {
-                    gp.map.setTileType(interactionArea.x, interactionArea.y, 0); // ID 10 adalah Soil kosong
+                    gp.map.setTileType(interactionArea.x, interactionArea.y, 0); 
                     setEnergy(getEnergy() - 5);
                     gp.addMinutes(5);
                     System.out.println("Player: Ubah ke soil at (" + interactionArea.x/gp.tileSize + "," + interactionArea.y/gp.tileSize + ")");
@@ -750,11 +683,9 @@ public class Player {
 
     public void planting() {
         if (equippedItem != null && equippedItem instanceof Seeds && 
-            energy >= -15 && keyH.enterPressed && interactionCooldown == 0 && gp.gameState == gp.playState) {
-            
+            energy >= -15 && keyH.enterPressed && gp.gameState == gp.playState) {
             Tile tileToPlantOn = gp.map.getTile(interactionArea.x, interactionArea.y);
             boolean isLast = false;
-
             if (tileToPlantOn instanceof Soil) {
                 Soil soilTile = (Soil) tileToPlantOn;
                 Seeds seedToPlant = (Seeds) equippedItem;
@@ -766,7 +697,6 @@ public class Player {
                     inventory.removeItem(equippedItem, 1);
                     setEnergy(getEnergy() - 5);
                     gp.addMinutes(5);
-                    // Pesan sudah ada di Map.plantSeedAtTile atau Soil.plantSeed
                     if (isLast) {
                         equipItem(null);
                     }
@@ -782,11 +712,12 @@ public class Player {
             }
         }
     }
+
     public void watering() {
         if (equippedItem != null && equippedItem.getName().equals("Watering Can") && 
-            energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
+            energy >= -15 && keyH.enterPressed) {
             Tile tileToWater = gp.map.getTile(interactionArea.x, interactionArea.y);
-            if (tileToWater != null && tileToWater instanceof Soil) { // Pastikan nama "grass" konsisten
+            if (tileToWater != null && tileToWater instanceof Soil) { 
                 Soil watered = (Soil) tileToWater;
                 if (!watered.canPlant() && watered.canWater()) {
                     watered.water(gp);
@@ -803,7 +734,6 @@ public class Player {
             int frameHeight = gp.tileSize * 10;
             int frameX = (gp.screenWidth  - frameWidth)  / 2;
             int frameY = (gp.screenHeight - frameHeight) / 2;
-
             Font menuFont;
             try {
                 InputStream inputStream = getClass().getResourceAsStream("/main/PressStart2PRegular.ttf");
@@ -825,28 +755,21 @@ public class Player {
             int titleX = getX(title, g2);
             int titleY = frameY + gp.tileSize * 2;
             
-            // shadow
             g2.setColor(Color.BLACK);
             g2.drawString(title, titleX + 3, titleY + 3);
-            // title
             g2.setColor(Color.WHITE);
             g2.drawString(title, titleX, titleY);
-
-            // Draw menu options
             g2.setFont(menuFont.deriveFont(Font.PLAIN, 20F));
             for (int i = 0; i < menu.length; i++) {
                 String option = menu[i];
                 int optionX = getX(option, g2);
                 int optionY = titleY + gp.tileSize * 2 + i * gp.tileSize;
                 
-                // Shadow
                 g2.setColor(Color.BLACK);
                 g2.drawString(option, optionX + 2, optionY + 2);
                 
-                // Text color changes based on selection
                 if (i == menuCommand) {
                     g2.setColor(Color.YELLOW);
-                    // Draw ">" pointer
                     g2.drawString(">", optionX - gp.tileSize, optionY);
                 } else {
                     g2.setColor(Color.WHITE);
@@ -858,22 +781,20 @@ public class Player {
     }
 
     private int getX(String text, Graphics2D g2) {
-    int length = (int)g2.getFontMetrics().getStringBounds(text, g2).getWidth();
-    return gp.screenWidth / 2 - length / 2;
-        }
+        int length = (int)g2.getFontMetrics().getStringBounds(text, g2).getWidth();
+        return gp.screenWidth / 2 - length / 2;
+    }
 
     public void handleMenuKey(KeyEvent e) {
         int code = e.getKeyCode();
         if (code == KeyEvent.VK_W || code == KeyEvent.VK_S) {
             gp.keyHandler.upPressed = (code == KeyEvent.VK_W);
             gp.keyHandler.downPressed = (code == KeyEvent.VK_S);
-            
             if (gp.keyHandler.upPressed) {
                 menuCommand = (menuCommand + menu.length - 1) % menu.length;
             } else if (gp.keyHandler.downPressed) {
                 menuCommand = (menuCommand + 1) % menu.length;
             }
-            
             gp.keyHandler.upPressed = false;
             gp.keyHandler.downPressed = false;
         } else if (code == KeyEvent.VK_ENTER) {
@@ -900,7 +821,8 @@ public class Player {
     }
 
     public void harvesting() {
-        if (equippedItem == null && energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
+
+        if (equippedItem == null && energy >= -15 && keyH.enterPressed) {
             Tile tileToHarvest = gp.map.getTile(interactionArea.x, interactionArea.y);
             if (tileToHarvest != null && tileToHarvest instanceof Soil) {
                 Soil harvest = (Soil) tileToHarvest;
@@ -935,20 +857,16 @@ public class Player {
         int frameY = gp.tileSize * 2;
         int frameWidth = gp.tileSize * 6;
         int frameHeight = gp.tileSize * 5;
-
         Color backgroundColor = new Color(0, 0, 0, 210);
         g2.setColor(backgroundColor);
         g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
-
         g2.setColor(Color.WHITE);
         g2.setStroke(new BasicStroke(5));
         g2.drawRoundRect(frameX + 5, frameY + 5, frameWidth - 10, frameHeight - 10, 25, 25);
-
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
         g2.drawString("Fish Caught!", frameX + 20, frameY + 50);
         int debugY = frameY + 130;
         g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 18F));
-
         if (gp.fishingTargetFish != null) {
             g2.drawString("Attempt: " + gp.fishingAttempts + " / " + gp.maxFishingAttempts, frameX + 20, debugY);
             debugY += 25;
@@ -960,7 +878,6 @@ public class Player {
             debugY += 25;
         }
 
-        // Hint berdasarkan tebakan
         if (gp.fishingHint != null && !gp.fishingHint.isEmpty()) {
             g2.setColor(Color.YELLOW);
             g2.drawString("Hint: " + gp.fishingHint, frameX + 20, debugY);
@@ -983,15 +900,11 @@ public class Player {
             energyRecover = MAX_ENERGY;
         }
 
-
         if (energy < MAX_ENERGY && keyH.interactPressed && interactionCooldown == 0) {
             if (gp.gameState == gp.playState) {
                 System.out.println("Player: Time to sleep!");
-
                 gp.startSleepingSequence();
-                // Reset energy to full after sleeping
                 setEnergy(energyRecover);
-
             } else {
                 System.out.println("Player: Can only sleep during play state.");
             }
@@ -1008,7 +921,7 @@ public class Player {
             //System.out.println("Player: Energy is already full, no need to sleep.");
 
         }
-        isSleeping = false; // Reset isSleeping after sleeping action
+        isSleeping = false; 
     }
 
     public void fishing() {
@@ -1126,7 +1039,8 @@ public boolean energyReducedInThisChat = false;
             }
         }
     }
-      public void watching() {
+
+    public void watching() {
         if (energy >= -5 && keyH.enterPressed && interactionCooldown == 0) {
             Tile TV = gp.map.getTile(interactionArea.x, interactionArea.y);
             if (TV != null && TV instanceof TV) {
@@ -1171,4 +1085,10 @@ public boolean energyReducedInThisChat = false;
         }
     }
 
+    public int getStoredMoney() {
+        return storedMoney;
+    }
+    public void setStoredMoney(int storedMoney) {
+        this.storedMoney = storedMoney;
+    }
 }

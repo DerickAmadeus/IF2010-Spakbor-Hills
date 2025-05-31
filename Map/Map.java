@@ -97,8 +97,8 @@ public class Map {
             tileImage[84].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananatasair.png"));
             tileImage[85] = new Tile("grass_bawah_air_kiri", true);
             tileImage[85].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiribawahair.png"));
-            tileImage[86] = new Tile("grass_bawah_air_kanan", true);
-            tileImage[86].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananbawahair.png"));
+            tileImage[181] = new Tile("grass_bawah_air_kanan", true);
+            tileImage[181].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananbawahair.png"));
 
             // HOUSE & FLOOR
             tileImage[49] = new Tile("floor", true);
@@ -183,7 +183,7 @@ public class Map {
             tileImage[10] = new Soil("soil", true, "/Map/tiles/dirt.png");
 
             // DOOR
-            tileImage[12] = new Tile("Door Visual Placeholder", true); // Walkable agar bisa transisi
+            tileImage[12] = new Tile("Door", true); // Walkable agar bisa transisi
             InputStream doorStream = getClass().getResourceAsStream("/Map/tiles/house/door.png");
              if (doorStream != null) {
                 tileImage[12].Image = ImageIO.read(doorStream);
@@ -776,5 +776,58 @@ public class Map {
         } else {
             System.out.println("Cannot harvest at ("+ (worldX/gp.tileSize) + "," + (worldY/gp.tileSize) +"): Not a soil tile or nothing to harvest.");
         }
+    }
+
+    public int getDoorLocationTileX() {
+        if (currentMapTiles == null || currentMapWorldCol == 0 || currentMapWorldRow == 0) {
+            System.err.println("Peringatan getDoorLocationTileX: Peta belum dimuat atau peta kosong.");
+            return -1; // Indikasi error atau peta kosong
+        }
+
+        // Cari tile dengan nama "Door" di seluruh peta
+        // Urutan pencarian: kolom per kolom, lalu baris per baris dalam setiap kolom
+        for (int col = 0; col < currentMapWorldCol; col++) {
+            for (int row = 0; row < currentMapWorldRow; row++) {
+                Tile tile = currentMapTiles[col][row];
+                // Pastikan Anda menggunakan nama yang benar untuk tile pintu Anda.
+                // Di contoh sebelumnya, Anda menggunakan "Door" (dengan D kapital).
+                // Jika di getTileImagePrototypes() Anda menamainya "door" (d kecil), sesuaikan di sini.
+                if (tile != null && "Door".equals(tile.getTileName())) {
+                    return col; // Kembalikan indeks kolom (koordinat tile X)
+                }
+            }
+        }
+
+        System.err.println("Peringatan getDoorLocationTileX: Tidak ada tile 'Door' yang ditemukan di peta.");
+        return -1; // Indikasi "Door" tidak ditemukan
+    }
+
+    /**
+     * Mencari tile pertama dengan nama "Door" di peta saat ini dan mengembalikan
+     * koordinat baris (tile Y) tempat tile tersebut ditemukan.
+     *
+     * @return Indeks baris (koordinat tile Y) dari "Door" pertama, atau -1 jika tidak ditemukan atau peta kosong.
+     */
+    public int getDoorLocationTileY() {
+        if (currentMapTiles == null || currentMapWorldCol == 0 || currentMapWorldRow == 0) {
+            System.err.println("Peringatan getDoorLocationTileY: Peta belum dimuat atau peta kosong.");
+            return -1; // Indikasi error atau peta kosong
+        }
+
+        // Cari tile dengan nama "Door" di seluruh peta
+        // Urutan pencarian harus konsisten dengan getDoorLocationTileX() jika Anda ingin
+        // mendapatkan koordinat X dan Y dari pintu yang sama.
+        for (int col = 0; col < currentMapWorldCol; col++) {
+            for (int row = 0; row < currentMapWorldRow; row++) {
+                Tile tile = currentMapTiles[col][row];
+                // Pastikan nama "Door" konsisten.
+                if (tile != null && "Door".equals(tile.getTileName())) {
+                    return row; // Kembalikan indeks baris (koordinat tile Y)
+                }
+            }
+        }
+
+        System.err.println("Peringatan getDoorLocationTileY: Tidak ada tile 'Door' yang ditemukan di peta.");
+        return -1; // Indikasi "Door" tidak ditemukan
     }
 }
