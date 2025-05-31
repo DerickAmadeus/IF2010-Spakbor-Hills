@@ -62,7 +62,7 @@ public class Player {
     private String playerName = null;
     private String gender = null;
 
-    private final String[] menu = { "Continue", "Player Info", "Statistics", "Help", "Quit" };
+    private final String[] menu = { "Continue", "Player Info", "Statistics", "Help", "Exit" };
     public int menuCommand = 0;
 
     private int interactionCooldown = 0;
@@ -797,7 +797,7 @@ public class Player {
                     gp.gameState = gp.playState; 
                     break;
                 case 1:
-                    // gp.gameState = gp.playerInfoState;
+                    gp.gameState = gp.playerInfoState;
                     break;
                 case 2:
                     // gp.gameState = gp.statisticsState;
@@ -806,7 +806,8 @@ public class Player {
                     gp.gameState = gp.inGameHelpState; 
                     break;
                 case 4:
-                    System.exit(0); 
+                    gp.gameState = gp.titleState; 
+                    gp.keyHandler.enterPressed = false;
                     break;
             }
         } else if (code == KeyEvent.VK_ESCAPE) {

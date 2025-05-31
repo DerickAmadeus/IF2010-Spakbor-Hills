@@ -133,6 +133,12 @@ public class PlayerInput {
         return gp.screenWidth / 2 - length / 2;
     }
 
+    public void reset() {
+        playerNameInput = "";
+        selectedGender  = "";
+        commandNumber = 0;
+    }
+
     public void keyPressed(KeyEvent e) {
 
         int code = e.getKeyCode();

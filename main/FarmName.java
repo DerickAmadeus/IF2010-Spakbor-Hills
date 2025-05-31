@@ -52,6 +52,11 @@ public class FarmName {
         }
     }
 
+    public void reset() {
+        farmNameInput = "";
+        commandNumber = 0;
+    }
+
     public void draw(Graphics2D g2){
         // taro bg disini
         if (farmInputBackground != null){
