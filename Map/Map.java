@@ -768,10 +768,9 @@ public class Map {
     }
 
     public void harvestSeedAtTile(int worldX, int worldY) {
-        Tile targetTile = getTile(worldX, worldY); // getTile() sudah menggunakan currentMapTiles
+        Tile targetTile = getTile(worldX, worldY); 
         if (targetTile instanceof Soil) {
             Soil soilTile = (Soil) targetTile;
-            // Logika harvest ada di Soil.harvest()
             soilTile.harvest(gp, gp.player);
         } else {
             System.out.println("Cannot harvest at ("+ (worldX/gp.tileSize) + "," + (worldY/gp.tileSize) +"): Not a soil tile or nothing to harvest.");
