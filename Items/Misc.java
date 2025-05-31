@@ -20,6 +20,7 @@ public class Misc extends Item implements Buyable {
             gp.player.setMoney(gp.player.getMoney() - (item.getHargaBeli() * amount));
             gp.player.getInventory().addItem(item, amount);
             gp.seller.getInventory().removeItem(item, amount);
+            gp.player.totalExpenditure += (item.getHargaBeli() * amount);
             System.out.println("Bought " + getName());
         }
     }

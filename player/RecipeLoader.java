@@ -72,6 +72,11 @@ public class RecipeLoader {
         recipes[9] = makeRecipe("recipe_10", new Food("Fish Sandwich", "Sandwich isi ikan pedas", 180, 200, 50), Map.of(fish, 1, wheat, 2, tomato, 1, hotPepper, 1));
         recipes[10] = makeRecipe("recipe_11", new Food("The Legends of Spakbor", "Hidangan legenda dunia bawah", 2000, 0, 100), Map.of(legendFish, 1, potato, 2, parsnip, 1, tomato, 1, eggplant, 1));
 
+        recipes[1].setUnlockInfo(true);
+        recipes[4].setUnlockInfo(true);
+        recipes[5].setUnlockInfo(true);
+        recipes[8].setUnlockInfo(true);
+
         return recipes;
     }
 
