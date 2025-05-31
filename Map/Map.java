@@ -13,7 +13,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
+
 import main.GamePanel;
+import java.util.Random;
 
 public class Map {
     GamePanel gp;
@@ -38,21 +40,27 @@ public class Map {
 
     public int currentMapWorldCol;
     public int currentMapWorldRow;
+    public int angka = new Random().nextInt(3) + 1;
     public int currentMapID = -1; // Inisialisasi agar load pertama selalu fresh
 
     public String[] mapFilePaths = {
-            "/Map/maps/farm_map.txt",
+            "/Map/maps/farm_map_" + angka +".txt",
             "/Map/maps/forest_map.txt",
             "/Map/maps/mountain_lake_map.txt",
             "/Map/maps/house_map.txt",
             "/Map/maps/npc_map.txt",
             "/Map/maps/mthouse_map.txt",
             "/Map/maps/chouse_map.txt",
+            "/Map/maps/phouse_map.txt",
+            "/Map/maps/dhouse_map.txt",
+            "/Map/maps/ahouse_map.txt",
+            "/Map/maps/store_map.txt",
+            "/Map/maps/ocean_map.txt"
     };
 
     public Map(GamePanel gp) {
         this.gp = gp;
-        this.tileImage = new Tile[100]; // Sesuaikan ukuran jika perlu
+        this.tileImage = new Tile[300]; // Sesuaikan ukuran jika perlu
         this.loadedMapStates = new HashMap<>();
         getTileImagePrototypes();
         loadMapByID(0); // Memuat peta default
@@ -87,6 +95,14 @@ public class Map {
             tileImage[47].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiriair.png"));
             tileImage[48] = new Tile("grass_kanan_air", true);
             tileImage[48].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananair.png"));
+            tileImage[83] = new Tile("grass_atas_air_kiri", true);
+            tileImage[83].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiriatasair.png"));
+            tileImage[84] = new Tile("grass_atas_air_kanan", true);
+            tileImage[84].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananatasair.png"));
+            tileImage[85] = new Tile("grass_bawah_air_kiri", true);
+            tileImage[85].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskiribawahair.png"));
+            tileImage[182] = new Tile("grass_bawah_air_kanan", true);
+            tileImage[182].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/grass/grasskananbawahair.png"));
 
             // HOUSE & FLOOR
             tileImage[49] = new Tile("floor", true);
@@ -171,7 +187,7 @@ public class Map {
             tileImage[10] = new Soil("soil", true, "/Map/tiles/dirt.png");
 
             // DOOR
-            tileImage[12] = new Tile("Door Visual Placeholder", true); // Walkable agar bisa transisi
+            tileImage[12] = new Tile("Door", true); // Walkable agar bisa transisi
             InputStream doorStream = getClass().getResourceAsStream("/Map/tiles/house/door.png");
              if (doorStream != null) {
                 tileImage[12].Image = ImageIO.read(doorStream);
@@ -282,10 +298,189 @@ public class Map {
             tileImage[99] = new Tile("Right Wall Top", false);
             tileImage[99].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/mayortadihouse/rightwalltop.png"));
 
+            // Caroline House Tiles Exterior
+            tileImage[100] = new Tile("Top Right Corner Roof", false);
+            tileImage[100].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/carolinehouse/righttopcornerroof.png"));
+            tileImage[101] = new Tile("Bottom Left Right Roof", false);
+            tileImage[101].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/carolinehouse/rightbottomcornerroof.png"));
+            tileImage[102] = new Tile("Bottom Roof", false);
+            tileImage[102].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/carolinehouse/bottomroof.png"));
+            tileImage[103] = new Tile("Top Left Corner Roof", false);
+            tileImage[103].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/carolinehouse/lefttopcornerroof.png"));
+            tileImage[104] = new Tile("Bottom Left Corner Roof", false);
+            tileImage[104].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/carolinehouse/leftbottomcornerroof.png"));
+            tileImage[105] = new Tile("MTHouse Wall Top", false);
+            tileImage[105].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/carolinehouse/walltop.png"));
+            tileImage[106] = new Tile("MTHouse Left Corner", false);
+            tileImage[106].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/carolinehouse/leftcorner.png"));
+            tileImage[107] = new Tile("MTHouse Right Corner", false);
+            tileImage[107].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/carolinehouse/rightcorner.png"));
+            tileImage[108] = new Tile("MTHouse Left Window Bottom", false);
+            tileImage[108].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/carolinehouse/leftwindowbottom.png"));
+            tileImage[109] = new Tile("MTHouse Right Window Bottom", false);
+            tileImage[109].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/carolinehouse/rightwindowbottom.png"));
+            tileImage[110] = new Tile("MTHouse Left Window Top", false);
+            tileImage[110].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/carolinehouse/lefttopwindow.png"));
+            tileImage[111] = new Tile("MTHouse Right Window Top", false);
+            tileImage[111].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/carolinehouse/righttopwindow.png"));
+            tileImage[112] = new Tile("Left Wall Top", false);
+            tileImage[112].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/carolinehouse/leftwalltop.png"));
+            tileImage[113] = new Tile("Right Wall Top", false);
+            tileImage[113].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/carolinehouse/rightwalltop.png"));
+
+            // Perry House Tiles Exterior
+            tileImage[114] = new Tile("Top Right Corner Roof", false);
+            tileImage[114].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/perryhouse/righttopcornerroof.png"));
+            tileImage[115] = new Tile("Bottom Left Right Roof", false);
+            tileImage[115].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/perryhouse/rightbottomcornerroof.png"));
+            tileImage[116] = new Tile("Bottom Roof", false);
+            tileImage[116].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/perryhouse/bottomroof.png"));
+            tileImage[117] = new Tile("Top Left Corner Roof", false);
+            tileImage[117].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/perryhouse/lefttopcornerroof.png"));
+            tileImage[118] = new Tile("Bottom Left Corner Roof", false);
+            tileImage[118].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/perryhouse/leftbottomcornerroof.png"));
+            tileImage[119] = new Tile("MTHouse Wall Top", false);
+            tileImage[119].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/perryhouse/walltop.png"));
+            tileImage[120] = new Tile("MTHouse Left Corner", false);
+            tileImage[120].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/perryhouse/leftcorner.png"));
+            tileImage[121] = new Tile("MTHouse Right Corner", false);
+            tileImage[121].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/perryhouse/rightcorner.png"));
+            tileImage[122] = new Tile("MTHouse Left Window Bottom", false);
+            tileImage[122].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/perryhouse/leftwindowbottom.png"));
+            tileImage[123] = new Tile("MTHouse Right Window Bottom", false);
+            tileImage[123].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/perryhouse/rightwindowbottom.png"));
+            tileImage[124] = new Tile("MTHouse Left Window Top", false);
+            tileImage[124].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/perryhouse/lefttopwindow.png"));
+            tileImage[125] = new Tile("MTHouse Right Window Top", false);
+            tileImage[125].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/perryhouse/righttopwindow.png"));
+            tileImage[126] = new Tile("Left Wall Top", false);
+            tileImage[126].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/perryhouse/leftwalltop.png"));
+            tileImage[127] = new Tile("Right Wall Top", false);
+            tileImage[127].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/perryhouse/rightwalltop.png"));
+
+            // Dasco House Tiles Exterior
+            tileImage[128] = new Tile("Top Right Corner Roof", false);
+            tileImage[128].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/righttopcornerroof.png"));
+            tileImage[129] = new Tile("Bottom Left Right Roof", false);
+            tileImage[129].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/rightbottomcornerroof.png"));
+            tileImage[130] = new Tile("Bottom Roof", false);
+            tileImage[130].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/bottomroof.png"));
+            tileImage[131] = new Tile("Top Left Corner Roof", false);
+            tileImage[131].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/lefttopcornerroof.png"));
+            tileImage[132] = new Tile("Bottom Left Corner Roof", false);
+            tileImage[132].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/leftbottomcornerroof.png"));
+            tileImage[133] = new Tile("MTHouse Wall Top", false);
+            tileImage[133].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/walltop.png"));
+            tileImage[134] = new Tile("MTHouse Left Corner", false);
+            tileImage[134].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/leftcorner.png"));
+            tileImage[135] = new Tile("MTHouse Right Corner", false);
+            tileImage[135].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/rightcorner.png"));
+            tileImage[136] = new Tile("MTHouse Left Window Bottom", false);
+            tileImage[136].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/leftwindowbottom.png"));
+            tileImage[137] = new Tile("MTHouse Right Window Bottom", false);
+            tileImage[137].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/rightwindowbottom.png"));
+            tileImage[138] = new Tile("MTHouse Left Window Top", false);
+            tileImage[138].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/lefttopwindow.png"));
+            tileImage[139] = new Tile("MTHouse Right Window Top", false);
+            tileImage[139].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/righttopwindow.png"));
+            tileImage[140] = new Tile("Left Wall Top", false);
+            tileImage[140].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/leftwalltop.png"));
+            tileImage[141] = new Tile("Right Wall Top", false);
+            tileImage[141].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/dascohouse/rightwalltop.png"));
+
+            // Abi House Tiles Exterior
+            tileImage[142] = new Tile("Top Right Corner Roof", false);
+            tileImage[142].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/righttopcornerroof.png"));
+            tileImage[143] = new Tile("Bottom Left Right Roof", false);
+            tileImage[143].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/rightbottomcornerroof.png"));
+            tileImage[144] = new Tile("Bottom Roof", false);
+            tileImage[144].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/bottomroof.png"));
+            tileImage[145] = new Tile("Top Left Corner Roof", false);
+            tileImage[145].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/lefttopcornerroof.png"));
+            tileImage[146] = new Tile("Bottom Left Corner Roof", false);
+            tileImage[146].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/leftbottomcornerroof.png"));
+            tileImage[147] = new Tile("MTHouse Wall Top", false);
+            tileImage[147].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/walltop.png"));
+            tileImage[148] = new Tile("MTHouse Left Corner", false);
+            tileImage[148].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/leftcorner.png"));
+            tileImage[149] = new Tile("MTHouse Right Corner", false);
+            tileImage[149].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/rightcorner.png"));
+            tileImage[150] = new Tile("MTHouse Left Window Bottom", false);
+            tileImage[150].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/leftwindowbottom.png"));
+            tileImage[151] = new Tile("MTHouse Right Window Bottom", false);
+            tileImage[151].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/rightwindowbottom.png"));
+            tileImage[152] = new Tile("MTHouse Left Window Top", false);
+            tileImage[152].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/lefttopwindow.png"));
+            tileImage[153] = new Tile("MTHouse Right Window Top", false);
+            tileImage[153].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/righttopwindow.png"));
+            tileImage[154] = new Tile("Left Wall Top", false);
+            tileImage[154].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/leftwalltop.png"));
+            tileImage[155] = new Tile("Right Wall Top", false);
+            tileImage[155].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/ahouse/rightwalltop.png"));
+
+            // Store Tiles Exterior
+            tileImage[156] = new Tile("Top Right Corner Roof", false);
+            tileImage[156].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/righttopcornerroof.png"));
+            tileImage[157] = new Tile("Bottom Left Right Roof", false);
+            tileImage[157].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/rightbottomcornerroof.png"));
+            tileImage[158] = new Tile("Bottom Roof", false);
+            tileImage[158].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/bottomroof.png"));
+            tileImage[159] = new Tile("Top Left Corner Roof", false);
+            tileImage[159].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/lefttopcornerroof.png"));
+            tileImage[160] = new Tile("Bottom Left Corner Roof", false);
+            tileImage[160].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/leftbottomcornerroof.png"));
+            tileImage[161] = new Tile("MTHouse Wall Top", false);
+            tileImage[161].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/walltop.png"));
+            tileImage[162] = new Tile("MTHouse Left Corner", false);
+            tileImage[162].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/leftcorner.png"));
+            tileImage[163] = new Tile("MTHouse Right Corner", false);
+            tileImage[163].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/rightcorner.png"));
+            tileImage[164] = new Tile("MTHouse Left Window Bottom", false);
+            tileImage[164].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/leftwindowbottom.png"));
+            tileImage[165] = new Tile("MTHouse Right Window Bottom", false);
+            tileImage[165].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/rightwindowbottom.png"));
+            tileImage[166] = new Tile("MTHouse Left Window Top", false);
+            tileImage[166].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/lefttopwindow.png"));
+            tileImage[167] = new Tile("MTHouse Right Window Top", false);
+            tileImage[167].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/righttopwindow.png"));
+            tileImage[168] = new Tile("Left Wall Top", false);
+            tileImage[168].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/leftwalltop.png"));
+            tileImage[169] = new Tile("Right Wall Top", false);
+            tileImage[169].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/rightwalltop.png"));
+            tileImage[170] = new Tile("Left Wall Top", false);
+            tileImage[170].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/S.png"));
+            tileImage[171] = new Tile("Right Wall Top", false);
+            tileImage[171].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/T.png"));
+            tileImage[172] = new Tile("Right Wall Top", false);
+            tileImage[172].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/O.png"));
+            tileImage[173] = new Tile("Right Wall Top", false);
+            tileImage[173].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/R.png"));
+            tileImage[174] = new Tile("Right Wall Top", false);
+            tileImage[174].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/store/E.png"));
+
+
+            //Shipping Bin
+            tileImage[175] = new Tile("Shipping Bin NI", false);
+            tileImage[175].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB1.png"));
+            tileImage[176] = new Tile("Shipping Bin NI", false);
+            tileImage[176].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB2.png"));
+            tileImage[177] = new Tile("Shipping Bin NI", false);
+            tileImage[177].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB3.png"));
+            tileImage[178] = new Tile("Shipping Bin NI", false);
+            tileImage[178].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB4.png"));
+            tileImage[179] = new ShippingBin("Shipping Bin", false, gp);
+            tileImage[179].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB5.png"));
+            tileImage[180] = new Tile("Shipping Bin NI", false);
+            tileImage[180].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/SB6.png"));
+            tileImage[181] = new Tile("Pad", true);
+            tileImage[181].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/shippingbin/pad.png"));
+
+
+
         } catch (IOException e) {
             System.err.println("Error loading tile prototype images: " + e.getMessage());
             e.printStackTrace();
-            for(int i=0; i<tileImage.length; i++) { // Menggunakan tileImage
+            for(int i=0; i<tileImage.length; i++) { 
                 if(tileImage[i] == null) {
                     tileImage[i] = new Tile("Error Proto "+i, false);
                     tileImage[i].Image = createPlaceholderImageOnError(gp.tileSize);
@@ -308,9 +503,6 @@ public class Map {
         return placeholder;
     }
 
-    // classExists tidak lagi digunakan dalam konteks ini
-    // private boolean classExists(String className) { ... }
-
     private Tile createTileInstance(int prototypeID) {
         if (prototypeID < 0 || prototypeID >= tileImage.length || tileImage[prototypeID] == null) {
             System.err.println("Warning: Invalid prototypeID " + prototypeID + " in createTileInstance. Using default tile 0.");
@@ -322,22 +514,26 @@ public class Map {
             }
         }
 
-        Tile prototype = tileImage[prototypeID]; // Menggunakan tileImage
+        Tile prototype = tileImage[prototypeID]; 
         Tile newInstance;
 
         if (prototype instanceof Soil) {
             newInstance = new Soil((Soil) prototype);
-        } else if (prototype instanceof Bed) { // Pastikan Bed adalah subclass Tile dan punya copy constructor
+        } else if (prototype instanceof Bed) { 
             newInstance = new Bed((Bed) prototype);
+        } else if (prototype instanceof Stove) {
+            newInstance = new Stove((Stove) prototype);
+        } else if (prototype instanceof TV) {
+            newInstance = new TV((TV) prototype);
+        } else if (prototype instanceof  ShippingBin) {
+            newInstance = new ShippingBin((ShippingBin) prototype);
         }
         else {
-            // Pastikan Tile memiliki copy constructor: public Tile(Tile other)
             newInstance = new Tile(prototype);
         }
         return newInstance;
     }
 
-    // Metode ini akan memuat peta dari file dan menyimpannya ke cache jika belum ada
     private void loadFreshMapFromFileAndCache(String mapFilePath, int mapIdToLoad) {
         try {
             InputStream is = getClass().getResourceAsStream(mapFilePath);
@@ -391,13 +587,11 @@ public class Map {
                 }
             }
 
-            // Set peta saat ini
             this.currentMapTiles = newMapTileInstances;
             this.currentMapWorldCol = cols;
             this.currentMapWorldRow = rows;
             this.currentMapID = mapIdToLoad;
 
-            // Simpan ke cache
             loadedMapStates.put(mapIdToLoad, new MapState(newMapTileInstances, cols, rows));
             System.out.println("Map loaded from file and cached: " + mapFilePath + " (ID: " + mapIdToLoad + ") Dimensions: " + cols + "x" + rows);
 
@@ -414,31 +608,28 @@ public class Map {
     public boolean loadMapByID(int mapID) {
         if (mapID < 0 || mapID >= mapFilePaths.length || mapFilePaths[mapID] == null) {
             System.err.println("Error: Invalid mapID (" + mapID + ") or map file path not configured.");
-            if (currentMapID == -1 && mapFilePaths.length > 0 && mapFilePaths[0] != null) { // Hanya jika belum ada peta yang dimuat
-                 return loadMapByID(0); // Rekursif panggil dengan ID 0
-            } else if (currentMapID == -1) { // Jika benar-benar tidak ada peta default
-                createEmptyMapAndCache(gp.maxScreenCol, gp.maxScreenRow, 0); // Buat peta kosong sebagai ID 0
+            if (currentMapID == -1 && mapFilePaths.length > 0 && mapFilePaths[0] != null) { 
+                 return loadMapByID(0); 
+            } else if (currentMapID == -1) { 
+                createEmptyMapAndCache(gp.maxScreenCol, gp.maxScreenRow, 0); 
             }
             return false;
         }
 
         if (loadedMapStates.containsKey(mapID)) {
             MapState cachedState = loadedMapStates.get(mapID);
-            this.currentMapTiles = cachedState.tiles; // Muat instance dari cache
+            this.currentMapTiles = cachedState.tiles; 
             this.currentMapWorldCol = cachedState.worldCol;
             this.currentMapWorldRow = cachedState.worldRow;
             this.currentMapID = mapID;
             System.out.println("Map loaded from cache. ID: " + mapID + ". World size: " + currentMapWorldCol + "x" + currentMapWorldRow);
             return true;
         } else {
-            // Peta belum ada di cache, muat dari file dan simpan ke cache
             loadFreshMapFromFileAndCache(mapFilePaths[mapID], mapID);
-            // currentMapID, currentMapTiles, dll sudah diatur di dalam loadFreshMapFromFileAndCache
             return true;
         }
     }
 
-    // Membuat peta kosong dan menyimpannya ke cache
     private void createEmptyMapAndCache(int cols, int rows, int mapIdForCache) {
         Tile[][] emptyTiles = new Tile[cols][rows];
         for (int r = 0; r < rows; r++) {
@@ -446,7 +637,6 @@ public class Map {
                 emptyTiles[c][r] = createTileInstance(0);
             }
         }
-        // Set peta saat ini ke peta kosong yang baru dibuat
         this.currentMapTiles = emptyTiles;
         this.currentMapWorldCol = cols;
         this.currentMapWorldRow = rows;
@@ -456,19 +646,12 @@ public class Map {
         System.out.println("Created/Reverted to empty map (ID: " + mapIdForCache + ") (" + cols + "x" + rows + ") and cached.");
     }
     
-    // Menghapus loadMapByPath lama karena logikanya sudah di loadFreshMapFromFileAndCache
-    // private void loadMapByPath(String mapFilePath) { ... }
-
-    // Menghapus createEmptyMap lama karena logikanya sudah di createEmptyMapAndCache
-    // private void createEmptyMap(int cols, int rows) { ... }
-
-
     public void draw(Graphics2D g2) {
-        if (currentMapTiles == null) return; // Menggunakan currentMapTiles
+        if (currentMapTiles == null) return; 
 
         for (int worldRow = 0; worldRow < currentMapWorldRow; worldRow++) {
             for (int worldCol = 0; worldCol < currentMapWorldCol; worldCol++) {
-                Tile currentTileToDraw = currentMapTiles[worldCol][worldRow]; // Menggunakan currentMapTiles
+                Tile currentTileToDraw = currentMapTiles[worldCol][worldRow]; 
                 if (currentTileToDraw != null && currentTileToDraw.Image != null) {
                     int worldX = worldCol * gp.tileSize;
                     int worldY = worldRow * gp.tileSize;
@@ -500,6 +683,9 @@ public class Map {
                         }
                         wet.updateImageBasedOnState(gp);
                     }
+                } else if (tiles != null && tiles instanceof Stove) {
+                    Stove stove = (Stove) tiles;
+                    stove.update(gp);
                 }
             }
         }
@@ -568,13 +754,60 @@ public class Map {
     }
 
     public void harvestSeedAtTile(int worldX, int worldY) {
-        Tile targetTile = getTile(worldX, worldY); // getTile() sudah menggunakan currentMapTiles
+        Tile targetTile = getTile(worldX, worldY); 
         if (targetTile instanceof Soil) {
             Soil soilTile = (Soil) targetTile;
-            // Logika harvest ada di Soil.harvest()
             soilTile.harvest(gp, gp.player);
         } else {
             System.out.println("Cannot harvest at ("+ (worldX/gp.tileSize) + "," + (worldY/gp.tileSize) +"): Not a soil tile or nothing to harvest.");
         }
+    }
+
+    public int getDoorLocationTileX() {
+        if (currentMapTiles == null || currentMapWorldCol == 0 || currentMapWorldRow == 0) {
+            System.err.println("Peringatan getDoorLocationTileX: Peta belum dimuat atau peta kosong.");
+            return -1;
+        }
+
+        for (int col = 0; col < currentMapWorldCol; col++) {
+            for (int row = 0; row < currentMapWorldRow; row++) {
+                Tile tile = currentMapTiles[col][row];
+                if (tile != null && "Door".equals(tile.getTileName())) {
+                    return col; // Kembalikan indeks kolom (koordinat tile X)
+                }
+            }
+        }
+
+        System.err.println("Peringatan getDoorLocationTileX: Tidak ada tile 'Door' yang ditemukan di peta.");
+        return -1; // Indikasi "Door" tidak ditemukan
+    }
+
+    /**
+     * Mencari tile pertama dengan nama "Door" di peta saat ini dan mengembalikan
+     * koordinat baris (tile Y) tempat tile tersebut ditemukan.
+     *
+     * @return Indeks baris (koordinat tile Y) dari "Door" pertama, atau -1 jika tidak ditemukan atau peta kosong.
+     */
+    public int getDoorLocationTileY() {
+        if (currentMapTiles == null || currentMapWorldCol == 0 || currentMapWorldRow == 0) {
+            System.err.println("Peringatan getDoorLocationTileY: Peta belum dimuat atau peta kosong.");
+            return -1; // Indikasi error atau peta kosong
+        }
+
+        // Cari tile dengan nama "Door" di seluruh peta
+        // Urutan pencarian harus konsisten dengan getDoorLocationTileX() jika Anda ingin
+        // mendapatkan koordinat X dan Y dari pintu yang sama.
+        for (int col = 0; col < currentMapWorldCol; col++) {
+            for (int row = 0; row < currentMapWorldRow; row++) {
+                Tile tile = currentMapTiles[col][row];
+                // Pastikan nama "Door" konsisten.
+                if (tile != null && "Door".equals(tile.getTileName())) {
+                    return row; // Kembalikan indeks baris (koordinat tile Y)
+                }
+            }
+        }
+
+        System.err.println("Peringatan getDoorLocationTileY: Tidak ada tile 'Door' yang ditemukan di peta.");
+        return -1; // Indikasi "Door" tidak ditemukan
     }
 }

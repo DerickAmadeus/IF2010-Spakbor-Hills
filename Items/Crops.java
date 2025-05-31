@@ -1,25 +1,41 @@
 package Items;
+import main.GamePanel;
 import player.Player;
 
 public class Crops extends Item implements Sellable, Buyable, Edible{
     private int jumlahPerPanen;
 
-    public Crops(String name, String description, int hargaJual, int hargaBeli, int jumlahPerPanen) {
-        super(name, description, hargaJual, hargaBeli);
-        this.jumlahPerPanen = jumlahPerPanen; //setter
+    public Crops(String name, int hargaJual, int hargaBeli, int jumlahPerPanen) {
+        super(name, "", hargaJual, hargaBeli);
+        this.jumlahPerPanen = jumlahPerPanen; 
+
+        this.setDescription(
+            "Sell Price: " + hargaJual + " | Buy Price: " + hargaBeli
+            + " | Amount Harvested: " + jumlahPerPanen
+        );
     }
     
     public int getJumlahPerPanen() {
         return jumlahPerPanen;
     }
 
-
-    public void buy() {
-        System.out.println("Bought " + getName());
+    @Override
+    public void buy(GamePanel gp, Item item, int amount) {
+        if (gp.player.getMoney() - (item.getHargaBeli() * amount) < 0) {
+            System.out.println("Insufficient Balance!");
+        } else {
+            gp.player.setMoney(gp.player.getMoney() - (item.getHargaBeli() * amount));
+            gp.player.getInventory().addItem(item, amount);
+            gp.seller.getInventory().removeItem(item, amount);
+            gp.player.totalExpenditure += (item.getHargaBeli() * amount);
+            System.out.println("Bought " + getName());
+        }
     }
 
-    public void sell() {
-        System.out.println("Sold " + getName() + " for " + getHargaJual());
+    @Override
+    public void sell(GamePanel gp, Item item) {
+        gp.player.getInventory().removeItem(item, 1);
+        gp.player.setStoredMoney(gp.player.getStoredMoney() + item.getHargaJual());
     }
 
     public void eat(Player player, Item get) {        
@@ -34,12 +50,12 @@ public class Crops extends Item implements Sellable, Buyable, Edible{
 
         Crops crops = (Crops) o;
 
-        return this.getName().equals(crops.getName()); // Atau sesuaikan dengan ID unik yang kamu punya
+        return this.getName().equals(crops.getName()); 
     }
 
     @Override
     public int hashCode() {
-        return this.getName().hashCode(); // Atau kombinasi field yang unik
+        return this.getName().hashCode(); 
     }
 
 }

@@ -17,8 +17,7 @@ public class Inventory<T extends Item> {
     private int scrollOffset = 0;
     private final int ITEMS_PER_ROW = 5;
     private final int SLOT_SIZE = 64;
-
-    private final int VIEWPORT_HEIGHT = 300; // Tinggi area tampilan inventory (sama seperti height drawRect)
+    private final int VIEWPORT_HEIGHT = 300; 
     private final int MAX_ROWS_ON_SCREEN = VIEWPORT_HEIGHT / SLOT_SIZE;
 
     // selecting
@@ -43,29 +42,24 @@ public class Inventory<T extends Item> {
     }
 
     public void drawInventory(Graphics2D g2) {
-        // frame
         int frameX = gp.tileSize*9;
         int frameY = gp.tileSize;
         int frameWidth = gp.tileSize*6;
         int frameHeight = gp.tileSize*5;
         drawSubwindow(g2, frameX, frameY, frameWidth, frameHeight);
 
-        //slot
         final int slotXStart = frameX + 20;
         final int slotYStart = frameY + 20;
 
-        // CURSOR
         int cursorX = slotXStart + (gp.tileSize * slotCol);
         int cursorY = slotYStart + (gp.tileSize * (slotRow - scrollOffset));
         int cursorWidth = gp.tileSize;
         int cursorHeight = gp.tileSize;
 
-        // DRAW CURSOR
         g2.setColor(Color.white);
         g2.setStroke(new BasicStroke(3));
         g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
 
-        // DRAW DESC WINDOW
         int dFrameX = frameX;
         int dFrameY = frameY + frameHeight;
         int dFrameWidth = frameWidth;
@@ -78,16 +72,16 @@ public class Inventory<T extends Item> {
 
             if (row < scrollOffset) {
                 index++;
-                continue; // Lewati baris di atas viewport
+                continue; 
             }
 
             if (row >= scrollOffset + MAX_ROWS_ON_SCREEN) {
-                break; // Hentikan kalau sudah melebihi viewport
+                break; 
             }
 
             int col = index % ITEMS_PER_ROW;
             int itemX = slotXStart + col * gp.tileSize;
-            int itemY = slotYStart + (row - scrollOffset) * gp.tileSize; // kurangi offset agar scroll naik
+            int itemY = slotYStart + (row - scrollOffset) * gp.tileSize; 
 
             if (item.getIcon() != null) {
                 int padding = 6;
@@ -109,21 +103,17 @@ public class Inventory<T extends Item> {
 
             index++;
         }
-        // AFTER drawing all items...
 
-        // Hitung index dari cursor saat ini
         int selectedIndex = slotRow * ITEMS_PER_ROW + slotCol;
 
         if (selectedIndex >= 0 && selectedIndex < itemContainer.size()) {
             T selectedItem = itemContainer.get(selectedIndex);
             if (selectedItem != null) {
-                // Gambar nama dan deskripsi
                 g2.setColor(Color.white);
                 g2.setFont(new Font("Arial", Font.BOLD, 18));
                 g2.drawString(selectedItem.getName(), dFrameX + 20, dFrameY + 30);
 
                 g2.setFont(new Font("Arial", Font.PLAIN, 14));
-                // Bungkus teks deskripsi agar tidak keluar jendela
                 drawWrappedText(g2, selectedItem.getDesc(), dFrameX + 20, dFrameY + 55, dFrameWidth - 40, 18);
             }
         }
@@ -164,17 +154,23 @@ public class Inventory<T extends Item> {
         int textX = x + 40;
         int textY = y + 50;
         String[] options;
-
-        if (item instanceof Equipment) {
-            options = new String[]{"Equip/Unequip", "Cancel"};
-        } else if (item instanceof Seeds) {
-            options = new String[]{"Hold/Put Out", "Cancel"};
-        } else if (item instanceof Fish || item instanceof Crops || item instanceof Food){
-            options = new String[]{"Eat", "Cancel"};
+        if (gp.seller == null || (gp.seller != null && !gp.seller.isBuying)) {
+            if (item instanceof Equipment) {
+                options = new String[]{"Equip/Unequip", "Cancel"};
+            } else if (item instanceof Seeds) {
+                options = new String[]{"Hold/Put Out", "Cancel"};
+            } else if (item instanceof Fish || item instanceof Crops || item instanceof Food){
+                options = new String[]{"Eat", "Cancel"};
+            } else {
+                options = new String[]{"Cancel"};
+            }
         } else {
-            options = new String[]{"damn"};
+            if (item instanceof Buyable) {
+                options = new String[]{"Buy", "Buy All", "Cancel"};
+            } else {
+                options = new String[]{"Cancel"};
+            }
         }
-
         for (int i = 0; i < options.length; i++) {
             if (i == optionCommandNum) {
                 g2.setColor(Color.yellow);
@@ -182,6 +178,148 @@ public class Inventory<T extends Item> {
                 g2.setColor(Color.white);
             }
             g2.drawString(options[i], textX, textY + (i * 40));
+        }
+    }
+
+    public void drawShipping(Graphics2D g2) {
+        int frameX = gp.tileSize*9;
+        int frameY = gp.tileSize;
+        int frameWidth = gp.tileSize*6;
+        int frameHeight = gp.tileSize*5;
+        drawSubwindow(g2, frameX, frameY, frameWidth, frameHeight);
+
+        if(itemContainer.isEmpty()) return;
+
+        final int slotXStart = frameX + 20;
+        final int slotYStart = frameY + 20;
+
+        int cursorX = slotXStart + (gp.tileSize * slotCol);
+        int cursorY = slotYStart + (gp.tileSize * (slotRow - scrollOffset));
+        int cursorWidth = gp.tileSize;
+        int cursorHeight = gp.tileSize;
+
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
+
+        int dFrameX = frameX;
+        int dFrameY = frameY + frameHeight;
+        int dFrameWidth = frameWidth;
+        int dFrameHeight = gp.tileSize * 3;
+        drawSubwindow(g2, dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+
+        int index = 0;
+        for (T item : itemContainer) {
+            int row = index / ITEMS_PER_ROW;
+
+            if (row < scrollOffset) {
+                index++;
+                continue; // Lewati baris di atas viewport
+            }
+
+            if (row >= scrollOffset + MAX_ROWS_ON_SCREEN) {
+                break; // Hentikan kalau sudah melebihi viewport
+            }
+
+            int col = index % ITEMS_PER_ROW;
+            int itemX = slotXStart + col * gp.tileSize;
+            int itemY = slotYStart + (row - scrollOffset) * gp.tileSize; // kurangi offset agar scroll naik
+            
+
+            if (item.getIcon() != null) {
+                int padding = 6;
+                int drawSize = gp.tileSize - 2 * padding;
+                int drawX = itemX + padding;
+                int drawY = itemY + padding;
+
+                g2.drawImage(item.getIcon(), drawX, drawY, drawSize, drawSize, null);
+            }
+            
+
+            Integer count = getItemCount(item);
+            if (count != null && count > 1) {
+                g2.setColor(Color.white);
+                g2.setFont(new Font("Arial", Font.BOLD, 12));
+                String countStr = String.valueOf(count);
+                int stringWidth = g2.getFontMetrics().stringWidth(countStr);
+                g2.drawString(countStr, itemX + gp.tileSize - stringWidth - 4, itemY + gp.tileSize - 4);
+            }
+
+            index++;
+        }
+        // AFTER drawing all items...
+
+        // Hitung index dari cursor saat ini
+        int selectedIndex = slotRow * ITEMS_PER_ROW + slotCol;
+
+        if (selectedIndex >= 0 && selectedIndex < itemContainer.size()) {
+            T selectedItem = itemContainer.get(selectedIndex);
+            if (selectedItem != null) {
+                g2.setColor(Color.white);
+                g2.setFont(new Font("Arial", Font.BOLD, 18));
+                g2.drawString(selectedItem.getName(), dFrameX + 20, dFrameY + 30);
+
+                g2.setFont(new Font("Arial", Font.PLAIN, 14));
+                drawWrappedText(g2, selectedItem.getDesc(), dFrameX + 20, dFrameY + 55, dFrameWidth - 40, 18);
+            }
+        }
+    }
+
+    public void drawShippingOptionWindow(Graphics2D g2) {
+        if (selectedItemIndex < 0 || selectedItemIndex >= itemContainer.size()) return;
+
+        T item = itemContainer.get(selectedItemIndex);
+        boolean validGiftingOption = !(item instanceof Equipment);
+        boolean validSellingOption = !(item instanceof Equipment);
+        int x = 200, y = 100, w = 400, h = 150;
+
+        drawSubwindow(g2, x, y, w, h);
+
+        g2.setColor(Color.white);
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 28F));
+
+        int textX = x + 40;
+        int textY = y + 50;
+        String[] options;
+        String[] gifting;
+
+        options = new String[]{"Sell", "Cancel"};
+        gifting = new String[]{"Gift", "Cancel"};
+
+
+        for (int i = 0; i < options.length; i++) {
+            if (i == optionCommandNum) {
+                g2.setColor(Color.yellow);
+            } else {
+                g2.setColor(Color.white);
+            }
+            if(gp.player.currentNPC == null){
+                if(!validSellingOption && gp.player.currentNPC == null){
+                    g2.drawString("You cannot sell " + item.getClass().getSimpleName() + "!", textX, textY);
+                }
+                else if (gp.player.currentNPC == null || !gp.player.currentNPC.isGifted){
+                    g2.drawString(options[i], textX, textY + (i * 40));
+                }
+            }
+            else{
+                if (gp.player.currentNPC != null && gp.player.currentNPC.isGifted && validGiftingOption) {
+                    g2.drawString(gifting[i], textX, textY + (i * 40));
+                } else if(gp.player.currentNPC != null && gp.player.currentNPC.isGifted && !validGiftingOption) {
+                    g2.drawString("You cannot gift " + item.getClass().getSimpleName() + "!", textX, textY);
+                }
+                else if (gp.player.currentNPC == null || !gp.player.currentNPC.isGifted){
+                    g2.drawString(options[i], textX, textY + (i * 40));
+                }
+            }
+        }
+    }
+
+    public void selectCurrentItemShipping() {
+        int selectedIndex = slotRow * ITEMS_PER_ROW + slotCol;
+        if (selectedIndex >= 0 && selectedIndex < itemContainer.size()) {
+            selectedItemIndex = selectedIndex; 
+            optionCommandNum = 0; 
+            gp.gameState = gp.shippingOptionState; 
         }
     }
 
@@ -215,7 +353,6 @@ public class Inventory<T extends Item> {
             }
         }
 
-        // Hindari cursor berada di slot kosong (misal kolom terlalu kanan di baris akhir)
         if ((slotRow * ITEMS_PER_ROW + slotCol) > maxIndex) {
             slotCol = maxIndex % ITEMS_PER_ROW;
             slotRow = maxIndex / ITEMS_PER_ROW;
@@ -224,9 +361,9 @@ public class Inventory<T extends Item> {
     public void selectCurrentItem() {
         int selectedIndex = slotRow * ITEMS_PER_ROW + slotCol;
         if (selectedIndex >= 0 && selectedIndex < itemContainer.size()) {
-            selectedItemIndex = selectedIndex; // ← Simpan index item
-            optionCommandNum = 0; // ← Reset opsi ke default (misal: "Equip")
-            gp.gameState = gp.itemOptionState; // ← Pindah ke opsi
+            selectedItemIndex = selectedIndex; 
+            optionCommandNum = 0; 
+            gp.gameState = gp.itemOptionState; 
         }
     }
 
@@ -247,6 +384,29 @@ public class Inventory<T extends Item> {
 
     public Integer getItemCount(T item) {
         return items.getOrDefault(item, 0);
+    }
+
+    public boolean hasItem(T item) {
+        return items.containsKey(item) && items.get(item) > 0;
+    }
+
+    public boolean hasItemOfClass(Class<?> itemClass, int amount) {
+        for (T item : items.keySet()) {
+            if (itemClass.isInstance(item) && items.get(item) >= amount) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public HashMap<Item, Integer> getAllItemOfClass(Class<?> itemClass) {
+        HashMap<Item, Integer> container = new HashMap<>();
+        for (Item item : items.keySet()) {
+            if (itemClass.isInstance(item)) {
+                container.put(item, items.get(item));
+            }
+        }
+        return container;
     }
 
     public void addItem(T item, int count) {
@@ -273,5 +433,87 @@ public class Inventory<T extends Item> {
 
     public ArrayList<T> getItemContainer() {
         return itemContainer;
+    }
+
+    public HashMap<T, Integer> getItems() {
+        return items;
+    }
+
+    public void drawBinInventory(Graphics2D g2) {
+        int frameX = gp.tileSize*9;
+        int frameY = gp.tileSize;
+        int frameWidth = gp.tileSize*6;
+        int frameHeight = gp.tileSize*5;
+        drawSubwindow(g2, frameX, frameY, frameWidth, frameHeight);
+
+        final int slotXStart = frameX + 20;
+        final int slotYStart = frameY + 20;
+
+        int cursorX = slotXStart + (gp.tileSize * slotCol);
+        int cursorY = slotYStart + (gp.tileSize * (slotRow - scrollOffset));
+        int cursorWidth = gp.tileSize;
+        int cursorHeight = gp.tileSize;
+
+        g2.setColor(Color.white);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
+
+        int dFrameX = frameX;
+        int dFrameY = frameY + frameHeight;
+        int dFrameWidth = frameWidth;
+        int dFrameHeight = gp.tileSize * 3;
+        drawSubwindow(g2, dFrameX, dFrameY, dFrameWidth, dFrameHeight);
+
+        int index = 0;
+        for (T item : itemContainer) {
+            int row = index / ITEMS_PER_ROW;
+
+            if (row < scrollOffset) {
+                index++;
+                continue; 
+            }
+
+            if (row >= scrollOffset + MAX_ROWS_ON_SCREEN) {
+                break; 
+            }
+
+            int col = index % ITEMS_PER_ROW;
+            int itemX = slotXStart + col * gp.tileSize;
+            int itemY = slotYStart + (row - scrollOffset) * gp.tileSize; 
+
+            if (item.getIcon() != null) {
+                int padding = 6;
+                int drawSize = gp.tileSize - 2 * padding;
+                int drawX = itemX + padding;
+                int drawY = itemY + padding;
+
+                g2.drawImage(item.getIcon(), drawX, drawY, drawSize, drawSize, null);
+            }
+
+            Integer count = getItemCount(item);
+            if (count != null && count > 1) {
+                g2.setColor(Color.white);
+                g2.setFont(new Font("Arial", Font.BOLD, 12));
+                String countStr = String.valueOf(count);
+                int stringWidth = g2.getFontMetrics().stringWidth(countStr);
+                g2.drawString(countStr, itemX + gp.tileSize - stringWidth - 4, itemY + gp.tileSize - 4);
+            }
+
+            index++;
+        }
+
+        int selectedIndex = slotRow * ITEMS_PER_ROW + slotCol;
+
+        if (selectedIndex >= 0 && selectedIndex < itemContainer.size()) {
+            T selectedItem = itemContainer.get(selectedIndex);
+            if (selectedItem != null) {
+                g2.setColor(Color.white);
+                g2.setFont(new Font("Arial", Font.BOLD, 18));
+                g2.drawString(selectedItem.getName(), dFrameX + 20, dFrameY + 30);
+
+                g2.setFont(new Font("Arial", Font.PLAIN, 14));
+                drawWrappedText(g2, selectedItem.getDesc(), dFrameX + 20, dFrameY + 55, dFrameWidth - 40, 18);
+            }
+        }
     }
 }

@@ -1,8 +1,12 @@
 package Items;
 
+import java.awt.Graphics2D;
+import java.awt.Font;
+import java.awt.Color;
+import java.awt.BasicStroke;
 import java.util.ArrayList;
 
-//Time nya belum
+import main.GamePanel;
 import player.Player;
 
 public class Fish extends Item implements Sellable, Edible{
@@ -13,19 +17,42 @@ public class Fish extends Item implements Sellable, Edible{
     private ArrayList<Integer> appearTime;
     private ArrayList<Integer> disappearTime;
 
-    public Fish(String name, String description, int hargaJual, int hargaBeli,  ArrayList<String> season, ArrayList<String> weather, ArrayList<String> location, String rarity, ArrayList<Integer> appearTime, ArrayList<Integer> disappearTime){
-        super(name, description, hargaJual, hargaBeli);
+    public Fish(String name, int hargaJual, int hargaBeli, ArrayList<String> season, ArrayList<String> weather,
+        ArrayList<String> location, String rarity, ArrayList<Integer> appearTime, ArrayList<Integer> disappearTime) {
+        super(name, "", hargaJual, hargaBeli);
         this.season = season;
         this.weather = weather;
         this.location = location;
         this.rarity = rarity;
         this.appearTime = appearTime;
         this.disappearTime = disappearTime;
+
+        String seasonStr = String.join(", ", season);
+        String weatherStr = String.join(", ", weather);
+        String locationStr = String.join(", ", location);
+
+        StringBuilder timeBuilder = new StringBuilder();
+        for (int i = 0; i < appearTime.size(); i++) {
+            String appear = (appearTime.get(i) < 10 ? "0" : "") + appearTime.get(i) + ":00";
+            String disappear = (disappearTime.get(i) < 10 ? "0" : "") + disappearTime.get(i) + ":00";
+            timeBuilder.append(appear).append(" - ").append(disappear);
+            if (i < appearTime.size() - 2) {
+                timeBuilder.append(", ");
+            } else if (i == appearTime.size() - 2) {
+                timeBuilder.append(" and ");
+            }
+        }
+
+        this.setDescription(
+            "Sell Price: " + hargaJual +
+            " | Season: " + seasonStr +
+            " | Weather: " + weatherStr +
+            " | Location: " + locationStr +
+            " | Rarity: " + rarity +
+            " | Time: " + timeBuilder.toString()
+        );
     }    
 
-    //Test
-
-    //Getter
     public  ArrayList<String> getSeason(){
         return season;
     }
@@ -52,8 +79,9 @@ public class Fish extends Item implements Sellable, Edible{
 
 
     @Override
-    public void sell() {
-        System.out.println("Sold " + getName() + " for " + getHargaJual());
+    public void sell(GamePanel gp, Item item) {
+        gp.player.getInventory().removeItem(item, 1);
+        gp.player.setStoredMoney(gp.player.getStoredMoney() + item.getHargaJual());
     }
 
     public void eat(Player player, Item get) {
@@ -67,7 +95,6 @@ public class Fish extends Item implements Sellable, Edible{
         int jumlahWeather = weather.size();
         int jumlahLokasi = location.size();
 
-        // Hitung total jam kemunculan
         int totalJam = 0;
         for (int i = 0; i < appearTime.size(); i++) {
             int start = appearTime.get(i);
@@ -76,13 +103,12 @@ public class Fish extends Item implements Sellable, Edible{
             if (end >= start) {
                 totalJam += end - start;
             } else {
-                // Jam melewati tengah malam, misalnya 19 -> 2 = 7 jam
                 totalJam += (24 - start) + end;
             }
         }
 
         if (jumlahSeason == 0 || jumlahWeather == 0 || jumlahLokasi == 0 || totalJam == 0) {
-            return 0; // Hindari pembagian dengan nol
+            return 0; 
         }
 
         double factorSeason = 4.0 / jumlahSeason;
@@ -108,5 +134,34 @@ public class Fish extends Item implements Sellable, Edible{
         double harga = factorSeason * factorTime * factorWeather * factorLocation * C;
         return (int) Math.round(harga);
     }
+    public void fishingWin(GamePanel gp, Graphics2D g2) {
+        int x = 200, y = 100, w = 400, h = 100;
 
+        Color c = new Color(0,0,0, 210);
+        g2.setColor(c);
+        g2.fillRoundRect(x, y, w, h, 35, 35);
+        c = new Color(255,255,255);
+        g2.setColor(c);
+        g2.setStroke(new BasicStroke(5));
+        g2.drawRoundRect(x+5, y+5, w-10, h-10, 25, 25);
+
+        g2.setColor(Color.white);
+        g2.setFont(g2.getFont().deriveFont(Font.PLAIN, 24F));
+        g2.drawImage(getIcon(), x + 20, y + 40, gp.tileSize - 2 * 10, gp.tileSize - 2 * 10, null);
+        g2.drawString("You Caught " + this.getName() + "!", x + 60, y + 60);
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Fish fish = (Fish) o;
+
+        return this.getName().equals(fish.getName()); 
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getName().hashCode(); 
+    }
 }

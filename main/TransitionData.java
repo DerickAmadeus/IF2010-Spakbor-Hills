@@ -50,6 +50,7 @@ public class TransitionData {
             return false; // Bukan peta yang benar atau sedang cooldown
         }
         return playerAbsoluteSolidArea.intersects(this.sourceArea);
+        
     }
 
     public void updateCooldown() {
@@ -61,4 +62,5 @@ public class TransitionData {
     public void startCooldown() {
         this.cooldownFrames = DEFAULT_COOLDOWN;
     }
+
 }

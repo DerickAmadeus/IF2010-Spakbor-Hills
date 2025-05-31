@@ -2,6 +2,8 @@ package main;
 
 import player.Player;
 import Map.Tile;
+import NPC.NPC;
+import java.awt.Rectangle;
 
 public class CollisionChecker {
 
@@ -13,10 +15,8 @@ public class CollisionChecker {
 
     public void checkTile(Player player) {
 
-        // Pastikan peta dan tile-nya sudah dimuat
         if (gp.map == null || gp.map.currentMapTiles == null) {
-            // System.err.println("CollisionChecker: Peta atau currentMapTiles belum dimuat!");
-            player.collisionOn = true; // Anggap ada collision jika peta tidak tersedia
+            player.collisionOn = true; 
             return;
         }
 
@@ -32,13 +32,10 @@ public class CollisionChecker {
 
         Tile tileNum1, tileNum2;
 
-        // Gunakan dimensi peta yang aktif dari Map.java
         int numMapCols = gp.map.currentMapWorldCol;
         int numMapRows = gp.map.currentMapWorldRow;
 
-        // Jika dimensi peta tidak valid (misalnya 0), anggap ada collision
         if (numMapCols <= 0 || numMapRows <= 0) {
-            // System.err.println("CollisionChecker: Dimensi peta tidak valid!");
             player.collisionOn = true;
             return;
         }
@@ -50,13 +47,11 @@ public class CollisionChecker {
             case "up":
                 targetTileRow = (playerTopY - player.speed) / gp.tileSize;
 
-                // Pengecekan batas yang lebih aman
                 if (targetTileRow < 0 || targetTileRow >= numMapRows ||
                     currentTileColLeft < 0 || currentTileColLeft >= numMapCols ||
                     currentTileColRight < 0 || currentTileColRight >= numMapCols) {
                     player.collisionOn = true;
                 } else {
-                    // Akses tile menggunakan currentMapTiles
                     tileNum1 = gp.map.currentMapTiles[currentTileColLeft][targetTileRow];
                     tileNum2 = gp.map.currentMapTiles[currentTileColRight][targetTileRow];
                     if ((tileNum1 != null && !tileNum1.isWalkable()) || (tileNum2 != null && !tileNum2.isWalkable())) {
@@ -109,6 +104,47 @@ public class CollisionChecker {
                     }
                 }
                 break;
+        }
+    }
+
+    public void checkNPC(Player player) {
+        if (gp.npcs == null || gp.npcs.length == 0) {
+            return;
+        }
+        Rectangle playerNextSolidArea = new Rectangle();
+        playerNextSolidArea.x = player.getX() + player.solidArea.x;
+        playerNextSolidArea.y = player.getY() + player.solidArea.y;
+        playerNextSolidArea.width = player.solidArea.width;
+        playerNextSolidArea.height = player.solidArea.height;
+        switch (player.direction) {
+            case "up":
+                playerNextSolidArea.y -= player.speed;
+                break;
+            case "down":
+                playerNextSolidArea.y += player.speed;
+                break;
+            case "left":
+                playerNextSolidArea.x -= player.speed;
+                break;
+            case "right":
+                playerNextSolidArea.x += player.speed;
+                break;
+        }
+
+        for (NPC npc : gp.npcs) {
+            if (npc != null) {
+                if (npc.getSpawnMapName() == player.getLocation()) {
+                    Rectangle npcWorldHitbox = new Rectangle();
+                    npcWorldHitbox.x = npc.worldX + npc.hitbox.x;
+                    npcWorldHitbox.y = npc.worldY + npc.hitbox.y;
+                    npcWorldHitbox.width = npc.hitbox.width;
+                    npcWorldHitbox.height = npc.hitbox.height;
+                    if (playerNextSolidArea.intersects(npcWorldHitbox)) {
+                        player.collisionOn = true; 
+                        return; 
+                    }
+                }
+            }
         }
     }
 }

@@ -5,8 +5,7 @@ import java.awt.event.KeyListener;
 
 
 public class KeyHandler implements KeyListener{
-
-    public boolean enterPressed, upPressed, downPressed, leftPressed, rightPressed, interactPressed, f1Pressed, invPressed; // Boolean flags for key states
+    public boolean enterPressed, upPressed, downPressed, leftPressed, rightPressed, interactPressed, f1Pressed, invPressed, fpressed ,escapePressed, rPressed, tPressed; // Boolean flags for key states
     public boolean input0, input9;
     GamePanel gp; // Reference to the GamePanel
 
@@ -30,13 +29,19 @@ public class KeyHandler implements KeyListener{
                 if (gp.titlePage.commandNumber > 3) gp.titlePage.commandNumber = 0;
             } else if (code == KeyEvent.VK_ENTER){
                 enterPressed = true;   
-                if (gp.titlePage.commandNumber == 0){        // NEW GAME
-                    gp.gameState = gp.farmNameInputState;        // diproses di GamePanel.update()
-                } else if (gp.titlePage.commandNumber == 2) { // HELP
+                if (gp.titlePage.commandNumber == 0){
+                        gp.farmName.reset();           
+                        gp.playerInput.reset();              
+                        gp.gameState = gp.farmNameInputState; 
+                        gp.keyHandler.enterPressed = false;
+                } else if (gp.titlePage.commandNumber == 1) { // HELP
                 gp.gameState = gp.helpState;
+                } else if (gp.titlePage.commandNumber == 2) { // CREDIS
+                gp.gameState = gp.creditsState;
                 } else if (gp.titlePage.commandNumber == 3) { // QUIT
                     System.exit(0);
                 }
+                enterPressed = false;
                 return;                          // abaikan input lain saat title
             }
         }
@@ -54,6 +59,17 @@ public class KeyHandler implements KeyListener{
             gp.help.keyPressed(e);
             return;
         }
+
+        if (gp.gameState == gp.creditsState) {
+            gp.credits.keyPressed(e);
+            return;
+        }
+
+        if (gp.gameState == gp.playerNameInputState) {
+            gp.playerInput.keyPressed(e);
+            return;
+        }
+
 
         if (gp.gameState != gp.titleState && gp.gameState != gp.helpState && gp.gameState != gp.farmNameInputState && gp.gameState != gp.fishingState){
             if (code == KeyEvent.VK_W) {
@@ -76,13 +92,42 @@ public class KeyHandler implements KeyListener{
                 invPressed = true;
             } else if (code == KeyEvent.VK_ENTER) {
                 enterPressed = true;
+            } else if (code == KeyEvent.VK_F) {
+                fpressed = true;
+            } else if (code == KeyEvent.VK_ESCAPE) {
+                escapePressed = true;
+            } else if (code == KeyEvent.VK_R) {
+                rPressed = true; 
+            } else if (code == KeyEvent.VK_T) {
+                tPressed = true;
             }
         }
 
         if (gp.gameState == gp.fishingState) {
-            gp.handleFishingPasswordInput(code);
-            return; // Jangan lanjut ke input lainnya saat sedang input password
+            gp.handleFishingInput(code);
+            return;
         }
+
+        if (gp.gameState == gp.menuState) {
+            gp.player.handleMenuKey(e);
+            return;
+        }
+        
+        if (gp.gameState == gp.inGameHelpState) {          
+            gp.inGameHelp.keyPressed(e);                   
+            return;                                       
+        }
+
+        if (gp.gameState == gp.playerInfoState) {          
+            gp.playerInfo.keyPressed(e);                   
+            return;                                       
+        }
+
+        if (gp.gameState == gp.statisticsState) {          
+            gp.statistics.keyPressed(e);                   
+            return;                                       
+        }
+
     }
     
     @Override
@@ -101,6 +146,14 @@ public class KeyHandler implements KeyListener{
             invPressed = false;
         } else if (code == KeyEvent.VK_ENTER && gp.gameState != gp.fishingState) {
             enterPressed = false;
+        } else if (code == KeyEvent.VK_F) {
+            fpressed = false;
+        } else if (code == KeyEvent.VK_ESCAPE) {
+            escapePressed = false;
+        } else if (code == KeyEvent.VK_R) {
+            rPressed = false;
+        } else if (code == KeyEvent.VK_T) {
+            tPressed = false;
         }
     }
 }
