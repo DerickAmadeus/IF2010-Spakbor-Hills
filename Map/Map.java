@@ -477,7 +477,7 @@ public class Map {
         } catch (IOException e) {
             System.err.println("Error loading tile prototype images: " + e.getMessage());
             e.printStackTrace();
-            for(int i=0; i<tileImage.length; i++) { // Menggunakan tileImage
+            for(int i=0; i<tileImage.length; i++) { 
                 if(tileImage[i] == null) {
                     tileImage[i] = new Tile("Error Proto "+i, false);
                     tileImage[i].Image = createPlaceholderImageOnError(gp.tileSize);
@@ -500,9 +500,6 @@ public class Map {
         return placeholder;
     }
 
-    // classExists tidak lagi digunakan dalam konteks ini
-    // private boolean classExists(String className) { ... }
-
     private Tile createTileInstance(int prototypeID) {
         if (prototypeID < 0 || prototypeID >= tileImage.length || tileImage[prototypeID] == null) {
             System.err.println("Warning: Invalid prototypeID " + prototypeID + " in createTileInstance. Using default tile 0.");
@@ -514,12 +511,12 @@ public class Map {
             }
         }
 
-        Tile prototype = tileImage[prototypeID]; // Menggunakan tileImage
+        Tile prototype = tileImage[prototypeID]; 
         Tile newInstance;
 
         if (prototype instanceof Soil) {
             newInstance = new Soil((Soil) prototype);
-        } else if (prototype instanceof Bed) { // Pastikan Bed adalah subclass Tile dan punya copy constructor
+        } else if (prototype instanceof Bed) { 
             newInstance = new Bed((Bed) prototype);
         } else if (prototype instanceof Stove) {
             newInstance = new Stove((Stove) prototype);
@@ -529,13 +526,11 @@ public class Map {
             newInstance = new ShippingBin((ShippingBin) prototype);
         }
         else {
-            // Pastikan Tile memiliki copy constructor: public Tile(Tile other)
             newInstance = new Tile(prototype);
         }
         return newInstance;
     }
 
-    // Metode ini akan memuat peta dari file dan menyimpannya ke cache jika belum ada
     private void loadFreshMapFromFileAndCache(String mapFilePath, int mapIdToLoad) {
         try {
             InputStream is = getClass().getResourceAsStream(mapFilePath);
@@ -589,13 +584,11 @@ public class Map {
                 }
             }
 
-            // Set peta saat ini
             this.currentMapTiles = newMapTileInstances;
             this.currentMapWorldCol = cols;
             this.currentMapWorldRow = rows;
             this.currentMapID = mapIdToLoad;
 
-            // Simpan ke cache
             loadedMapStates.put(mapIdToLoad, new MapState(newMapTileInstances, cols, rows));
             System.out.println("Map loaded from file and cached: " + mapFilePath + " (ID: " + mapIdToLoad + ") Dimensions: " + cols + "x" + rows);
 
@@ -612,31 +605,28 @@ public class Map {
     public boolean loadMapByID(int mapID) {
         if (mapID < 0 || mapID >= mapFilePaths.length || mapFilePaths[mapID] == null) {
             System.err.println("Error: Invalid mapID (" + mapID + ") or map file path not configured.");
-            if (currentMapID == -1 && mapFilePaths.length > 0 && mapFilePaths[0] != null) { // Hanya jika belum ada peta yang dimuat
-                 return loadMapByID(0); // Rekursif panggil dengan ID 0
-            } else if (currentMapID == -1) { // Jika benar-benar tidak ada peta default
-                createEmptyMapAndCache(gp.maxScreenCol, gp.maxScreenRow, 0); // Buat peta kosong sebagai ID 0
+            if (currentMapID == -1 && mapFilePaths.length > 0 && mapFilePaths[0] != null) { 
+                 return loadMapByID(0); 
+            } else if (currentMapID == -1) { 
+                createEmptyMapAndCache(gp.maxScreenCol, gp.maxScreenRow, 0); 
             }
             return false;
         }
 
         if (loadedMapStates.containsKey(mapID)) {
             MapState cachedState = loadedMapStates.get(mapID);
-            this.currentMapTiles = cachedState.tiles; // Muat instance dari cache
+            this.currentMapTiles = cachedState.tiles; 
             this.currentMapWorldCol = cachedState.worldCol;
             this.currentMapWorldRow = cachedState.worldRow;
             this.currentMapID = mapID;
             System.out.println("Map loaded from cache. ID: " + mapID + ". World size: " + currentMapWorldCol + "x" + currentMapWorldRow);
             return true;
         } else {
-            // Peta belum ada di cache, muat dari file dan simpan ke cache
             loadFreshMapFromFileAndCache(mapFilePaths[mapID], mapID);
-            // currentMapID, currentMapTiles, dll sudah diatur di dalam loadFreshMapFromFileAndCache
             return true;
         }
     }
 
-    // Membuat peta kosong dan menyimpannya ke cache
     private void createEmptyMapAndCache(int cols, int rows, int mapIdForCache) {
         Tile[][] emptyTiles = new Tile[cols][rows];
         for (int r = 0; r < rows; r++) {
@@ -644,7 +634,6 @@ public class Map {
                 emptyTiles[c][r] = createTileInstance(0);
             }
         }
-        // Set peta saat ini ke peta kosong yang baru dibuat
         this.currentMapTiles = emptyTiles;
         this.currentMapWorldCol = cols;
         this.currentMapWorldRow = rows;
@@ -654,19 +643,12 @@ public class Map {
         System.out.println("Created/Reverted to empty map (ID: " + mapIdForCache + ") (" + cols + "x" + rows + ") and cached.");
     }
     
-    // Menghapus loadMapByPath lama karena logikanya sudah di loadFreshMapFromFileAndCache
-    // private void loadMapByPath(String mapFilePath) { ... }
-
-    // Menghapus createEmptyMap lama karena logikanya sudah di createEmptyMapAndCache
-    // private void createEmptyMap(int cols, int rows) { ... }
-
-
     public void draw(Graphics2D g2) {
-        if (currentMapTiles == null) return; // Menggunakan currentMapTiles
+        if (currentMapTiles == null) return; 
 
         for (int worldRow = 0; worldRow < currentMapWorldRow; worldRow++) {
             for (int worldCol = 0; worldCol < currentMapWorldCol; worldCol++) {
-                Tile currentTileToDraw = currentMapTiles[worldCol][worldRow]; // Menggunakan currentMapTiles
+                Tile currentTileToDraw = currentMapTiles[worldCol][worldRow]; 
                 if (currentTileToDraw != null && currentTileToDraw.Image != null) {
                     int worldX = worldCol * gp.tileSize;
                     int worldY = worldRow * gp.tileSize;
