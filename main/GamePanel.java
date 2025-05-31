@@ -176,14 +176,14 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void initializeTransitions() {
         transitions = new ArrayList<>();
-        transitions.add(new TransitionData(0, 0, 10, 1, 3, 1, 12, 11, false, tileSize));
-        transitions.add(new TransitionData(1, 15, 10, 1, 3, 0, 1, 11, false, tileSize));
-        transitions.add(new TransitionData(0, 15, 0, 3, 1, 2, 10, 9, false, tileSize));
-        transitions.add(new TransitionData(2, 10, 10, 3, 1, 0, 16, 1, false, tileSize));
+        transitions.add(new TransitionData(0, 0, 1, 1, 30, 1, 12, 11, false, tileSize));
+        transitions.add(new TransitionData(1, 16, 8, 1, 3, 0, 1, 11, false, tileSize));
+        transitions.add(new TransitionData(0, 1, 0, 30, 1, 2, 10, 9, false, tileSize));
+        transitions.add(new TransitionData(2, 8, 13, 5, 1, 0, 16, 1, false, tileSize));
         transitions.add(new TransitionData(0, map.getDoorLocationTileX(), map.getDoorLocationTileY(), 1, 1, 3, 7, 12, false, tileSize));
         transitions.add(new TransitionData(3, 7, 13, 1, 1, 0, map.getDoorLocationTileX(), map.getDoorLocationTileY() + 1, false, tileSize));
-        transitions.add(new TransitionData(0, 30, 30, 1, 1, 4, 4, 5, false, tileSize));
-        transitions.add(new TransitionData(4, 3, 5, 1, 1, 0, 29, 30, false, tileSize));
+        transitions.add(new TransitionData(0, 31, 30, 1, 1, 4, 4, 5, false, tileSize));
+        transitions.add(new TransitionData(4, 0, 0, 1, 10, 0, 29, 30, false, tileSize));
         transitions.add(new TransitionData(4, 15, 3, 1, 1, 10, 7, 12, false, tileSize));
         transitions.add(new TransitionData(10, 7, 13, 1, 1, 4, 17, 4, false, tileSize));
         transitions.add(new TransitionData(4, 24, 3, 1, 1, 5, 7, 12, false, tileSize));
@@ -196,7 +196,7 @@ public class GamePanel extends JPanel implements Runnable {
         transitions.add(new TransitionData(8, 7, 13, 1, 1, 4, 53, 4, false, tileSize));
         transitions.add(new TransitionData(4, 60, 3, 1, 1, 9, 7, 12, false, tileSize));
         transitions.add(new TransitionData(9, 7, 13, 1, 1, 4, 62, 4, false, tileSize));
-        transitions.add(new TransitionData(0, 31, 10, 1, 3, 11, 0, 10, false, tileSize));
+        transitions.add(new TransitionData(0, 31, 1, 1, 28, 11, 0, 10, false, tileSize));
         transitions.add(new TransitionData(11, 0, 8, 1, 6, 0, 30, 10, false, tileSize)); // Farm Map ke Forest Map
     }
 

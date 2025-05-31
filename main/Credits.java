@@ -20,9 +20,9 @@ public class Credits {
 
     private final String[] creditsLines = {
         "Created by:",
-        "18223064 Ahmad Evander Ruichi Xavier",
+        "18223064 Ahmad Evander Ruizhi Xavier",
         "18223090 Derick Amadeus Budiono",
-        "18223080 Michael Ballard",
+        "18223080 Michael Ballard Isaiah Silaen",
         "18223092 Gabriela Jennifer Sandy",
     };
 

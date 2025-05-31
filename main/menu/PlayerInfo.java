@@ -71,7 +71,8 @@ public class PlayerInfo {
             "Gender          : " + p.getGender(),
             "Energy          : " + p.getEnergy() + " / 100",
             "Partner         : " + (p.getPartner()==null? "-" : p.getPartner().getName()),
-            "Favourite Item  : Eggplant, Cooked Pig's Head", 
+            "Favourite Item  : Eggplant, ",
+            "                  Cooked Pig's Head", 
             // + (p.getFavoriteItem()==null? "-" : p.getFavoriteItem().getName()),
             "Gold            : " + p.getMoney() + " g"
         };
