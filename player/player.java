@@ -12,19 +12,11 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.awt.event.KeyEvent;
 import javax.imageio.ImageIO;
-import Items.*;
-import NPC.NPC;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-
 import main.GamePanel;
 import main.KeyHandler;
 
@@ -51,6 +43,8 @@ public class Player {
     public BufferedImage goldIcon;
     public ShippingBin currSB;
     public int checkerstate = 0;
+
+    private int lastday = 1;
     private int spriteCounter = 0;
     private int spriteNum = 0;
     private final int ANIMATION_SPEED = 10;
@@ -66,7 +60,7 @@ public class Player {
     private String playerName = null;
     private String gender = null;
 
-    private final String[] menu = { "Continue", "Player Info", "Statistics", "Help", "Exit" };
+    private final String[] menu = { "Continue", "Player Info", "Statistics", "Help", "Quit" };
     public int menuCommand = 0;
 
     private int interactionCooldown = 0;
@@ -209,6 +203,7 @@ public class Player {
         if (interactionCooldown > 0) {
             interactionCooldown--;
         }
+
 
         boolean isAttemptingMoveByKeyPress = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
 
@@ -587,11 +582,24 @@ public class Player {
             this.location = "Farm Map";
         } else if (locationID == 1) {
             this.location = "Forest River";
+        } else if (locationID == 2) {
+            this.location = "Mountain Lake";
         } else if (locationID == 5){
             this.location = "MTHouse";
         } else if (locationID == 3) {
             this.location = "Player's House";
-
+        } else if (locationID == 4) {
+            this.location = "World Map";
+        } else if (locationID == 6) {
+            this.location = "Caroline's House";
+        } else if (locationID == 7) {
+            this.location = "Perry's House";
+        } else if (locationID == 8) {
+            this.location = "Dasco's House";
+        } else if (locationID == 10) {
+            this.location = "Emily's Store";
+        } else if (locationID == 9) {
+            this.location = "Abigail's House";
         }
     }
 
@@ -612,9 +620,7 @@ public class Player {
     }
 
     public void setMoney(int amount) {
-        if (money - amount >= 0) { 
-            this.money = amount; 
-        }
+        this.money = amount; 
     }
 
     public int getEnergy() {
@@ -769,7 +775,7 @@ public class Player {
         return gp.screenWidth / 2 - length / 2;
     }
 
-    public void handleMenuKey(java.awt.event.KeyEvent e) {
+    public void handleMenuKey(KeyEvent e) {
         int code = e.getKeyCode();
         if (code == KeyEvent.VK_W || code == KeyEvent.VK_S) {
             gp.keyHandler.upPressed = (code == KeyEvent.VK_W);
@@ -793,7 +799,7 @@ public class Player {
                     // gp.gameState = gp.statisticsState;
                     break;
                 case 3:
-                    gp.gameState = gp.helpState; 
+                    gp.gameState = gp.inGameHelpState; 
                     break;
                 case 4:
                     System.exit(0); 
@@ -1043,9 +1049,9 @@ public boolean energyReducedInThisChat = false;
         if(sb.lastday < gp.gameDay) {
             sb.binCount = 0;
             sb.lastday = gp.gameDay;
-            money += storedMoney;
+            /*money += storedMoney;
             storedMoney = 0;
-            System.out.println("Player: Shipping bin has been emptied, Current Money: " + money + " coins.");
+            System.out.println("Player: Shipping bin has been emptied, Current Money: " + money + " coins.");*/
         }
         if (sb.binCount < sb.maxSlot) {
             if (inventory.getItemCount(sellingItem) > 0) {
@@ -1068,4 +1074,10 @@ public boolean energyReducedInThisChat = false;
         }
     }
 
+    public int getStoredMoney() {
+        return storedMoney;
+    }
+    public void setStoredMoney(int storedMoney) {
+        this.storedMoney = storedMoney;
+    }
 }

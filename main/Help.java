@@ -88,7 +88,7 @@ public class Help {
         loadHelpScreen();
     }
 
-     private void loadFont() {
+    private void loadFont() {
         try {
             InputStream inputStream = getClass().getResourceAsStream("PressStart2PRegular.ttf");
             helpFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
