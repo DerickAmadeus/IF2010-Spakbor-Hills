@@ -12,19 +12,11 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.awt.event.KeyEvent;
 import javax.imageio.ImageIO;
-import Items.*;
-import NPC.NPC;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-
 import main.GamePanel;
 import main.KeyHandler;
 
@@ -51,6 +43,7 @@ public class Player {
     public BufferedImage goldIcon;
     public ShippingBin currSB;
     public int checkerstate = 0;
+    private int lastday = 1;
 
     private int spriteCounter = 0;
     private int spriteNum = 0;
@@ -233,6 +226,7 @@ public class Player {
         if (interactionCooldown > 0) {
             interactionCooldown--;
         }
+
 
         boolean isAttemptingMoveByKeyPress = keyH.upPressed || keyH.downPressed || keyH.leftPressed || keyH.rightPressed;
 
@@ -1077,4 +1071,10 @@ public boolean energyReducedInThisChat = false;
         }
     }
 
+    public int getStoredMoney() {
+        return storedMoney;
+    }
+    public void setStoredMoney(int storedMoney) {
+        this.storedMoney = storedMoney;
+    }
 }
