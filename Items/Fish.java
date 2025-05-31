@@ -17,14 +17,40 @@ public class Fish extends Item implements Sellable, Edible{
     private ArrayList<Integer> appearTime;
     private ArrayList<Integer> disappearTime;
 
-    public Fish(String name, String description, int hargaJual, int hargaBeli,  ArrayList<String> season, ArrayList<String> weather, ArrayList<String> location, String rarity, ArrayList<Integer> appearTime, ArrayList<Integer> disappearTime){
-        super(name, description, hargaJual, hargaBeli);
+    public Fish(String name, int hargaJual, int hargaBeli, ArrayList<String> season, ArrayList<String> weather,
+        ArrayList<String> location, String rarity, ArrayList<Integer> appearTime, ArrayList<Integer> disappearTime) {
+        super(name, "", hargaJual, hargaBeli);
         this.season = season;
         this.weather = weather;
         this.location = location;
         this.rarity = rarity;
         this.appearTime = appearTime;
         this.disappearTime = disappearTime;
+
+        String seasonStr = String.join(", ", season);
+        String weatherStr = String.join(", ", weather);
+        String locationStr = String.join(", ", location);
+
+        StringBuilder timeBuilder = new StringBuilder();
+        for (int i = 0; i < appearTime.size(); i++) {
+            String appear = (appearTime.get(i) < 10 ? "0" : "") + appearTime.get(i) + ":00";
+            String disappear = (disappearTime.get(i) < 10 ? "0" : "") + disappearTime.get(i) + ":00";
+            timeBuilder.append(appear).append(" - ").append(disappear);
+            if (i < appearTime.size() - 2) {
+                timeBuilder.append(", ");
+            } else if (i == appearTime.size() - 2) {
+                timeBuilder.append(" and ");
+            }
+        }
+
+        this.setDescription(
+            "Sell Price: " + hargaJual +
+            " | Season: " + seasonStr +
+            " | Weather: " + weatherStr +
+            " | Location: " + locationStr +
+            " | Rarity: " + rarity +
+            " | Time: " + timeBuilder.toString()
+        );
     }    
 
     public  ArrayList<String> getSeason(){

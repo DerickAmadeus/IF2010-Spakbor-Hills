@@ -16,11 +16,11 @@ public class RecipeLoader {
         ArrayList<Integer> endtime = new ArrayList<>(List.of(24));
 
         // Ikan biasa
-        Item fish = new Fish("Any Fish", "Ikan biasa", 80, 50,
+        Item fish = new Fish("Any Fish", 80, 50,
                 allSeasons, anyWeather, anyLocation, "Common", anytime, endtime);
 
         // Ikan spesifik
-        Item salmon = new Fish("Salmon", "Ikan Salmon", 150, 100,
+        Item salmon = new Fish("Salmon", 150, 100,
                 new ArrayList<>(List.of("Fall")),
                 new ArrayList<>(List.of("Rainy")),
                 new ArrayList<>(List.of("River")),
@@ -28,7 +28,7 @@ public class RecipeLoader {
                 new ArrayList<>(List.of(6)),
                 new ArrayList<>(List.of(20)));
 
-        Item pufferfish = new Fish("Pufferfish", "Ikan buntal", 200, 120,
+        Item pufferfish = new Fish("Pufferfish", 200, 120,
                 new ArrayList<>(List.of("Summer")),
                 new ArrayList<>(List.of("Sunny")),
                 new ArrayList<>(List.of("Ocean")),
@@ -36,7 +36,7 @@ public class RecipeLoader {
                 new ArrayList<>(List.of(12)),
                 new ArrayList<>(List.of(16)));
 
-        Item legendFish = new Fish("Legend", "Ikan legenda langka", 300, 200,
+        Item legendFish = new Fish("Legend", 300, 200,
                 new ArrayList<>(List.of("Winter")),
                 new ArrayList<>(List.of("Snowy")),
                 new ArrayList<>(List.of("Mountain Lake")),
