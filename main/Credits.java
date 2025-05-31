@@ -92,7 +92,7 @@ public class Credits {
         
         // copyright hehe
         g2.setFont(creditsFont.deriveFont(Font.PLAIN, 10f));
-        g2.setColor(new Color(200, 200, 200)); // Light gray
+        g2.setColor(new Color(200, 200, 200));
         
         int x = getX(copyright, g2);
         int y = gp.screenHeight - gp.tileSize * 2; 
@@ -119,7 +119,7 @@ public class Credits {
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
 
-        if (keyCode == KeyEvent.VK_ESCAPE){          // ESC auto back
+        if (keyCode == KeyEvent.VK_ESCAPE){       
                 gp.gameState = gp.titleState;
                 return;
         } else if (keyCode == KeyEvent.VK_TAB){

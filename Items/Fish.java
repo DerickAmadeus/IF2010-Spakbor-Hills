@@ -95,7 +95,6 @@ public class Fish extends Item implements Sellable, Edible{
         int jumlahWeather = weather.size();
         int jumlahLokasi = location.size();
 
-        // Hitung total jam kemunculan
         int totalJam = 0;
         for (int i = 0; i < appearTime.size(); i++) {
             int start = appearTime.get(i);

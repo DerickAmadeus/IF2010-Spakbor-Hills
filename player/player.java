@@ -30,7 +30,7 @@ public class Player {
     public Rectangle solidArea; 
     public Rectangle interactionArea; 
     public int solidAreaDefaultX, solidAreaDefaultY;
-    private int money = 9183012;
+    private int money = 17000;
     private int storedMoney = 0; 
     public boolean collisionOn = false;
     GamePanel gp;

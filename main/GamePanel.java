@@ -854,6 +854,20 @@ public class GamePanel extends JPanel implements Runnable {
                     gameHour = 0;
                     gameDay++;
                     daysPlayed++;
+                    for (NPC npc : npcs) {
+                        if (npc instanceof Seller) {
+                            Seller seller =(Seller) npc;
+                            seller.getInventory().getItems().clear();
+                            seller.getInventory().getItemContainer().clear();
+                            if (seller.getName().equals("Emily")) {
+                                seller.loadInitialCrops();
+                                seller.loadInitialFood();
+                                seller.loadInitialSeeds();
+                            } else if (seller.getName().equals("Caroline")) {
+                                seller.loadMisc();
+                            }
+                        }
+                    }
                 }
             }
             map.updateTiles(); 
@@ -1480,6 +1494,21 @@ public class GamePanel extends JPanel implements Runnable {
                     gameHour = 0;
                     gameDay++;
                     daysPlayed++;
+                    for (NPC npc : npcs) {
+                        if (npc instanceof Seller) {
+                            Seller seller =(Seller) npc;
+                            seller.getInventory().getItems().clear();
+                            seller.getInventory().getItemContainer().clear();
+                            if (seller.getName().equals("Emily")) {
+                                seller.loadInitialCrops();
+                                seller.loadInitialFood();
+                                seller.loadInitialSeeds();
+                                seller.loadProposalRing();
+                            } else if (seller.getName().equals("Caroline")) {
+                                seller.loadMisc();
+                            }
+                        }
+                    }
                 }
             }
             map.updateTiles();
@@ -1499,7 +1528,7 @@ public class GamePanel extends JPanel implements Runnable {
             currentWeather = initialWeather[1];
         }
         
-        if (currentWeather.equals("Rainy") && !player.getLocation().equals("Player's House")) {
+        if (currentWeather.equals("Rainy") && !player.getLocation().contains("House") && !player.getLocation().equals("Emily's Store")) {
             for (RainDrop drop : rainDrops) {
                 drop.update();
             }
@@ -1878,7 +1907,7 @@ public class GamePanel extends JPanel implements Runnable {
             g2.setColor(nightOverlay);
             g2.fillRect(0, 0, screenWidth, screenHeight);
         }
-        if (currentWeather.equals("Rainy") && !player.getLocation().equals("Player's House")) {
+        if (currentWeather.equals("Rainy") && !player.getLocation().contains("House") && !player.getLocation().equals("Emily's Store")) {
             g2.setColor(new Color(0, 0, 0, 80)); 
             g2.fillRect(0, 0, screenWidth, screenHeight);
 
