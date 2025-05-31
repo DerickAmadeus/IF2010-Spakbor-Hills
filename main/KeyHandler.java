@@ -36,6 +36,8 @@ public class KeyHandler implements KeyListener{
                         gp.keyHandler.enterPressed = false;
                 } else if (gp.titlePage.commandNumber == 1) { // HELP
                 gp.gameState = gp.helpState;
+                } else if (gp.titlePage.commandNumber == 2) { // CREDIS
+                gp.gameState = gp.creditsState;
                 } else if (gp.titlePage.commandNumber == 3) { // QUIT
                     System.exit(0);
                 }
@@ -55,6 +57,11 @@ public class KeyHandler implements KeyListener{
 
         if (gp.gameState == gp.helpState) {
             gp.help.keyPressed(e);
+            return;
+        }
+
+        if (gp.gameState == gp.creditsState) {
+            gp.credits.keyPressed(e);
             return;
         }
 

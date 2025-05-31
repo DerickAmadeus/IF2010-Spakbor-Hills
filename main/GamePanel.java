@@ -51,6 +51,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int inGameHelpState  = 11;
     public final int playerInfoState  = 12;
     public final int statisticsState = 13;
+    public final int creditsState = 14;
     public final int viewShippingState = 18;
     public final int shippingState = 19;
     public final int shippingOptionState = 20;
@@ -126,11 +127,12 @@ public class GamePanel extends JPanel implements Runnable {
     public CollisionChecker cChecker = new CollisionChecker(this); // Collision checker for player movement
     public final PlayerInput playerInput = new PlayerInput(this);
     public Help help = new Help(this);
+    public Credits credits = new Credits(this);
     public InGameHelp inGameHelp = new InGameHelp(this);
     public PlayerInfo playerInfo = new PlayerInfo(this);
     public Statistics statistics = new Statistics(this);
     public Player player; // Player object
-    private BufferedImage backgroundImage; // Background image for the game\
+    private BufferedImage backgroundImage; // Background image for the game
 
     public boolean debugMode = false;
 
@@ -941,6 +943,9 @@ public class GamePanel extends JPanel implements Runnable {
                     keyHandler.enterPressed = false;
                 } else if (titlePage.commandNumber == 1) {
                     gameState = helpState;
+                    keyHandler.enterPressed = false;
+                } else if (titlePage.commandNumber == 2) {
+                    gameState = creditsState;
                     keyHandler.enterPressed = false;
                 }
             }
@@ -1878,6 +1883,10 @@ public class GamePanel extends JPanel implements Runnable {
             return;
         } else if (gameState == helpState) {
             help.draw(g2);
+            g2.dispose();
+            return;
+        } else if (gameState == creditsState) {
+            credits.draw(g2);
             g2.dispose();
             return;
         } else if (gameState == playerNameInputState) {
