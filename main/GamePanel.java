@@ -898,6 +898,10 @@ public class GamePanel extends JPanel implements Runnable {
                     player.getInventory().removeItem(player.getInventory().getSelectedItem(), 1);
                     player.currentNPC.isGifted = false;
                     keyHandler.enterPressed = false;
+                } else if (player.currentNPC != null && player.currentNPC.isMarried){
+                    player.currentNPC.isMarried = false;
+                    keyHandler.enterPressed = false;
+
                 } else {
                     String action = player.currentNPC.confirmAction();
                     if (player.currentNPC != null && player.currentNPC instanceof Seller) {
@@ -918,7 +922,11 @@ public class GamePanel extends JPanel implements Runnable {
                         player.currentNPC.isGifted = true;
                         gameState = shippingState;
                         player.energyReducedInThisChat = false;
-                    } else if (seller != null && player.currentNPC instanceof Seller && action.equalsIgnoreCase("Buy") && !seller.getInventory().getItemContainer().isEmpty()) {
+                    } else if (action.equalsIgnoreCase("Marry")){
+                        player.currentNPC.isMarried = true;
+                        player.energyReducedInThisChat = false;
+
+                    }else if (seller != null && player.currentNPC instanceof Seller && action.equalsIgnoreCase("Buy") && !seller.getInventory().getItemContainer().isEmpty()) {
                         seller.isBuying = true;
                         gameState = inventoryState;
                     }

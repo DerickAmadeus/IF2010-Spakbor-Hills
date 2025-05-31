@@ -44,6 +44,7 @@ public class Player {
     public ShippingBin currSB;
     public int checkerstate = 0;
     private int lastday = 1;
+    private NPC partner;
 
     private int spriteCounter = 0;
     private int spriteNum = 0;
@@ -540,6 +541,8 @@ public class Player {
                 proposing(g2);
             } else if (currentNPC.isGifted){
                 gifting(g2);
+            } else if (currentNPC.isMarried) {
+                marrying(g2);
             }
 
         } else {
@@ -966,6 +969,26 @@ public boolean energyReducedInThisChat = false;
         }
     }
 
+    public void marrying(Graphics2D g2) {
+        int energyUsed = 0;
+
+        Boolean hasil = currentNPC.drawMarrying(g2, currentNPC.getName());
+        if (hasil == true) {
+            System.out.println("Player: Congratulations! You are now married to " + currentNPC.getName() + ".");
+            partner = currentNPC;
+            energyUsed = 80;
+        } else {
+            System.out.println("Player: " + currentNPC.getName() + " has declined the marriage proposal.");
+            partner = null;
+            energyUsed = 0;
+        }
+        if (!energyReducedInThisChat) {
+            setEnergy(getEnergy() - energyUsed);
+            energyReducedInThisChat = true;
+
+        }
+    }
+
      public void gifting(Graphics2D g2) {
         if (currentNPC != null) {
             Item[] loved = currentNPC.getLovedItems();
@@ -1090,5 +1113,9 @@ public boolean energyReducedInThisChat = false;
     }
     public void setStoredMoney(int storedMoney) {
         this.storedMoney = storedMoney;
+    }
+
+    public NPC getPartner() {
+        return partner;
     }
 }
