@@ -68,8 +68,7 @@ public class PlayerInfo {
             "Farm Name       : " + p.getFarmName(),
             "Gender          : " + p.getGender(),
             "Energy          : " + p.getEnergy() + " / 100",
-            "Partner         : ", 
-            // + (p.getPartner()==null? "-" : p.getPartner().getName()),
+            "Partner         : " + (p.getPartner()==null? "-" : p.getPartner().getName()),
             "Favourite Item  : ", 
             // + (p.getFavoriteItem()==null? "-" : p.getFavoriteItem().getName()),
             "Gold            : " + p.getMoney() + " g"
