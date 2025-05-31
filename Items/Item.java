@@ -37,6 +37,10 @@ public abstract class Item {
         return description;
     }
 
+    public void setDescription(String desc) {
+        description = desc;
+    }
+
     public int getHargaJual() {
         return hargaJual;
     }

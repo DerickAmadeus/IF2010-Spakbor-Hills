@@ -11,8 +11,8 @@ public class Seeds extends Item implements Buyable {
     private int wetIndex;
     private static int totalSeeds = 11;
 
-    public Seeds(String name, String description, int hargaJual, int hargaBeli, int daysToHarvest, ArrayList<String> season, int tileIndex) {
-        super(name, description, hargaJual, hargaBeli);
+    public Seeds(String name, int hargaJual, int hargaBeli, int daysToHarvest, ArrayList<String> season, int tileIndex) {
+        super(name, "", hargaJual, hargaBeli);
         if (daysToHarvest < 1) {
             this.daysToHarvest = 1;
         } else {
@@ -21,6 +21,13 @@ public class Seeds extends Item implements Buyable {
         this.season = season;
         this.tileIndex = tileIndex;
         this.wetIndex = tileIndex + totalSeeds;
+        
+        String seasonString = String.join(", ", season);
+        this.setDescription(
+            "Sell Price: " + hargaJual + " | Buy Price: " + hargaBeli +
+            " | Days to Harvest: " + this.daysToHarvest + " days" +
+            " | Grows on: " + seasonString
+        );
     }
 
     public int getDaysToHarvest() {

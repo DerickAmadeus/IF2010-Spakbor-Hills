@@ -781,11 +781,9 @@ public class Map {
     public int getDoorLocationTileX() {
         if (currentMapTiles == null || currentMapWorldCol == 0 || currentMapWorldRow == 0) {
             System.err.println("Peringatan getDoorLocationTileX: Peta belum dimuat atau peta kosong.");
-            return -1; // Indikasi error atau peta kosong
+            return -1;
         }
 
-        // Cari tile dengan nama "Door" di seluruh peta
-        // Urutan pencarian: kolom per kolom, lalu baris per baris dalam setiap kolom
         for (int col = 0; col < currentMapWorldCol; col++) {
             for (int row = 0; row < currentMapWorldRow; row++) {
                 Tile tile = currentMapTiles[col][row];

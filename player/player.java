@@ -103,11 +103,11 @@ public class Player {
 
     public void loadInitialItems() {
         ArrayList<String> spring = new ArrayList<>(Arrays.asList("Spring"));
-        Equipment wateringCan = new Equipment("Watering Can", "Untuk menyiram tanaman.", 10, 10);
-        Equipment pickaxe = new Equipment("Pickaxe", "Untuk menghancurkan batu.", 15, 15);
-        Equipment hoe = new Equipment("Hoe", "Untuk mencangkul tanah.", 12, 12);
-        Equipment fishingRod = new Equipment("Fishing Rod", "Untuk memancing ikan.", 19, 19);
-        Seeds parsnip = new Seeds("Parsnip Seeds", "Grows quickly in Spring", 10, 20, 1, spring, 13);
+        Equipment wateringCan = new Equipment("Watering Can", "Use this to water planted seeds. Can oly be used on Farm Map.", 10, 10);
+        Equipment pickaxe = new Equipment("Pickaxe", "Use this recover tiled lands. Can oly be used on Farm Map.", 15, 15);
+        Equipment hoe = new Equipment("Hoe", "Use this to tile lands into soil. Can oly be used on Farm Map.", 12, 12);
+        Equipment fishingRod = new Equipment("Fishing Rod", "Use this to do fishing on nearest water tile.", 19, 19);
+        Seeds parsnip = new Seeds("Parsnip Seeds", 10, 20, 1, spring, 13);
 
         inventory.addItem(wateringCan, 1);
         inventory.addItem(pickaxe, 1);
