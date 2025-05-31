@@ -9,7 +9,7 @@ import main.GamePanel;
 public class Tile {
     private String name;
     private boolean isWalkable;
-    public BufferedImage Image; // Assuming you have an Image class for tile images
+    public BufferedImage Image;
 
     public Tile(String tilename, boolean isWalkable) {
         this.name = tilename;

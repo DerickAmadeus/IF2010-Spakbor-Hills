@@ -20,9 +20,8 @@ public class Inventory<T extends Item> {
     private final int VIEWPORT_HEIGHT = 300; 
     private final int MAX_ROWS_ON_SCREEN = VIEWPORT_HEIGHT / SLOT_SIZE;
 
-    // selecting
     public int selectedItemIndex = -1;
-    public int optionCommandNum = 0; // untuk navigasi menu opsi
+    public int optionCommandNum = 0; 
 
 
     public Inventory(GamePanel gp) {
@@ -214,16 +213,16 @@ public class Inventory<T extends Item> {
 
             if (row < scrollOffset) {
                 index++;
-                continue; // Lewati baris di atas viewport
+                continue; 
             }
 
             if (row >= scrollOffset + MAX_ROWS_ON_SCREEN) {
-                break; // Hentikan kalau sudah melebihi viewport
+                break;
             }
 
             int col = index % ITEMS_PER_ROW;
             int itemX = slotXStart + col * gp.tileSize;
-            int itemY = slotYStart + (row - scrollOffset) * gp.tileSize; // kurangi offset agar scroll naik
+            int itemY = slotYStart + (row - scrollOffset) * gp.tileSize; 
             
 
             if (item.getIcon() != null) {
@@ -247,9 +246,7 @@ public class Inventory<T extends Item> {
 
             index++;
         }
-        // AFTER drawing all items...
 
-        // Hitung index dari cursor saat ini
         int selectedIndex = slotRow * ITEMS_PER_ROW + slotCol;
 
         if (selectedIndex >= 0 && selectedIndex < itemContainer.size()) {

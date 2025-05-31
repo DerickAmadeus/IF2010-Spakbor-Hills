@@ -9,7 +9,7 @@ public class Soil extends Tile {
     private Seeds seedPlanted;
     private int wetCooldown;
     private  final int MAX_COOLDOWN = 3;
-    private String emptySoilImagePath; // Path to the image for empty soil
+    private String emptySoilImagePath; 
     private int dayHarvest;
     public int timestampMinute = 0;
     public int timestampHour = 0;
@@ -39,7 +39,6 @@ public class Soil extends Tile {
         }
     }
 
-    //Getters
     public boolean canPlant() {
         return seedPlanted == null;
     }
@@ -63,7 +62,7 @@ public class Soil extends Tile {
     public void plantSeed(Seeds seed, GamePanel gp) {
         if (canPlant()) {
             this.seedPlanted = seed;
-            this.wetCooldown = 2; // Set the wet cooldown based on the seed
+            this.wetCooldown = 2; 
             this.dayHarvest = seed.getDaysToHarvest();
             this.timestampMinute = gp.gameMinute;
             this.timestampHour = gp.gameHour;
@@ -119,12 +118,12 @@ public class Soil extends Tile {
             if (gp != null && visualID != -1 && visualID < gp.map.tileImage.length && gp.map.tileImage[visualID] != null) {
                 if (dayHarvest > 0) {
                     if (wetCooldown == 3) {
-                        this.Image = gp.map.tileImage[visualID + Seeds.getTotalSeeds()].Image; // Gunakan image dari prototype visual
+                        this.Image = gp.map.tileImage[visualID + Seeds.getTotalSeeds()].Image; 
                     } else if (wetCooldown > 0) {
-                        this.Image = gp.map.tileImage[visualID].Image; // Gunakan image dari prototype visual
+                        this.Image = gp.map.tileImage[visualID].Image;
                     } else {
-                        seedPlanted = null; // Reset seed if not watered
-                        loadImage(this.emptySoilImagePath); // Load empty soil image
+                        seedPlanted = null; 
+                        loadImage(this.emptySoilImagePath); 
                         return;
                     }
                 } else {
@@ -143,7 +142,6 @@ public class Soil extends Tile {
 
             }
         } else {
-            // Jika tidak ada benih, tampilkan gambar tanah kosong
             loadImage(this.emptySoilImagePath);
         }
     }

@@ -32,7 +32,7 @@ public class NPC {
     private String[] actions = { "Talk", "Give", "Propose", "Marry", "Leave" };
     public int selectedActionIndex = 0;
     private String[] proposingAnswers = { "Sure, My Love <3", "Dih Effort Dulu Bang",
-            "Dah kau lamar bang aku", "Dah nikah kita" }; // Contoh jawaban untuk pertanyaan pernikahan
+            "Dah kau lamar bang aku", "Dah nikah kita" };
     public String[] giftingAnswers = { "Wow! I love this! Thank you so much!", "I like this, thanks!", "Appreciated.",
             "Is this a joke..." };
     public String[] marriageAnswers = { "I do! Let's get married!", "I'm not ready for marriage yet.", "No.",
@@ -44,15 +44,15 @@ public class NPC {
     private Item[] likedItems;
     private Item[] hatedItems;
     private String relationship;
-    private int daysCanMarry; // 0 = no, 1 = yes, 2 = already married
+    private int daysCanMarry; 
     protected Inventory<Item> inventory;
     public boolean isTalking = false;
     public boolean isProposed = false;
     public boolean isGifted = false;
     public boolean isMarried = false;
-    public int chattingFrequency; // Frequency of chatting with the player
-    public int giftingFrequency; // Counter to track the frequency of chatting
-    public int visitingFrequency; // Counter to track the frequency of visiting
+    public int chattingFrequency; 
+    public int giftingFrequency;
+    public int visitingFrequency; 
 
     public NPC(GamePanel gp, String name, String spawnMapName, int tileX, int tileY, Item[] loveditems,
             Item[] likedItems, Item[] hatedItems) {
@@ -68,10 +68,10 @@ public class NPC {
         this.worldX = tileX * gp.tileSize;
         this.worldY = tileY * gp.tileSize;
         this.hitbox = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
-        daysCanMarry = 0; // Default value, can be set later
-        chattingFrequency = 0; // Frequency of chatting with the player
-        giftingFrequency = 0; // Counter to track the frequency of chatting
-        visitingFrequency = 0; // Counter to track the frequency of visiting
+        daysCanMarry = 0; 
+        chattingFrequency = 0; 
+        giftingFrequency = 0; 
+        visitingFrequency = 0;
 
 
         this.interactionTriggerArea = new Rectangle(worldX, worldY, gp.tileSize, gp.tileSize);
@@ -437,29 +437,22 @@ public class NPC {
     }
 
     public void drawNPCDialog(Graphics2D g2, String speakerName) {
-        // Ukuran dan posisi jendela dialog
         int x = gp.tileSize * 1;
         int y = gp.tileSize * 8;
         int width = gp.tileSize * 14;
         int height = gp.tileSize * 3;
 
-        // Gambar latar belakang dialog
         drawSubwindow(g2, x, y, width, height);
 
-        // Atur font dan warna teks
         g2.setFont(new Font("Arial", Font.PLAIN, 20));
         g2.setColor(Color.WHITE);
 
-        // Padding teks
         int paddingX = 20;
         int paddingY = 30;
 
-        // Gambar nama pembicara
         g2.drawString(speakerName + ":", x + paddingX, y + paddingY);
 
-        // Cek apakah indeks dialog valid
         if (currentDialogueIndex < dialogues.length) {
-            // Word wrap dialog agar tidak keluar border
             String dialog = dialogues[currentDialogueIndex];
             FontMetrics fm = g2.getFontMetrics();
             int maxWidth = width - 2 * paddingX;
@@ -482,7 +475,6 @@ public class NPC {
                 g2.drawString(line.toString(), x + paddingX, drawY);
             }
         } else {
-            // Reset dialog jika sudah selesai
             currentDialogueIndex = 0;
             isTalking = false;
             showActionMenu = true;
@@ -506,7 +498,7 @@ public class NPC {
                 && gp.player.getEquippedItem().getName().equals("Proposal Ring")) {
             g2.drawString(proposingAnswers[0], x + 20, y + 100);
             relationship = "Proposed";
-            daysCanMarry = gp.daysPlayed + 1; // Set daysCanMarry to 1 days later
+            daysCanMarry = gp.daysPlayed + 1; 
             return true;
         } else if (relationship == "Married") {
             g2.drawString(proposingAnswers[3], x + 20, y + 100);

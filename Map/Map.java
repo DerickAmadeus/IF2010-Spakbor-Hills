@@ -4,7 +4,7 @@ import Furniture.Bed;
 import Furniture.Stove;
 import Furniture.TV;
 import Items.Seeds;
-import java.awt.Graphics2D; // Pastikan import ini dan lainnya sesuai dengan yang Anda gunakan
+import java.awt.Graphics2D; 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,11 +19,8 @@ import java.util.Random;
 
 public class Map {
     GamePanel gp;
-
-    // Tetap menggunakan tileImage sesuai kode yang Anda berikan,
-    // pastikan Soil.java juga menggunakan gp.map.tileImage
     public Tile[] tileImage;
-    public Tile[][] currentMapTiles; // Tiles untuk peta yang sedang aktif
+    public Tile[][] currentMapTiles; 
 
     private static class MapState {
         Tile[][] tiles;
@@ -41,7 +38,7 @@ public class Map {
     public int currentMapWorldCol;
     public int currentMapWorldRow;
     public int angka = new Random().nextInt(3) + 1;
-    public int currentMapID = -1; // Inisialisasi agar load pertama selalu fresh
+    public int currentMapID = -1; 
 
     public String[] mapFilePaths = {
             "/Map/maps/farm_map_" + angka +".txt",
@@ -60,10 +57,10 @@ public class Map {
 
     public Map(GamePanel gp) {
         this.gp = gp;
-        this.tileImage = new Tile[300]; // Sesuaikan ukuran jika perlu
+        this.tileImage = new Tile[300];
         this.loadedMapStates = new HashMap<>();
         getTileImagePrototypes();
-        loadMapByID(0); // Memuat peta default
+        loadMapByID(0); 
     }
 
     public void getTileImagePrototypes() {
@@ -159,7 +156,6 @@ public class Map {
             tileImage[72].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed1.png"));
             tileImage[73] = new Bed("Bed", false, "king_um");
             tileImage[73].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed2.png"));
-            // ... (Lanjutkan untuk semua furniture prototypes)
             tileImage[74] = new Bed("Bed", false, "king_ur");
             tileImage[74].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/house/bed3.png"));
             tileImage[75] = new Bed("Bed", false, "king_ml");
@@ -187,7 +183,7 @@ public class Map {
             tileImage[10] = new Soil("soil", true, "/Map/tiles/dirt.png");
 
             // DOOR
-            tileImage[12] = new Tile("Door", true); // Walkable agar bisa transisi
+            tileImage[12] = new Tile("Door", true); 
             InputStream doorStream = getClass().getResourceAsStream("/Map/tiles/house/door.png");
              if (doorStream != null) {
                 tileImage[12].Image = ImageIO.read(doorStream);
@@ -200,7 +196,6 @@ public class Map {
             // SEEDS
             tileImage[13] = new Tile("Planted Parsnip Visual", true);
             tileImage[13].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Parsnip Seeds.png"));
-            // ... (Lanjutkan untuk semua seed visual prototypes)
             tileImage[14] = new Tile("Planted Cauliflower Visual", true);
             tileImage[14].Image = ImageIO.read(getClass().getResourceAsStream("/Map/tiles/seeds/Planted Cauliflower Seeds.png"));
             tileImage[15] = new Tile("Planted Potato Visual", true);
@@ -670,10 +665,10 @@ public class Map {
     }
 
     public void updateTiles() {
-        if (currentMapTiles == null) return; // Menggunakan currentMapTiles
+        if (currentMapTiles == null) return;
         for (int r = 0; r < currentMapWorldRow; r++) {
             for (int c = 0; c < currentMapWorldCol; c++) {
-                Tile tiles = currentMapTiles[c][r]; // Menggunakan currentMapTiles
+                Tile tiles = currentMapTiles[c][r]; 
                 if (tiles != null && tiles instanceof Soil) {
                     tiles.update(gp); 
                     Soil wet = (Soil) tiles;
@@ -705,8 +700,7 @@ public class Map {
                 }
             }
         }
-        // Panggil updateTiles untuk me-refresh gambar peta yang sedang aktif jika ada perubahan
-        if (currentMapID != -1) { // Hanya jika ada peta yang aktif
+        if (currentMapID != -1) { 
              System.out.println("Refreshing visuals for current map after advancing day.");
             updateTiles();
         }
@@ -718,7 +712,7 @@ public class Map {
         int row = worldY / gp.tileSize;
 
         if (currentMapTiles != null && col >= 0 && col < currentMapWorldCol && row >= 0 && row < currentMapWorldRow) {
-            return currentMapTiles[col][row]; // Menggunakan currentMapTiles
+            return currentMapTiles[col][row];
         }
         return null;
     }
@@ -728,14 +722,12 @@ public class Map {
         int row = worldY / gp.tileSize;
 
         if (currentMapTiles != null && col >= 0 && col < currentMapWorldCol && row >= 0 && row < currentMapWorldRow) {
-            currentMapTiles[col][row] = createTileInstance(newTilePrototypeID); // Menggunakan currentMapTiles
-            // Perubahan pada currentMapTiles akan langsung tercermin di MapState yang ada di cache
-            // karena currentMapTiles adalah referensi ke array tiles di dalam MapState.
+            currentMapTiles[col][row] = createTileInstance(newTilePrototypeID); 
         }
     }
 
     public void plantSeedAtTile(int worldX, int worldY, Seeds seedToPlant) {
-        Tile targetTile = getTile(worldX, worldY); // getTile() sudah menggunakan currentMapTiles
+        Tile targetTile = getTile(worldX, worldY); 
         if (targetTile instanceof Soil) {
             Soil soilTile = (Soil) targetTile;
             if (soilTile.canPlant()) {
@@ -773,41 +765,32 @@ public class Map {
             for (int row = 0; row < currentMapWorldRow; row++) {
                 Tile tile = currentMapTiles[col][row];
                 if (tile != null && "Door".equals(tile.getTileName())) {
-                    return col; // Kembalikan indeks kolom (koordinat tile X)
+                    return col; 
                 }
             }
         }
 
         System.err.println("Peringatan getDoorLocationTileX: Tidak ada tile 'Door' yang ditemukan di peta.");
-        return -1; // Indikasi "Door" tidak ditemukan
+        return -1; 
     }
 
-    /**
-     * Mencari tile pertama dengan nama "Door" di peta saat ini dan mengembalikan
-     * koordinat baris (tile Y) tempat tile tersebut ditemukan.
-     *
-     * @return Indeks baris (koordinat tile Y) dari "Door" pertama, atau -1 jika tidak ditemukan atau peta kosong.
-     */
+
     public int getDoorLocationTileY() {
         if (currentMapTiles == null || currentMapWorldCol == 0 || currentMapWorldRow == 0) {
             System.err.println("Peringatan getDoorLocationTileY: Peta belum dimuat atau peta kosong.");
-            return -1; // Indikasi error atau peta kosong
+            return -1; 
         }
 
-        // Cari tile dengan nama "Door" di seluruh peta
-        // Urutan pencarian harus konsisten dengan getDoorLocationTileX() jika Anda ingin
-        // mendapatkan koordinat X dan Y dari pintu yang sama.
         for (int col = 0; col < currentMapWorldCol; col++) {
             for (int row = 0; row < currentMapWorldRow; row++) {
                 Tile tile = currentMapTiles[col][row];
-                // Pastikan nama "Door" konsisten.
                 if (tile != null && "Door".equals(tile.getTileName())) {
-                    return row; // Kembalikan indeks baris (koordinat tile Y)
+                    return row; 
                 }
             }
         }
 
         System.err.println("Peringatan getDoorLocationTileY: Tidak ada tile 'Door' yang ditemukan di peta.");
-        return -1; // Indikasi "Door" tidak ditemukan
+        return -1; 
     }
 }

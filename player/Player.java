@@ -30,7 +30,7 @@ public class Player {
     public Rectangle solidArea; 
     public Rectangle interactionArea; 
     public int solidAreaDefaultX, solidAreaDefaultY;
-    private int money = 17000;
+    private int money = 1000;
     private int storedMoney = 0; 
     public boolean collisionOn = false;
     GamePanel gp;
@@ -45,7 +45,6 @@ public class Player {
     public BufferedImage goldIcon;
     public ShippingBin currSB;
     public int checkerstate = 0;
-    private int lastday = 1;
     private NPC partner;
     private int spriteCounter = 0;
     private int spriteNum = 0;
@@ -56,7 +55,6 @@ public class Player {
     private int energy;
     private static final int MAX_ENERGY = 100; 
 
-    private Tile tile; 
     private String farmName;
 
     private String playerName = null;
