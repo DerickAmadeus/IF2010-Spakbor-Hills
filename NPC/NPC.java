@@ -27,7 +27,7 @@ public class NPC {
     private int spriteCounter = 0;
     private int spriteNum = 0;
     private final int ANIMATION_SPEED = 15;
-    private final int IDLE_FRAME_COUNT = 6;
+    private final int IDLE_FRAME_COUNT = 4;
     private boolean showActionMenu = false;
     private String[] actions = { "Talk", "Give", "Propose", "Marry", "Leave" };
     public int selectedActionIndex = 0;
@@ -79,20 +79,28 @@ public class NPC {
                     "Desa kami damai berkat para pahlawan sepertimu.",
                     "Sudahkah kamu mencoba memancing di danau?"
             };
-        } else if (this.name.equalsIgnoreCase("Merchant")) {
+        } else if (this.name.equalsIgnoreCase("Caroline")) {
             dialogues = new String[] {
                     "Barang baru datang! Mau lihat?",
                     "Aku punya penawaran spesial untukmu hari ini.",
                     "Jangan ragu untuk bertanya jika ada yang menarik."
             };
-        } else if (this.name.equalsIgnoreCase("Fisherman")) {
+        } else if (this.name.equalsIgnoreCase("Dasco")) {
             dialogues = new String[] {
-                    "Ikan hari ini sedang bagus-bagusnya!",
-                    "Kesabaran adalah kunci memancing, nak.",
-                    "Ada monster di danau itu... atau hanya perasaanku saja ya?"
+                    "Let's go Gambling!",
+                    "I can't stop winning!",
+                    "Gacor Kanggg!!!!!"
+            };
+        } else if (this.name.equalsIgnoreCase("Emily")) {
+            dialogues = new String[] {
+                    "Barang baru datang! Mau lihat?",
+                    "Aku punya penawaran spesial untukmu hari ini.",
+                    "Jangan ragu untuk bertanya jika ada yang menarik."
             };
         } else {
-            dialogues = new String[] { "Hmm..." };
+            dialogues = new String[] {
+                "hmmm, siapa kamu?"
+            };
         }
     }
 

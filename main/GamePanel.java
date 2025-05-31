@@ -27,7 +27,7 @@ import main.menu.PlayerInfo;
 import main.menu.Statistics;
 import player.Player;
 import player.Recipe;
-import player.RecipeLoader; 
+import player.RecipeLoader;
 
 
 public class GamePanel extends JPanel implements Runnable {
@@ -588,11 +588,60 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public NPC[] loadNPCs() {
-        NPC[] npcArray = new NPC[3]; // Ganti nama variabel agar tidak sama dengan field kelas
+        NPC[] npcArray = new NPC[6]; // Ganti nama variabel agar tidak sama dengan field kelas
+        ArrayList<String> spring = new ArrayList<>(Arrays.asList("Spring"));
+        ArrayList<String> summer = new ArrayList<>(Arrays.asList("Summer"));
+        ArrayList<String> fall = new ArrayList<>(Arrays.asList("Fall"));
+        ArrayList<String> wheatSeason = new ArrayList<>(Arrays.asList("Spring", "Fall"));
 
 
         // --NPC1 ----
         loadInitialFish();
+        Seeds parsnipSeed = new Seeds("Parsnip Seeds", 10, 20, 1, spring, 13);
+        Seeds cauliflowerSeed = new Seeds("Cauliflower Seeds", 40, 80, 5, spring, 14);
+        Seeds potatoSeed = new Seeds("Potato Seeds", 25, 50, 3, spring, 15);
+        Seeds wheatSeed = new Seeds("Wheat Seeds", 30, 60, 1, wheatSeason, 16);
+
+        Seeds blueberrySeed = new Seeds("Blueberry Seeds", 40, 80, 7, summer, 17);
+        Seeds tomatoSeed = new Seeds("Tomato Seeds", 25, 50, 3, summer, 18);
+        Seeds hotPepperSeed = new Seeds("Hot Pepper Seeds", 20, 40, 1, summer, 19);
+        Seeds melonSeed = new Seeds("Melon Seeds", 40, 80, 4, summer, 20);
+
+        Seeds cranberrySeed = new Seeds("Cranberry Seeds", 50, 100, 2, fall, 21);
+        Seeds pumpkinSeed = new Seeds("Pumpkin Seeds", 75, 150, 7, fall, 22);
+        Seeds grapeSeed= new Seeds("Grape Seeds", 30, 60, 3, fall, 23);
+
+        Crops parsnip = new Crops("Parsnip", 35, 50, 1);
+        Crops cauliflower = new Crops("Cauliflower", 150, 200, 1);
+        Crops wheat = new Crops("Wheat", 30, 50, 3);
+        Crops blueberry = new Crops("Blueberry", 40, 150, 3);
+        Crops tomato = new Crops("Tomato", 60, 90, 1);
+        Crops pumpkin = new Crops("Pumpkin", 250, 300, 1);
+        Crops grape = new Crops("Grape", 10, 100, 20);
+        Crops potato = new Crops("Potato", 50, 70, 1);
+        Crops hotPepper = new Crops("Hot Pepper", 80, 100, 1);
+        Crops cranberry = new Crops("Cranberry", 100, 120, 1);
+        Crops melon = new Crops("Melon", 200, 250, 1);
+
+        Food fishChips = new Food("Fish n' Chips",  135, 150, 50);
+        Food baguette = new Food("Baguette", 80, 100, 25);
+        Food sashimi = new Food("Sashimi", 275, 300, 70);
+        Food wine = new Food("Wine", 90, 100, 20);
+        Food pumpkinPie = new Food("Pumpkin Pie", 100, 120, 35);
+        Food veggieSoup = new Food("Veggie Soup", 120, 140, 40);
+        Food fishStew = new Food("Fish Stew", 260, 280, 70);
+        Food fishSandwich = new Food("Fish Sandwich", 180, 200, 50);
+        Food pigHead = new Food("Cooked Pig's Head", 0, 1000, 100);
+        Food theLegendsOfSpakbor = new Food("The Legends of Spakbor", 500, 600, 100);
+        Food fugu = new Food("Fugu", 1000, 1200, 200);
+        Food spakborSalad = new Food("Spakbor Salad", 150, 200, 50);
+
+
+        Misc firewood = new Misc("Firewood", "Sell Price: 10 | Buy Price: 20. Use this to cook a meal." , 10, 20);
+        Misc coal = new Misc("Coal", "Sell Price: 20 | Buy Price: 40. Use this to cook 2 meals (the ingredients will be doubled).", 20, 40);
+        Misc egg = new Misc("Egg", "Sell Price: 30 | Buy Price: 60. Can be used to make Pumpkin Pie.", 30, 60);
+        Misc eggplant = new Misc("Eggplant", "Sell Price: 65 | Buy Price: 135. Can be used to make The Legends of Spakbor.", 65, 130);
+
         Item[] mtLoved = {
             getFishByName("Legend"),
         };
@@ -608,15 +657,27 @@ public class GamePanel extends JPanel implements Runnable {
 
         // -- NPC2---
         Item[] cLoved = {
-            getFishByName("Legend"),
+            firewood,
+            coal
         };
         Item[] cLiked = {
-            getFishByName("Angler"),
-            getFishByName("Crimsonfish"),
-            getFishByName("Glacierfish"),
+            potato,
+            wheat
         };
 
         Item[] cHated = {
+            hotPepper,
+        };
+
+        // -- NPC3---
+        Item[] pLoved ={
+            cranberry, 
+            blueberry
+        };
+        Item[] pLiked = {
+            wine
+        };
+        Item[] pHated = {
             getFishByName("Bullhead"),
             getFishByName("Carp"),
             getFishByName("Chub"),
@@ -631,30 +692,100 @@ public class GamePanel extends JPanel implements Runnable {
             getFishByName("Sardine"),
             getFishByName("Super Cucumber"),
             getFishByName("Catfish"),
+            getFishByName("Salmon"),
+            getFishByName("Angler"),
+            getFishByName("Crimsonfish"),
+            getFishByName("Glacierfish"),
+            getFishByName("Legend")
+        };
+
+        // --NPC 4---
+        Item[] dLoved = {
+            theLegendsOfSpakbor,
+            pigHead,
+            wine,
+            fugu,
+            spakborSalad
+
+        };
+        Item[] dLiked = {
+            fishSandwich,
+            fishStew,
+            baguette,
+            fishChips
+        };
+        Item[] dHated = {
+            getFishByName("Legend"),
+            grape,
+            cauliflower,
+            wheat,
+            getFishByName("Pufferfish"),
             getFishByName("Salmon")
         };
 
-        // Contoh: NPC "Villager" akan muncul di map dengan ID 0 (misalnya Farm Map)
-        // pada tile (kolom 10, baris 12)
-        // Parameter: GamePanel, Nama NPC, ID Map Spawn, Tile X, Tile Y
-        npcArray[0] = new NPC(this, "MT", "MTHouse", 7, 3,  
+        // --NPC 5---
+        Item[] eLoved = {
+            parsnipSeed,
+            cauliflowerSeed,
+            potatoSeed,
+            wheatSeed,
+            blueberrySeed,
+            tomatoSeed,
+            hotPepperSeed,
+            melonSeed,
+            cranberrySeed,
+            pumpkinSeed,
+            grapeSeed
+        };
+        Item[] eLiked = {
+            getFishByName("Catfish"),
+            getFishByName("Salmon"),
+            getFishByName("Sardine"),
+        };
+        Item[] eHated = {
+            coal,
+            firewood
+        };
+
+        Item[] aLoved = {
+            blueberry,
+            melon,
+            pumpkin,
+            grape,
+            cranberry
+        };
+        Item[] aLiked = {
+            baguette,
+            pumpkinPie,
+            wine
+        };
+        Item[] aHated = {
+            hotPepper,
+            cauliflower,
+            parsnip,
+            wheat
+        };
+
+
+        npcArray[0] = new NPC(this, "Mayor Tadi", "MTHouse", 7, 3,  
                         mtLoved, mtLiked, mtHated);
 
 
-        npcArray[1] = new Seller(this, "Merchant", "MTHouse", 7, 5,  
+        npcArray[1] = new Seller(this, "Caroline", "Caroline's House", 7, 5,  
                         cLoved, cLiked, cHated);
 
-        // Contoh: NPC "Merchant" akan muncul di map dengan ID 4 (misalnya NPC Map)
-        // pada tile (kolom 5, baris 8)
-        // npcArray[1] = new NPC(this, "Merchant", "apa", 5, 8);
 
-        // // Contoh: NPC "Fisherman" akan muncul di map dengan ID 1 (misalnya Forest River)
-        // // pada tile (kolom 20, baris 15)
-        // npcArray[2] = new NPC(this, "Fisherman", "itu", 20, 15);
+        npcArray[2] = new NPC(this, "Perry", "Perry's House", 7, 7,  
+                        pLoved, pLiked, pHated);
 
-        // Pastikan nama NPC ("Villager", "Merchant", "Fisherman") sesuai dengan
-        // nama file gambar animasi Anda (misal: Villager_idle_0.png, dst.)
-        // dan ID Map (0, 4, 1) sesuai dengan ID map di game Anda.
+
+        npcArray[3] = new NPC(this, "Dasco", "Dasco's House", 7, 9,  
+                        dLoved, dLiked, dHated);
+
+        npcArray[4] = new Seller(this, "Emily", "Emily's Store", 7, 7, eLoved, eLiked, eHated);
+
+        npcArray[5] = new NPC(this, "Abigail", "Abigail's House", 7, 7, aLoved, aLiked, aHated);
+
 
         return npcArray;
     }
