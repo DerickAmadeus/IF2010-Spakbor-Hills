@@ -31,7 +31,7 @@ public class NPC {
     private boolean showActionMenu = false;
     private String[] actions = { "Talk", "Give", "Propose", "Marry", "Leave" };
     public int selectedActionIndex = 0;
-    private String[] proposingAnswers = { "AAWWWWWWWWWWW SO SWEEETTTT. AKU MAUUUUUUUUUU", "Dih Effort Dulu Bang",
+    private String[] proposingAnswers = { "Sure, My Love <3", "Dih Effort Dulu Bang",
             "Dah kau lamar bang aku", "Dah nikah kita" }; // Contoh jawaban untuk pertanyaan pernikahan
     public String[] giftingAnswers = { "Wow! I love this! Thank you so much!", "I like this, thanks!", "Appreciated.",
             "Is this a joke..." };
@@ -506,6 +506,7 @@ public class NPC {
                 && gp.player.getEquippedItem().getName().equals("Proposal Ring")) {
             g2.drawString(proposingAnswers[0], x + 20, y + 100);
             relationship = "Proposed";
+            daysCanMarry = gp.daysPlayed + 1; // Set daysCanMarry to 1 days later
             return true;
         } else if (relationship == "Married") {
             g2.drawString(proposingAnswers[3], x + 20, y + 100);
@@ -552,14 +553,14 @@ public class NPC {
         g2.setColor(Color.WHITE);
         g2.drawString(speakerName + ":", x + 20, y + 35);
 
-        if (heartPoints >= 150 && relationship == "Proposed" && daysCanMarry <= gp.gameDay) {
+        if (heartPoints >= 150 && relationship == "Proposed" && daysCanMarry <= gp.daysPlayed) {
             g2.drawString(marriageAnswers[0], x + 20, y + 100);
             relationship = "Married";
             return true;
         } else if (relationship == "Married") {
             g2.drawString(marriageAnswers[3], x + 20, y + 100);
             return false;
-        } else if (daysCanMarry > gp.gameDay) {
+        } else if (daysCanMarry > gp.daysPlayed) {
             g2.drawString(marriageAnswers[1], x + 20, y + 100);
             return false;
         } else {

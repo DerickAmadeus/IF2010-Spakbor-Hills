@@ -13,7 +13,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
+
 import main.GamePanel;
+import java.util.Random;
 
 public class Map {
     GamePanel gp;
@@ -38,10 +40,11 @@ public class Map {
 
     public int currentMapWorldCol;
     public int currentMapWorldRow;
+    public int angka = new Random().nextInt(3) + 1;
     public int currentMapID = -1; // Inisialisasi agar load pertama selalu fresh
 
     public String[] mapFilePaths = {
-            "/Map/maps/farm_map.txt",
+            "/Map/maps/farm_map_" + angka +".txt",
             "/Map/maps/forest_map.txt",
             "/Map/maps/mountain_lake_map.txt",
             "/Map/maps/house_map.txt",
