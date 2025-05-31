@@ -32,8 +32,10 @@ public class Crops extends Item implements Sellable, Buyable, Edible{
         }
     }
 
-    public void sell() {
-        System.out.println("Sold " + getName() + " for " + getHargaJual());
+    @Override
+    public void sell(GamePanel gp, Item item) {
+        gp.player.getInventory().removeItem(item, 1);
+        gp.player.setStoredMoney(gp.player.getStoredMoney() + item.getHargaJual());
     }
 
     public void eat(Player player, Item get) {        

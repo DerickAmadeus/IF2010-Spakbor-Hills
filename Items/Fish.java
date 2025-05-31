@@ -79,8 +79,9 @@ public class Fish extends Item implements Sellable, Edible{
 
 
     @Override
-    public void sell() {
-        System.out.println("Sold " + getName() + " for " + getHargaJual());
+    public void sell(GamePanel gp, Item item) {
+        gp.player.getInventory().removeItem(item, 1);
+        gp.player.setStoredMoney(gp.player.getStoredMoney() + item.getHargaJual());
     }
 
     public void eat(Player player, Item get) {

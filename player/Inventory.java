@@ -255,14 +255,12 @@ public class Inventory<T extends Item> {
         if (selectedIndex >= 0 && selectedIndex < itemContainer.size()) {
             T selectedItem = itemContainer.get(selectedIndex);
             if (selectedItem != null) {
-                // Gambar nama dan deskripsi
                 g2.setColor(Color.white);
                 g2.setFont(new Font("Arial", Font.BOLD, 18));
                 g2.drawString(selectedItem.getName(), dFrameX + 20, dFrameY + 30);
 
                 g2.setFont(new Font("Arial", Font.PLAIN, 14));
-                // Bungkus teks deskripsi agar tidak keluar jendela
-                drawWrappedText(g2, Integer.toString(selectedItem.getHargaJual()), dFrameX + 20, dFrameY + 55, dFrameWidth - 40, 18);
+                drawWrappedText(g2, selectedItem.getDesc(), dFrameX + 20, dFrameY + 55, dFrameWidth - 40, 18);
             }
         }
     }

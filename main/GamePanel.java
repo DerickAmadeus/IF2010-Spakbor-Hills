@@ -784,7 +784,6 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-        System.out.println("Game State: " + gameState);
         if(gameDay > lastday) {
             System.out.println("******************");
             System.out.println("Day Has Been Reset.");
@@ -793,6 +792,7 @@ public class GamePanel extends JPanel implements Runnable {
             lastday = gameDay;
             player.currSB.clearBin();
             player.setMoneyX(player.getMoney() + player.getStoredMoney());
+            player.totalIncome += player.getStoredMoney();
             player.setStoredMoney(0);
             System.out.println("____________________");
             System.out.println("Player: Stored money. New stored money: " + player.getStoredMoney());
@@ -1078,7 +1078,7 @@ public class GamePanel extends JPanel implements Runnable {
                         } else if (player.getInventory().optionCommandNum == 1) {
                             gameState = inventoryState; 
                         }
-                    } else if (selected instanceof Fish || selected instanceof Crops || selected instanceof Food) {
+                    } else if (selected instanceof Edible) {
                         if (player.getInventory().optionCommandNum == 0) {
                             player.eating();
                             gameState = inventoryState;
@@ -1178,7 +1178,7 @@ public class GamePanel extends JPanel implements Runnable {
             if (gameState == shippingOptionState && (player.currentNPC == null || (player.currentNPC != null && !player.currentNPC.isGifted))) {
                 if (keyHandler.enterPressed) {
                     Item selected = player.getInventory().getSelectedItem();
-                    if(!(selected instanceof Equipment)){
+                    if(selected instanceof Sellable){
                         if (player.getInventory().optionCommandNum == 0) {
                             player.selling();
                             gameState = playState;
@@ -1209,7 +1209,7 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
         } else if (gameState == dialogState) {
-            player.currentNPC.selectAction(keyHandler.leftPressed, keyHandler.rightPressed); // Memanggil metode selectAction pada NPC yang sedang berinteraksi
+            player.currentNPC.selectAction(keyHandler.leftPressed, keyHandler.rightPressed);
             keyHandler.leftPressed = false;
             keyHandler.rightPressed = false;
         }

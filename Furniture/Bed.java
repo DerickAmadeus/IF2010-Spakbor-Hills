@@ -1,8 +1,6 @@
 package Furniture;
 
-import Map.Tile; // Pastikan import Tile jika Bed adalah subclassnya
-// Import lain yang mungkin diperlukan oleh Bed
-
+import Map.Tile; 
 public class Bed extends Furniture { // Atau kelas parent lainnya jika bukan Tile
 
     // Atribut-atribut spesifik Bed Anda (misalnya, bedType, dll.)

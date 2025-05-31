@@ -2,7 +2,7 @@ package Items;
 
 import main.GamePanel;
 
-public class Misc extends Item implements Buyable {
+public class Misc extends Item implements Buyable, Sellable {
     
     public Misc(String name, String description, int hargaJual, int hargaBeli) {
         super(name, description, hargaJual, hargaBeli);
@@ -23,6 +23,12 @@ public class Misc extends Item implements Buyable {
             gp.player.totalExpenditure += (item.getHargaBeli() * amount);
             System.out.println("Bought " + getName());
         }
+    }
+
+    @Override
+    public void sell(GamePanel gp, Item item) {
+        gp.player.getInventory().removeItem(item, 1);
+        gp.player.setStoredMoney(gp.player.getStoredMoney() + item.getHargaJual());
     }
 
     @Override

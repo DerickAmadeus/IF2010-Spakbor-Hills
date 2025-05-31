@@ -25,7 +25,7 @@ public class TV extends Furniture{
         String weather = gp.currentWeather;
 
         if (weather.equals("Rainy")) {
-            g2.setColor(new java.awt.Color(40, 40, 70)); // Lebih kelam
+            g2.setColor(new java.awt.Color(40, 40, 70));
             g2.fillRect(screenX + 10, screenY + 10, screenWidth - 20, screenHeight - 20);
 
             g2.setColor(java.awt.Color.LIGHT_GRAY);
@@ -55,7 +55,7 @@ public class TV extends Furniture{
             g2.setFont(g2.getFont().deriveFont(28f));
             g2.drawString("Weather: Rainy", screenX + 40, screenY + screenHeight - 40);
         } else if (weather.equals("Sunny")) {
-            g2.setColor(new java.awt.Color(135, 206, 235)); // Biru langit
+            g2.setColor(new java.awt.Color(135, 206, 235));
             g2.fillRect(screenX + 10, screenY + 10, screenWidth - 20, screenHeight - 20);
 
             int sunCenterX = screenX + screenWidth / 2;
@@ -64,7 +64,7 @@ public class TV extends Furniture{
 
             g2.setColor(java.awt.Color.YELLOW);
             for (int i = 0; i < 12; i++) {
-                double angle = Math.toRadians(i * 30); // 360 / 12
+                double angle = Math.toRadians(i * 30);
                 int x1 = (int)(sunCenterX + Math.cos(angle) * (sunRadius + 10));
                 int y1 = (int)(sunCenterY + Math.sin(angle) * (sunRadius + 10));
                 int x2 = (int)(sunCenterX + Math.cos(angle) * (sunRadius + 30));

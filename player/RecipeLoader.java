@@ -8,18 +8,15 @@ public class RecipeLoader {
     public static Recipe[] loadInitialRecipes() {
         Recipe[] recipes = new Recipe[11];
 
-        // List umum untuk reusable data ikan
         ArrayList<String> allSeasons = new ArrayList<>(List.of("Spring", "Summer", "Fall", "Winter"));
         ArrayList<String> anyWeather = new ArrayList<>(List.of("Sunny", "Rainy"));
         ArrayList<String> anyLocation = new ArrayList<>(List.of("River", "Lake", "Ocean"));
         ArrayList<Integer> anytime = new ArrayList<>(List.of(0));
         ArrayList<Integer> endtime = new ArrayList<>(List.of(24));
 
-        // Ikan biasa
         Item fish = new Fish("Any Fish", 80, 50,
                 allSeasons, anyWeather, anyLocation, "Common", anytime, endtime);
 
-        // Ikan spesifik
         Item salmon = new Fish("Salmon", 150, 100,
                 new ArrayList<>(List.of("Fall")),
                 new ArrayList<>(List.of("Rainy")),
@@ -44,7 +41,6 @@ public class RecipeLoader {
                 new ArrayList<>(List.of(6)),
                 new ArrayList<>(List.of(8)));
 
-        // Item tanaman
         Item wheat = new Crops("Wheat", 40, 20, 3);
         Item potato = new Crops("Potato", 30, 15, 3);
         Item grape = new Crops("Grape", 60, 30, 3);
@@ -59,7 +55,6 @@ public class RecipeLoader {
         Item blueberry = new Crops("Blueberry", 70, 35, 3);
         Item eggplant = new Misc("Eggplant", "Terong", 65, 32);
 
-        // Daftar resep
         recipes[0] = makeRecipe("recipe_1", new Food("Fish n' Chips", 135, 150, 50), Map.of(fish, 2, wheat, 1, potato, 1));
         recipes[1] = makeRecipe("recipe_2", new Food("Baguette", 80, 100, 25), Map.of(wheat, 3));
         recipes[2] = makeRecipe("recipe_3", new Food("Sashimi", 275, 300, 70), Map.of(salmon, 3));

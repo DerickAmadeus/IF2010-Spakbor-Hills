@@ -841,17 +841,9 @@ public class Player {
 
     public void eating() {
         Item get = inventory.getSelectedItem();
-        if ((get instanceof Fish || get instanceof Crops || get instanceof Food) && energy < MAX_ENERGY && keyH.enterPressed && interactionCooldown == 0) {
-            if (get instanceof Fish) {
-                Fish eaten = (Fish) get;
-                eaten.eat(this, eaten);
-            } else if (get instanceof Crops) {
-                Crops eaten = (Crops) get;
-                eaten.eat(this, get);
-            } else if (get instanceof Food) {
-                Food eaten = (Food) get;
-                eaten.eat(this, get);
-            }
+        if ((get instanceof Edible) && energy < MAX_ENERGY && keyH.enterPressed && interactionCooldown == 0) {
+            Edible eaten = (Edible) get;
+            eaten.eat(this, get);
             gp.addMinutes(5);
         }
     }
@@ -972,40 +964,23 @@ public boolean energyReducedInThisChat = false;
 
     public void marrying(Graphics2D g2) {
         int energyUsed = 0;
-
-        // currentNPC.drawMarrying akan menangani UI dan logika proposal pernikahan,
-        // dan mengembalikan true jika diterima, false jika ditolak.
         Boolean hasil = currentNPC.drawMarrying(g2, currentNPC.getName());
 
         if (hasil == true) {
             System.out.println("Player: Congratulations! You are now married to " + currentNPC.getName() + ".");
-            this.partner = currentNPC; // Tetapkan NPC ini sebagai partner pemain
-            energyUsed = 80; // Misalnya, biaya energi untuk menikah
-
-            // Panggil metode triggerWeddingDayEvent dari GamePanel
-            // 'this' adalah instance Player saat ini, dan this.partner adalah NPC yang baru saja dinikahi.
+            this.partner = currentNPC; 
+            energyUsed = 80;
             gp.triggerWeddingDayEvent(this, this.partner);
-
-            // Catatan: triggerWeddingDayEvent di GamePanel akan menangani perubahan gameState,
-            // skip waktu, teleportasi pemain, dll.
-            // Metode tersebut juga mengatur gp.player.currentNPC menjadi null di akhirnya,
-            // yang sesuai karena interaksi dialog pernikahan telah selesai.
-
         } else {
             System.out.println("Player: " + currentNPC.getName() + " has declined the marriage proposal.");
-            this.partner = null; // Pastikan partner adalah null jika pernikahan ditolak
+            this.partner = null; 
             energyUsed = 0;
         }
 
-        // Logika pengurangan energi
         if (!energyReducedInThisChat) {
             setEnergy(getEnergy() - energyUsed);
-            energyReducedInThisChat = true; // Tandai bahwa energi telah dikurangi untuk siklus interaksi ini
+            energyReducedInThisChat = true; 
         }
-
-        // Flag `currentNPC.isMarried` yang menyebabkan metode ini dipanggil
-        // akan di-reset di loop update GamePanel setelah interaksi dialog ini selesai.
-        // Jadi, tidak perlu di-reset secara eksplisit di sini.
     }
 
      public void gifting(Graphics2D g2) {
@@ -1103,16 +1078,15 @@ public boolean energyReducedInThisChat = false;
         if(sb.lastday < gp.gameDay) {
             sb.binCount = 0;
             sb.lastday = gp.gameDay;
-            /*money += storedMoney;
-            storedMoney = 0;
-            System.out.println("Player: Shipping bin has been emptied, Current Money: " + money + " coins.");*/
         }
         if (sb.binCount < sb.maxSlot) {
             if (inventory.getItemCount(sellingItem) > 0) {
                 int price = sellingItem.getHargaJual();
                 if (price > 0) {
-                    inventory.removeItem(sellingItem, 1);
-                    storedMoney += price;
+                    Sellable sell = (Sellable) sellingItem;
+                    sell.sell(gp, sellingItem);
+                    //inventory.removeItem(sellingItem, 1);
+                    //storedMoney += price;
                     System.out.println("Player: Sold " + sellingItem.getName() + " for " + price + " coins.");
                     System.out.println("Player: Total money now: " + storedMoney + " coins.");
                     sb.binCount++;
