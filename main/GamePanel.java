@@ -191,38 +191,40 @@ public class GamePanel extends JPanel implements Runnable {
 
         // Dari Farm Map (ID 0) ke HouseMap (ID 3)
         // Area pemicu, Door
-        // muncul di depan door rumah
-        transitions.add(new TransitionData(0, 5, 10, 1, 1, 3, 7, 12, false, tileSize));
+
+        //muncul di depan door rumah
+        transitions.add(new TransitionData(0, map.getDoorLocationTileX(), map.getDoorLocationTileY(), 1, 1, 3, 7, 12, false, tileSize));
         // No additional transitions needed here for background color change.
 
-        transitions.add(new TransitionData(3, 7, 13, 1, 1, 0, 5, 11, false, tileSize));
+        transitions.add(new TransitionData(3, 7, 13, 1, 1, 0, map.getDoorLocationTileX(), map.getDoorLocationTileY() + 1, false, tileSize));
 
         // Farm Map ke NPC map and backwards
         transitions.add(new TransitionData(0, 30, 30, 1, 1, 4, 4, 5, false, tileSize));
         transitions.add(new TransitionData(4, 3, 5, 1, 1, 0, 29, 30, false, tileSize));
 
-        // NPC Map ke MT House Map and backwards
-        transitions.add(new TransitionData(4, 17, 3, 1, 1, 10, 7, 12, false, tileSize));
+
+        //NPC Map ke MT House Map and backwards
+        transitions.add(new TransitionData(4, 15, 3, 1, 1, 10, 7, 12, false, tileSize));
         transitions.add(new TransitionData(10, 7, 13, 1, 1, 4, 17, 4, false, tileSize));
 
-        // NPC Map ke C House Map and backwards
-        transitions.add(new TransitionData(4, 26, 3, 1, 1, 5, 7, 12, false, tileSize));
+        //NPC Map ke C House Map and backwards
+        transitions.add(new TransitionData(4, 24, 3, 1, 1, 5, 7, 12, false, tileSize));
         transitions.add(new TransitionData(5, 7, 13, 1, 1, 4, 26, 4, false, tileSize));
 
-        // NPC Map ke P House Map and backwards
-        transitions.add(new TransitionData(4, 35, 3, 1, 1, 6, 7, 12, false, tileSize));
+        //NPC Map ke P House Map and backwards
+        transitions.add(new TransitionData(4, 33, 3, 1, 1, 6, 7, 12, false, tileSize));
         transitions.add(new TransitionData(6, 7, 13, 1, 1, 4, 35, 4, false, tileSize));
 
-        // NPC Map ke D House Map and backwards
-        transitions.add(new TransitionData(4, 44, 3, 1, 1, 7, 7, 12, false, tileSize));
+        //NPC Map ke D House Map and backwards
+        transitions.add(new TransitionData(4, 42, 3, 1, 1, 7, 7, 12, false, tileSize));
         transitions.add(new TransitionData(7, 7, 13, 1, 1, 4, 44, 4, false, tileSize));
 
-        // NPC Map ke A House Map and backwards
-        transitions.add(new TransitionData(4, 53, 3, 1, 1, 8, 7, 12, false, tileSize));
+        //NPC Map ke A House Map and backwards
+        transitions.add(new TransitionData(4, 51, 3, 1, 1, 8, 7, 12, false, tileSize));
         transitions.add(new TransitionData(8, 7, 13, 1, 1, 4, 53, 4, false, tileSize));
 
-        // NPC Map ke Store Map and backwards
-        transitions.add(new TransitionData(4, 62, 3, 1, 1, 9, 7, 12, false, tileSize));
+        //NPC Map ke Store Map and backwards
+        transitions.add(new TransitionData(4, 60, 3, 1, 1, 9, 7, 12, false, tileSize));
         transitions.add(new TransitionData(9, 7, 13, 1, 1, 4, 62, 4, false, tileSize));
 
         // Tambahkan transisi lain sesuai kebutuhan Anda
@@ -257,11 +259,14 @@ public class GamePanel extends JPanel implements Runnable {
                     player.direction = "down"; // Atur arah default
                     // player.isActuallyMoving = false; // Jika Anda memiliki variabel ini di Player
                     player.setLocation(transition.targetMapID);
-                    if (map.currentMapID != 3 && map.currentMapID != 0) {
+                    if (previousMapID >=4 && previousMapID <= 10 && map.currentMapID == 4){
+                        // DO Nothing
+                        player.setEnergy(player.getEnergy() - 0);
+
+                    } else if (map.currentMapID != 3 && map.currentMapID != 0 && map.currentMapID <= 4) {
                         addMinutes(15);
                         player.setEnergy(player.getEnergy() - 10);
-
-                    }
+                    } 
                     transition.startCooldown(); // Mulai cooldown untuk transisi yang baru saja digunakan
 
                     // Mencegah langsung kembali: terapkan cooldown pada transisi yang mengarah
@@ -748,6 +753,7 @@ public class GamePanel extends JPanel implements Runnable {
             player.setStoredMoney(0);
             System.out.println("Player: Money added from stored money. Current money: " + player.getMoney());
         }
+
         if (gameState == titleState) {
             if (keyHandler.enterPressed) {
                 if (titlePage.commandNumber == 3) {
