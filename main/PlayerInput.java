@@ -140,25 +140,21 @@ public class PlayerInput {
     }
 
     public void keyPressed(KeyEvent e) {
-
-        int code = e.getKeyCode();
+        int keyCode = e.getKeyCode();
         char ch  = e.getKeyChar();
 
-        /* ESC – balik ke FarmNameInputState */
-        if (code == KeyEvent.VK_ESCAPE) {
+        if (keyCode == KeyEvent.VK_ESCAPE) { // ESC auto back
             gp.gameState = gp.farmNameInputState;
             gp.farmName.commandNumber = 0;
             return;
         }
 
-        /* TAB – pindah fokus siklis 0→1→2→3→0 */
-        if (code == KeyEvent.VK_TAB) {
+        else if (keyCode == KeyEvent.VK_TAB) {
             commandNumber = (commandNumber + 1) % 4;
             return;
         }
 
-        /* ENTER */
-        if (code == KeyEvent.VK_ENTER) {
+        else if (keyCode == KeyEvent.VK_ENTER) {
             switch (commandNumber) {
                 case 1:
                     selectedGender = "Male";
@@ -170,7 +166,7 @@ public class PlayerInput {
                     gp.gameState = gp.farmNameInputState;
                     return;              
             }
-            /* validasi keseluruhan */
+            
             if (!playerNameInput.trim().isEmpty() && (selectedGender=="Male"||selectedGender=="Female")) {
                 gp.player.setPlayerName(playerNameInput.trim());
                 gp.player.setGender(selectedGender);
@@ -180,10 +176,9 @@ public class PlayerInput {
             return;
         }
 
-        /* EDIT TEKS – hanya jika fokus di nama */
         if (commandNumber != 0) return;
 
-        if (code == KeyEvent.VK_BACK_SPACE) {
+        if (keyCode == KeyEvent.VK_BACK_SPACE) {
             if (!nameMessage.isEmpty()){
                 playerNameInput = playerNameInput.substring(0, playerNameInput.length()-1);
             return;

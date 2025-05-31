@@ -18,6 +18,12 @@ public class Statistics {
     private final String back = "BACK";
     private final String title = "STATISTICS";
 
+    private int scrollOffset = 0;
+    private final int lineHeight = 20;
+    private final int visibleLines = 12; 
+
+    private String[] rows;
+    
     public Statistics(GamePanel gp) {
         this.gp = gp;
         loadFont();
@@ -33,7 +39,60 @@ public class Statistics {
         }
     }
 
+    private void updateRows() {
+            Player p = gp.player;
+            rows = new String[] {
+                "Total income           : " + p.totalIncome,
+                "Total expenditure      : " + p.totalExpenditure,
+                "Average season income  : " + (int) p.totalIncome / 4,
+                "Total days played      : " + gp.daysPlayed,
+                "",
+                "NPCs status - " + gp.npcs[0].getName() + " : ",
+                "   - Relationship status   : " + gp.npcs[0].getRelationship(),
+                "   - Chatting Frequency    : " + gp.npcs[0].chattingFrequency,
+                "   - Gifting Frequency     : " + gp.npcs[0].giftingFrequency,
+                "   - Visiting Frequency    : " + gp.npcs[0].visitingFrequency,
+                "",
+                "NPCs status - " + gp.npcs[1].getName() + " : ",
+                "   - Relationship status   : " + gp.npcs[1].getRelationship(),
+                "   - Chatting Frequency    : " + gp.npcs[1].chattingFrequency,
+                "   - Gifting Frequency     : " + gp.npcs[1].giftingFrequency,
+                "   - Visiting Frequency    : " + gp.npcs[1].visitingFrequency,
+                "",
+                "NPCs status - " + gp.npcs[2].getName() + " : ",
+                "   - Relationship status   : " + gp.npcs[2].getRelationship(),
+                "   - Chatting Frequency    : "+ gp.npcs[2].chattingFrequency,
+                "   - Gifting Frequency     : "+ gp.npcs[2].giftingFrequency,
+                "   - Visiting Frequency    : "+ gp.npcs[2].visitingFrequency,
+                "",
+                "NPCs status - " + gp.npcs[3].getName() + " : ",
+                "   - Relationship status   : " + gp.npcs[3].getRelationship(),
+                "   - Chatting Frequency    : "+ gp.npcs[3].chattingFrequency,
+                "   - Gifting Frequency     : "+ gp.npcs[3].giftingFrequency,
+                "   - Visiting Frequency    : "+ gp.npcs[3].visitingFrequency,
+                "",
+                "NPCs status - " + gp.npcs[4].getName() + " : ",
+                "   - Relationship status   : " + gp.npcs[4].getRelationship(),
+                "   - Chatting Frequency    : "+ gp.npcs[4].chattingFrequency,
+                "   - Gifting Frequency     : "+ gp.npcs[4].giftingFrequency,
+                "   - Visiting Frequency    : "+ gp.npcs[4].visitingFrequency,
+                "",
+                "NPCs status - " + gp.npcs[5].getName() + " : ",
+                "   - Relationship status   : " + gp.npcs[5].getRelationship(),
+                "   - Chatting Frequency    : "+ gp.npcs[5].chattingFrequency,
+                "   - Gifting Frequency     : "+ gp.npcs[5].giftingFrequency,
+                "   - Visiting Frequency    : "+ gp.npcs[5].visitingFrequency,
+                "",
+                "Crops harvested        : " + p.cropsHarvested,
+                "Fish caught :",
+                "   - Common    : " + p.fishCaughtCommon,
+                "   - Regular   : " + p.fishCaughtRegular,
+                "   - Legendary : " + p.fishCaughtLegendary,
+        };
+    }
+
     public void draw(Graphics2D g2) {
+        updateRows();
         int frameWidth = gp.tileSize * 12;
         int frameHeight = gp.tileSize * 10;
         int frameX = (gp.screenWidth - frameWidth) / 2;
@@ -59,63 +118,23 @@ public class Statistics {
         g2.setFont(helpFont.deriveFont(Font.PLAIN, 10F));
         g2.setColor(Color.WHITE);
 
-        int lx = frameX + gp.tileSize; // margin kiri dalam kotak
-        int ly = titleY + gp.tileSize / 2;
+        //scroll
+        Shape oldClip = g2.getClip();
+        int contentX = frameX + gp.tileSize;
+        int contentY = frameY + 80;
+        int contentWidth = frameWidth - 40;
+        int contentHeight = frameHeight - 110;
+        
+        g2.clipRect(contentX, contentY - lineHeight, contentWidth, contentHeight);
 
-        Player p = gp.player; // referensi pemain
-        String[] rows = {
-                "Total income           : " + p.totalIncome,
-                "Total expenditure      : " + p.totalExpenditure,
-                "Average season income  : " + (int) p.totalIncome / 4,
-                "Total days played      : " + gp.daysPlayed,
-                
-                "NPCs status - " + gp.npcs[0].getName() + " : ",
-                "   - Relationship status   : " + gp.npcs[0].getRelationship(),
-                "   - Chatting Frequency    : " + gp.npcs[0].chattingFrequency,
-                "   - Gifting Frequency     : " + gp.npcs[0].giftingFrequency,
-                "   - Visiting Frequency    : " + gp.npcs[0].visitingFrequency,
-
-                "NPCs status - " + gp.npcs[1].getName() + " : ",
-                "   - Relationship status   : " + gp.npcs[1].getRelationship(),
-                "   - Chatting Frequency    : " + gp.npcs[1].chattingFrequency,
-                "   - Gifting Frequency     : " + gp.npcs[1].giftingFrequency,
-                "   - Visiting Frequency    : " + gp.npcs[1].visitingFrequency,
-
-                "NPCs status - " + gp.npcs[2].getName() + " : ",
-                "   - Relationship status   : " + gp.npcs[2].getRelationship(),
-                "   - Chatting Frequency    : "+ gp.npcs[2].chattingFrequency,
-                "   - Gifting Frequency     : "+ gp.npcs[2].giftingFrequency,
-                "   - Visiting Frequency    : "+ gp.npcs[2].visitingFrequency,
-
-                "NPCs status - " + gp.npcs[3].getName() + " : ",
-                "   - Relationship status   : " + gp.npcs[3].getRelationship(),
-                "   - Chatting Frequency    : "+ gp.npcs[3].chattingFrequency,
-                "   - Gifting Frequency     : "+ gp.npcs[3].giftingFrequency,
-                "   - Visiting Frequency    : "+ gp.npcs[3].visitingFrequency,
-
-                "NPCs status - " + gp.npcs[4].getName() + " : ",
-                "   - Relationship status   : " + gp.npcs[4].getRelationship(),
-                "   - Chatting Frequency    : "+ gp.npcs[4].chattingFrequency,
-                "   - Gifting Frequency     : "+ gp.npcs[4].giftingFrequency,
-                "   - Visiting Frequency    : "+ gp.npcs[4].visitingFrequency,
-
-                "NPCs status - " + gp.npcs[5].getName() + " : ",
-                "   - Relationship status   : " + gp.npcs[5].getRelationship(),
-                "   - Chatting Frequency    : "+ gp.npcs[5].chattingFrequency,
-                "   - Gifting Frequency     : "+ gp.npcs[5].giftingFrequency,
-                "   - Visiting Frequency    : "+ gp.npcs[5].visitingFrequency,
-
-                "Crops harvested        : " + p.cropsHarvested,
-                "Fish caught :",
-                "   - Common    : " + p.fishCaughtCommon,
-                "   - Regular   : " + p.fishCaughtRegular,
-                "   - Legendary : " + p.fishCaughtLegendary,
-        };
-
-        for (String line : rows) {
-            g2.drawString(line, lx, ly);
-            ly += gp.tileSize / 2;
+        int startY = contentY + lineHeight - scrollOffset;
+         for (String txt : rows) {
+            if (startY > contentY - lineHeight && startY < contentY + contentHeight) {
+                g2.drawString(txt, contentX, startY + 20);
+            }
+            startY += lineHeight;
         }
+        g2.setClip(oldClip);
 
         // BACK
         g2.setFont(helpFont.deriveFont(Font.BOLD, 20F));
@@ -149,7 +168,14 @@ public class Statistics {
                 gp.gameState = gp.menuState;
                 gp.keyHandler.enterPressed = false;
             }
-        }
+        } else if (keyCode == KeyEvent.VK_W) {
+                // Scroll up
+                scrollOffset = Math.max(0, scrollOffset - lineHeight);
+        } else if (keyCode == KeyEvent.VK_S) {
+                // Scroll down
+                int maxScroll = (rows.length * lineHeight) - (visibleLines * lineHeight);
+                scrollOffset = Math.min(maxScroll, scrollOffset + lineHeight);
+        } 
     }
 
     public int getX(String text, Graphics2D g2) {

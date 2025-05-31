@@ -5,9 +5,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.imageio.ImageIO;
-
 
 public class FarmName {
     GamePanel gp;
@@ -112,7 +110,7 @@ public class FarmName {
 
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
-        char keyChar = e.getKeyChar();
+        char ch = e.getKeyChar();
 
         if (keyCode == KeyEvent.VK_ESCAPE) { // ESC auto back
             gp.gameState = gp.titleState; 
@@ -140,8 +138,8 @@ public class FarmName {
             }
         } else {
             if (commandNumber == 0 && farmNameInput.length() < maxLength) {
-                if (Character.isLetterOrDigit(keyChar) || Character.isWhitespace(keyChar)) {
-                    farmNameInput += keyChar;
+                if (ch >= 32 && ch <= 126) {
+                    farmNameInput += ch;
                 }
             }
         }
