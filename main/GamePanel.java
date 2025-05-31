@@ -755,7 +755,7 @@ public class GamePanel extends JPanel implements Runnable {
                     daysPlayed++;
                 }
             }
-            map.updateTiles(); // hanya update tiap 5 menit, sesuai
+            map.updateTiles(); 
         }
     }
 
@@ -1818,12 +1818,10 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void startSleepingSequence() {
-        gameHour = 5;
-        gameMinute = 55;
-        gameDay++;
-        daysPlayed++;
+        while(gameHour != 6 || gameMinute != 0) {
+            addMinutes(5);
+        }
         gameState = playState;
-        map.updateTiles(); 
 
         for (int i = 0; i <= 200; i += 10) {
             try {
