@@ -437,6 +437,7 @@ public class NPC {
         if (heartPoints >= 150 && relationship != "Married" && gp.player.getEquippedItem() != null && gp.player.getEquippedItem().getName().equals("Proposal Ring")) {
             g2.drawString(proposingAnswers[0], x + 20, y + 100); 
             relationship = "Proposed"; 
+            daysCanMarry = gp.daysPlayed + 1; // Set the day they can marry to 7 days later
             return true; 
         } else if (relationship == "Married") {
             g2.drawString(proposingAnswers[3], x + 20, y + 100); 
@@ -483,14 +484,14 @@ public class NPC {
         g2.setColor(Color.WHITE);
         g2.drawString(speakerName + ":", x + 20, y + 35);
 
-        if (heartPoints >= 150 && relationship == "Proposed" && daysCanMarry <= gp.gameDay) {
+        if (heartPoints >= 150 && relationship == "Proposed" && daysCanMarry <= gp.daysPlayed &&  gp.player.getEquippedItem().getName().equals("Proposal Ring")) {
             g2.drawString(marriageAnswers[0], x + 20, y + 100); 
             relationship = "Married"; 
             return true; 
         } else if (relationship == "Married") {
             g2.drawString(marriageAnswers[3], x + 20, y + 100); 
             return false; 
-        } else if (daysCanMarry > gp.gameDay) {
+        } else if (daysCanMarry > gp.daysPlayed) {
             g2.drawString(marriageAnswers[1], x + 20, y + 100); 
             return false; 
         } else {

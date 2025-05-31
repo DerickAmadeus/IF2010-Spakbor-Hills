@@ -30,7 +30,7 @@ public class Player {
     public Rectangle solidArea; 
     public Rectangle interactionArea; 
     public int solidAreaDefaultX, solidAreaDefaultY;
-    private int money = 1000;
+    private int money = 100000;
     private int storedMoney = 0; 
     public boolean collisionOn = false;
     GamePanel gp;
@@ -45,7 +45,6 @@ public class Player {
     public BufferedImage goldIcon;
     public ShippingBin currSB;
     public int checkerstate = 0;
-    private int lastday = 1;
     private NPC partner;
 
 
@@ -940,7 +939,7 @@ public boolean energyReducedInThisChat = false;
             setEnergy(getEnergy() - 10);
             energyReducedInThisChat = true;
             gp.addMinutes(10);
-            currentNPC.addHeartPoints(10);
+            currentNPC.addHeartPoints(100);
         }
         currentNPC.drawNPCDialog(g2, currentNPC.getName());
     }
@@ -971,12 +970,12 @@ public boolean energyReducedInThisChat = false;
 
         if (hasil == true) {
             System.out.println("Player: Congratulations! You are now married to " + currentNPC.getName() + ".");
-            this.partner = currentNPC; // Tetapkan NPC ini sebagai partner pemain
-            energyUsed = 80; // Misalnya, biaya energi untuk menikah
+            this.partner = currentNPC; 
+            energyUsed = 80; 
 
             // Panggil metode triggerWeddingDayEvent dari GamePanel
             // 'this' adalah instance Player saat ini, dan this.partner adalah NPC yang baru saja dinikahi.
-            gp.triggerWeddingDayEvent(this, this.partner);
+            gp.triggerWeddingDayEvent(this, this.partner, g2);
 
             // Catatan: triggerWeddingDayEvent di GamePanel akan menangani perubahan gameState,
             // skip waktu, teleportasi pemain, dll.

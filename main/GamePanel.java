@@ -1851,9 +1851,8 @@ public class GamePanel extends JPanel implements Runnable {
         repaint(); 
     }
 
-    public void triggerWeddingDayEvent(Player player, NPC spouse) {
+    public void triggerWeddingDayEvent(Player player, NPC spouse, Graphics2D g2) {
         System.out.println("Wedding event triggered with " + spouse.getName() + "!");
-
         // (Opsional) gameState = cutsceneState;
 
         // 1. Logika untuk memindahkan pemain dan pasangan ke rumah
@@ -1877,11 +1876,10 @@ public class GamePanel extends JPanel implements Runnable {
         // spouse.x = ...; spouse.y = ...; spouse.setLocation(playerHouseMapID);
 
         // 2. Skip waktu ke malam hari
-        this.gameHour = 22;
-        this.gameMinute = 0;
+        while(gameHour != 22 || gameMinute != 0) {
+            addMinutes(5);
+        }
 
-        // 3. Pulihkan energi pemain
-        player.setEnergy(Player.getMaxEnergy());
 
         // 4. Selesaikan event dan kembali ke playState
         this.gameState = playState;
