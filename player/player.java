@@ -714,9 +714,18 @@ public class Player {
             this.location = "MTHouse";
         } else if (locationID == 3) {
             this.location = "Player's House";
-
         } else if (locationID == 4) {
             this.location = "World Map";
+        } else if (locationID == 6) {
+            this.location = "Caroline's House";
+        } else if (locationID == 7) {
+            this.location = "Perry's House";
+        } else if (locationID == 8) {
+            this.location = "Dasco's House";
+        } else if (locationID == 10) {
+            this.location = "Emily's Store";
+        } else if (locationID == 9) {
+            this.location = "Abigail's House";
         }
     }
 

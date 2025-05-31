@@ -258,11 +258,14 @@ public class GamePanel extends JPanel implements Runnable {
                     player.direction = "down"; // Atur arah default
                     // player.isActuallyMoving = false; // Jika Anda memiliki variabel ini di Player
                     player.setLocation(transition.targetMapID);
-                    if (map.currentMapID != 3 && map.currentMapID != 0) {
+                    if (previousMapID >=4 && previousMapID <= 10 && map.currentMapID == 4){
+                        // DO Nothing
+                        player.setEnergy(player.getEnergy() - 0);
+
+                    } else if (map.currentMapID != 3 && map.currentMapID != 0 && map.currentMapID <= 4) {
                         addMinutes(15);
                         player.setEnergy(player.getEnergy() - 10);
-
-                    }
+                    } 
                     transition.startCooldown(); // Mulai cooldown untuk transisi yang baru saja digunakan
 
                     // Mencegah langsung kembali: terapkan cooldown pada transisi yang mengarah kembali
