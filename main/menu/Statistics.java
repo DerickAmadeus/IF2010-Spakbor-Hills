@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.awt.event.KeyEvent;
 
-public class PlayerInfo {
+public class Statistics {
     GamePanel gp;
 
     Font helpFont;
@@ -16,9 +16,9 @@ public class PlayerInfo {
     public int commandNumber = 0;
 
     private final String back = "BACK";
-    private final String title = "PLAYER INFO";
+    private final String title = "STATISTICS";
 
-    public PlayerInfo(GamePanel gp) {
+    public Statistics(GamePanel gp) {
         this.gp = gp;
         loadFont();
     }
@@ -64,14 +64,20 @@ public class PlayerInfo {
 
         Player p = gp.player;                      // referensi pemain
         String[] rows = {
-            "Name            : " + p.getPlayerName(),
-            "Farm Name       : " + p.getFarmName(),
-            "Gender          : " + p.getGender(),
-            "Energy          : " + p.getEnergy() + " / 100",
-            "Partner         : " + (p.getPartner()==null? "-" : p.getPartner().getName()),
-            "Favourite Item  : ", 
-            // + (p.getFavoriteItem()==null? "-" : p.getFavoriteItem().getName()),
-            "Gold            : " + p.getMoney() + " g"
+            "Total income           : " + p.totalIncome,
+            "Total expenditure      : " + p.totalExpenditure,
+            "Average season income  : " + (int) p.totalIncome / 4,
+            "Total days played      : " + gp.daysPlayed,
+            "NPCs status            : ",
+            "   - Relationship status   : ",
+            "   - Chatting Frequency    : ",
+            "   - Gifting Frequency     : ",
+            "   - Visiting Frequency    :",
+            "Crops harvested        : ",
+            "Fish caught :",
+            "   - Common    : ",
+            "   - Regular   : ",
+            "   - Legendary : ",
         };
 
         for (String line : rows) {
