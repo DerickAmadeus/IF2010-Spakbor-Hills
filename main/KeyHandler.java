@@ -95,6 +95,17 @@ public class KeyHandler implements KeyListener{
             gp.handleFishingInput(code);
             return;
         }
+
+        if (gp.gameState == gp.menuState) {
+            gp.player.handleMenuKey(e);
+            return;
+        }
+        
+        if (gp.gameState == gp.inGameHelpState) {          
+            gp.inGameHelp.keyPressed(e);                   
+            return;                                       
+        }
+
     }
     
     @Override

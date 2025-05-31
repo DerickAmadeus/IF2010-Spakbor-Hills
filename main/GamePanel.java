@@ -21,7 +21,13 @@ import java.util.HashMap;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-import player.Player;
+
+import main.menu.InGameHelp;
+
+import player.Player; 
+import NPC.NPC;
+import NPC.Seller;
+
 import player.Recipe;
 import player.RecipeLoader; 
 
@@ -44,6 +50,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int fishSelectionState = 8;
     public final int watchingState = 9;
     public final int fishingWinState = 10;
+    public final int inGameHelpState  = 11;
     public final int shippingState = 19;
     public final int shippingOptionState = 20;
     public int gameState = titleState;
@@ -117,6 +124,7 @@ public class GamePanel extends JPanel implements Runnable {
     public CollisionChecker cChecker = new CollisionChecker(this); // Collision checker for player movement
     public final PlayerInput playerInput = new PlayerInput(this);
     public Help help = new Help(this);
+    public InGameHelp inGameHelp = new InGameHelp(this);
     public Player player; // Player object
     private BufferedImage backgroundImage; // Background image for the game\
 
@@ -1641,6 +1649,7 @@ public class GamePanel extends JPanel implements Runnable {
             return;
         }
 
+        
         if (map.currentMapID == 3) { // Ganti angka 3 jika ID peta rumah Anda berbeda
             g2.setColor(java.awt.Color.black); // Atur latar belakang menjadi hitam untuk rumah
             g2.fillRect(0, 0, screenWidth, screenHeight);
@@ -1653,7 +1662,7 @@ public class GamePanel extends JPanel implements Runnable {
                 g2.fillRect(0, 0, screenWidth, screenHeight);
             }
         }
-
+        
         map.draw(g2); // Draw the map
         if (gameHour >= 18 || gameHour <= 5) {
             Color nightOverlay = new Color(0, 0, 0, 100);
@@ -1675,8 +1684,8 @@ public class GamePanel extends JPanel implements Runnable {
         g2.drawString(player.getLocation(), 500, 70);
         switch (currentSeason) {
             case "Spring":
-                g2.setColor(Color.PINK);
-                break;
+            g2.setColor(Color.PINK);
+            break;
             case "Summer":
                 g2.setColor(Color.YELLOW);
                 break;
@@ -1751,6 +1760,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
         if (gameState == menuState) {
             player.showMenu(g2);
+        }
+        if (gameState == inGameHelpState) {
+            inGameHelp.draw(g2); 
         }
         if (gameState == watchingState) {
             activeTV.screen(g2, this);
