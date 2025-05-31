@@ -17,8 +17,7 @@ public abstract class Item {
         setHargaJual(hargaJual);
         setHargaBeli(hargaBeli);
 
-        // Tentukan nama folder berdasarkan class turunan
-        String className = getClass().getSimpleName().toLowerCase(); // contoh: "Food" → "food"
+        String className = getClass().getSimpleName().toLowerCase();
         String imagePath = String.format("image/%s/%s.png", className, name);
         try {
             BufferedImage icon = ImageIO.read(getClass().getResourceAsStream(imagePath));

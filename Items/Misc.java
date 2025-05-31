@@ -38,11 +38,11 @@ public class Misc extends Item implements Buyable, Sellable {
 
         Misc misc = (Misc) o;
 
-        return this.getName().equals(misc.getName()); // Atau sesuaikan dengan ID unik yang kamu punya
+        return this.getName().equals(misc.getName()); 
     }
 
     @Override
     public int hashCode() {
-        return this.getName().hashCode(); // Atau kombinasi field yang unik
+        return this.getName().hashCode(); 
     }
 }

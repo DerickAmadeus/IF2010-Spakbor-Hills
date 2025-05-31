@@ -787,9 +787,6 @@ public class Map {
         for (int col = 0; col < currentMapWorldCol; col++) {
             for (int row = 0; row < currentMapWorldRow; row++) {
                 Tile tile = currentMapTiles[col][row];
-                // Pastikan Anda menggunakan nama yang benar untuk tile pintu Anda.
-                // Di contoh sebelumnya, Anda menggunakan "Door" (dengan D kapital).
-                // Jika di getTileImagePrototypes() Anda menamainya "door" (d kecil), sesuaikan di sini.
                 if (tile != null && "Door".equals(tile.getTileName())) {
                     return col; // Kembalikan indeks kolom (koordinat tile X)
                 }

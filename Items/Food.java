@@ -56,11 +56,11 @@ public class Food extends Item implements Sellable, Buyable, Edible{
 
         Food food = (Food) o;
 
-        return this.getName().equals(food.getName()); // Atau sesuaikan dengan ID unik yang kamu punya
+        return this.getName().equals(food.getName()); 
     }
 
     @Override
     public int hashCode() {
-        return this.getName().hashCode(); // Atau kombinasi field yang unik
+        return this.getName().hashCode(); 
     }
 }
