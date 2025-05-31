@@ -800,7 +800,7 @@ public class Player {
                     gp.gameState = gp.playerInfoState;
                     break;
                 case 2:
-                    // gp.gameState = gp.statisticsState;
+                    gp.gameState = gp.statisticsState;
                     break;
                 case 3:
                     gp.gameState = gp.inGameHelpState; 
