@@ -863,6 +863,7 @@ public class GamePanel extends JPanel implements Runnable {
                                 seller.loadInitialCrops();
                                 seller.loadInitialFood();
                                 seller.loadInitialSeeds();
+                                seller.loadProposalRing();
                             } else if (seller.getName().equals("Caroline")) {
                                 seller.loadMisc();
                             }
