@@ -748,10 +748,17 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void update() {
         if(gameDay > lastday) {
+            System.out.println("******************");
+            System.out.println("Day Has Been Reset.");
+            System.out.println("Current Player Money: " + player.getMoney());
+            System.out.println("Current Player Stored Money: " + player.getStoredMoney());
             lastday = gameDay;
             player.setMoney(player.getMoney() + player.getStoredMoney());
             player.setStoredMoney(0);
+            System.out.println("____________________");
+            System.out.println("Player: Stored money. New stored money: " + player.getStoredMoney());
             System.out.println("Player: Money added from stored money. Current money: " + player.getMoney());
+            System.out.println("******************");
         }
 
         if (gameState == titleState) {
@@ -1080,6 +1087,9 @@ public class GamePanel extends JPanel implements Runnable {
                         } else if (player.getInventory().optionCommandNum == 1) {
                             gameState = playState; 
                         }
+                    }
+                    else {
+                        gameState = playState;
                     }
                     keyHandler.enterPressed = false;
                 }
