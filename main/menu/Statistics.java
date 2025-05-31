@@ -68,6 +68,7 @@ public class Statistics {
                 "Total expenditure      : " + p.totalExpenditure,
                 "Average season income  : " + (int) p.totalIncome / 4,
                 "Total days played      : " + gp.daysPlayed,
+                
                 "NPCs status - " + gp.npcs[0].getName() + " : ",
                 "   - Relationship status   : " + gp.npcs[0].getRelationship(),
                 "   - Chatting Frequency    : " + gp.npcs[0].chattingFrequency,
