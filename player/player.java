@@ -67,7 +67,7 @@ public class Player {
     private String playerName = null;
     private String gender = null;
 
-    private final String[] menu = { "Continue", "Player Info", "Statistics", "Help", "Exit" };
+    private final String[] menu = { "Continue", "Player Info", "Statistics", "Help", "Quit" };
     public int menuCommand = 0;
 
     private int interactionCooldown = 0;
@@ -862,7 +862,7 @@ public class Player {
     return gp.screenWidth / 2 - length / 2;
         }
 
-    public void handleMenuKey(java.awt.event.KeyEvent e) {
+    public void handleMenuKey(KeyEvent e) {
         int code = e.getKeyCode();
         if (code == KeyEvent.VK_W || code == KeyEvent.VK_S) {
             gp.keyHandler.upPressed = (code == KeyEvent.VK_W);
@@ -888,7 +888,7 @@ public class Player {
                     // gp.gameState = gp.statisticsState;
                     break;
                 case 3:
-                    gp.gameState = gp.helpState; 
+                    gp.gameState = gp.inGameHelpState; 
                     break;
                 case 4:
                     System.exit(0); 
@@ -899,20 +899,19 @@ public class Player {
         }
     }
 
-
-        public void harvesting() {
-            if (equippedItem == null && energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
-                Tile tileToHarvest = gp.map.getTile(interactionArea.x, interactionArea.y);
-                if (tileToHarvest != null && tileToHarvest instanceof Soil) {
-                    Soil harvest = (Soil) tileToHarvest;
-                    if (!harvest.canPlant() && harvest.getDaysToHarvest() == 0 && harvest.getWetCooldown() > 0) {
-                        gp.map.harvestSeedAtTile(interactionArea.x, interactionArea.y);
-                        setEnergy(getEnergy() - 5);
-                        gp.addMinutes(5);
-                    }
+    public void harvesting() {
+        if (equippedItem == null && energy >= -15 && keyH.enterPressed && interactionCooldown == 0) {
+            Tile tileToHarvest = gp.map.getTile(interactionArea.x, interactionArea.y);
+            if (tileToHarvest != null && tileToHarvest instanceof Soil) {
+                Soil harvest = (Soil) tileToHarvest;
+                if (!harvest.canPlant() && harvest.getDaysToHarvest() == 0 && harvest.getWetCooldown() > 0) {
+                    gp.map.harvestSeedAtTile(interactionArea.x, interactionArea.y);
+                    setEnergy(getEnergy() - 5);
+                    gp.addMinutes(5);
                 }
             }
         }
+    }
 
     public void eating() {
         Item get = inventory.getSelectedItem();
