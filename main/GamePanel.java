@@ -3,26 +3,25 @@ package main;
 import Furniture.*;
 import Items.*;
 import Map.Map; // ← Tambahkan ini
+import Map.ShippingBin;
+import Map.Tile;
+import NPC.NPC;
+import NPC.Seller;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage; // Importing player class from player package
-import java.io.IOException; // Importing map class from Map package
+import java.awt.Rectangle; // Importing player class from player package
+import java.awt.event.KeyEvent; // Importing map class from Map package
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-
-import player.Player; 
-import NPC.NPC;
-import NPC.Seller;
-
-
+import player.Player;
 import player.Recipe;
 import player.RecipeLoader; 
 
@@ -811,13 +810,39 @@ public class GamePanel extends JPanel implements Runnable {
             keyHandler.escapePressed = false; // Reset escapePressed after handling
         }
         if (keyHandler.rPressed){
-            if (gameState == playState) {
-                gameState = shippingState;
-            } else if (gameState == shippingState || gameState == shippingOptionState) {
-                gameState = playState;
-                player.checkerstate = 0;
+            Rectangle soliddArea = new Rectangle(8, 16, 32, 32);
+            int playerCurrentTileCol = (player.x + soliddArea.x + soliddArea.width / 2) / tileSize; 
+            int playerCurrentTileRow = (player.y + soliddArea.y + soliddArea.height / 2) / tileSize;
+            int targetTileCol = playerCurrentTileCol;
+            int targetTileRow = playerCurrentTileRow;
+
+            String lastMoveDirectionz = player.getLastMoveDirection();
+
+            switch (lastMoveDirectionz) {
+                case "up": targetTileRow--; break;
+                case "down": targetTileRow++; break;
+                case "left": targetTileCol--; break;
+                case "right": targetTileCol++; break;
             }
-            keyHandler.rPressed = false;
+
+            Rectangle interactionAreaz = new Rectangle(0, 0, tileSize, tileSize);
+            interactionAreaz.x = targetTileCol * tileSize;
+            interactionAreaz.y = targetTileRow * tileSize;
+
+            Tile tileToInteractz = map.getTile(interactionAreaz.x, interactionAreaz.y);
+
+            if (tileToInteractz instanceof ShippingBin){
+                if (gameState == playState) {
+                    gameState = shippingState;
+                } else if (gameState == shippingState || gameState == shippingOptionState) {
+                    gameState = playState;
+                    player.checkerstate = 0;
+                }
+                keyHandler.rPressed = false;
+            }
+            else{
+                System.out.println("Tidak ada interaksi shipping bin yang tersedia di sini.");
+            }
         }
           
         if (gameState == playState) {
