@@ -39,7 +39,7 @@ public class ShippingBin extends Tile {
     }
 
     public void addItem(Item item, int quantity) {
-        if (binCount < maxSlot) {
+        if (binCount < maxSlot || inventory.hasItem(item)) {
             inventory.addItem(item, quantity);
         } else {
             System.out.println("Shipping bin is full!");

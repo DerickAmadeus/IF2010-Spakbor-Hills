@@ -269,7 +269,7 @@ public class Inventory<T extends Item> {
         if (selectedItemIndex < 0 || selectedItemIndex >= itemContainer.size()) return;
 
         T item = itemContainer.get(selectedItemIndex);
-        boolean validGiftingOption = !(item instanceof Equipment || item instanceof Seeds);
+        boolean validGiftingOption = !(item instanceof Equipment);
         boolean validSellingOption = !(item instanceof Equipment);
         int x = 200, y = 100, w = 400, h = 150;
 

@@ -30,7 +30,7 @@ public class Player {
     public Rectangle solidArea; 
     public Rectangle interactionArea; 
     public int solidAreaDefaultX, solidAreaDefaultY;
-    private int money = 1000;
+    private int money = 9183012;
     private int storedMoney = 0; 
     public boolean collisionOn = false;
     GamePanel gp;
@@ -1077,34 +1077,44 @@ public boolean energyReducedInThisChat = false;
     public void selling() {
         Item sellingItem = inventory.getSelectedItem();
         Tile tileToSell = gp.map.getTile(interactionArea.x, interactionArea.y);
+        if (!(tileToSell instanceof ShippingBin)) {
+            System.out.println("Player: No shipping bin at this location.");
+            return;
+        }
+
         ShippingBin sb = (ShippingBin) tileToSell;
         currSB = sb;
-        if(sb.lastday < gp.gameDay) {
+
+        if (sb.lastday < gp.gameDay) {
             sb.binCount = 0;
             sb.lastday = gp.gameDay;
         }
-        if (sb.binCount < sb.maxSlot) {
-            if (inventory.getItemCount(sellingItem) > 0) {
-                int price = sellingItem.getHargaJual();
-                if (price > 0) {
-                    Sellable sell = (Sellable) sellingItem;
-                    sell.sell(gp, sellingItem);
-                    //inventory.removeItem(sellingItem, 1);
-                    //storedMoney += price;
-                    System.out.println("Player: Sold " + sellingItem.getName() + " for " + price + " coins.");
-                    System.out.println("Player: Total money now: " + storedMoney + " coins.");
-                    sb.binCount++;
-                    sb.addItem(sellingItem, 1);
-                    currSB = sb;
-                } else {
-                    System.out.println("Player: Cannot sell " + sellingItem.getName() + ", no selling price.");
-                }
-            } else {
-                System.out.println("Player: No " + sellingItem.getName() + " to sell.");
-            }
+
+        if (inventory.getItemCount(sellingItem) <= 0) {
+            System.out.println("Player: No " + sellingItem.getName() + " to sell.");
+            return;
         }
-        else{
-            System.out.println("Player: Shipping bin is full, cannot sell more items.");
+
+        if (!(sellingItem instanceof Sellable)) {
+            System.out.println("Player: Item is not sellable.");
+            return;
+        }
+
+        if (sb.binCount >= sb.maxSlot && !sb.getInventory().hasItem(sellingItem)) {
+            System.out.println("Player: Shipping bin is full, cannot sell more unique items.");
+            return;
+        }
+
+        Sellable sell = (Sellable) sellingItem;
+        sell.sell(gp, sellingItem);
+        System.out.println("Player: Sold " + sellingItem.getName() + " for " + sellingItem.getHargaJual() + " coins.");
+        System.out.println("Player: Total money now: " + storedMoney + " coins.");
+
+        boolean itemSudahAda = sb.getInventory().hasItem(sellingItem);
+        sb.addItem(sellingItem, 1);
+
+        if (!itemSudahAda) {
+            sb.binCount++;
         }
     }
 
