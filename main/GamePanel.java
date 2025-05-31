@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 
 import main.menu.InGameHelp;
 import main.menu.PlayerInfo;
+import main.menu.Statistics;
 import player.Player; 
 import NPC.NPC;
 import NPC.Seller;
@@ -53,6 +54,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int fishingWinState = 10;
     public final int inGameHelpState  = 11;
     public final int playerInfoState  = 12;
+    public final int statisticsState = 13;
     public final int shippingState = 19;
     public final int shippingOptionState = 20;
     public final int cutsceneState = 21;
@@ -129,6 +131,7 @@ public class GamePanel extends JPanel implements Runnable {
     public Help help = new Help(this);
     public InGameHelp inGameHelp = new InGameHelp(this);
     public PlayerInfo playerInfo = new PlayerInfo(this);
+    public Statistics statistics = new Statistics(this);
     public Player player; // Player object
     private BufferedImage backgroundImage; // Background image for the game\
 
@@ -1694,10 +1697,12 @@ public class GamePanel extends JPanel implements Runnable {
             help.draw(g2);
             g2.dispose();
             return;
-        }
-
-        else if (gameState == playerNameInputState) {
+        } else if (gameState == playerNameInputState) {
             playerInput.draw(g2);
+            g2.dispose();
+            return;
+        } else if (gameState == statisticsState) {
+            statistics.draw(g2);
             g2.dispose();
             return;
         }

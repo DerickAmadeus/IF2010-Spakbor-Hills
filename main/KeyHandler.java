@@ -114,6 +114,11 @@ public class KeyHandler implements KeyListener{
             return;                                       
         }
 
+        if (gp.gameState == gp.statisticsState) {          
+            gp.statistics.keyPressed(e);                   
+            return;                                       
+        }
+
     }
     
     @Override
