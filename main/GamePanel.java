@@ -56,6 +56,8 @@ public class GamePanel extends JPanel implements Runnable {
     List<RainDrop> rainDrops = new ArrayList<>();
     private final int RAIN_COUNT = 100;
 
+    private int lastday = 1;
+
     public Fish[] allFishes = loadInitialFish();
     public Fish fishingTargetFish = null;
     public int fishingTarget = -1; // Angka yang harus ditebak
@@ -740,6 +742,12 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
+        if(gameDay > lastday) {
+            lastday = gameDay;
+            player.setMoney(player.getMoney() + player.getStoredMoney());
+            player.setStoredMoney(0);
+            System.out.println("Player: Money added from stored money. Current money: " + player.getMoney());
+        }
         if (gameState == titleState) {
             if (keyHandler.enterPressed) {
                 if (titlePage.commandNumber == 3) {
