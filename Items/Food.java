@@ -1,4 +1,5 @@
 package Items;
+import main.GamePanel;
 import player.Player;
 
 public class Food extends Item implements Sellable, Buyable, Edible{
@@ -12,9 +13,17 @@ public class Food extends Item implements Sellable, Buyable, Edible{
     public int getEnergyGain() {
         return energyGain;
     }
-
-    public void buy() {
-        System.out.println("Bought " + getName());
+    
+    @Override
+    public void buy(GamePanel gp, Item item, int amount) {
+        if (gp.player.getMoney() - (item.getHargaBeli() * amount) < 0) {
+            System.out.println("Insufficient Balance!");
+        } else {
+            gp.player.setMoney(gp.player.getMoney() - (item.getHargaBeli() * amount));
+            gp.player.getInventory().addItem(item, amount);
+            gp.seller.getInventory().removeItem(item, amount);
+            System.out.println("Bought " + getName());
+        }
     }
 
     public void sell() {

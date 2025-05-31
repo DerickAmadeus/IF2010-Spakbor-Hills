@@ -40,13 +40,14 @@ public class NPC {
     private Item[] likedItems;
     private Item[] hatedItems;
     private String relationship;
-    private Inventory<Item> inventory = new Inventory<>(gp);
+    protected Inventory<Item> inventory;
     public boolean isTalking = false;
     public boolean isProposed = false;
     public boolean isGifted = false;
 
     public NPC(GamePanel gp, String name, String spawnMapName, int tileX, int tileY, Item[] loveditems, Item[] likedItems, Item[] hatedItems) {
         this.gp = gp;
+        inventory = new Inventory<>(gp);
         this.name = name;
         heartPoints = 0;
         this.lovedItems = loveditems;
@@ -104,6 +105,13 @@ public class NPC {
         }
     }
 
+    public String[] getActions() {
+        return actions;
+    }
+
+    public void setActions(String[] actions) {
+        this.actions = actions;
+    }
 
     private void loadIdleAnimation() {
         idleFrames = new BufferedImage[IDLE_FRAME_COUNT];
@@ -130,7 +138,6 @@ public class NPC {
     }
 
     private BufferedImage createPlaceholderImage() {
-        // ... (metode createPlaceholderImage sudah ada) ...
         BufferedImage placeholder = new BufferedImage(gp.tileSize, gp.tileSize, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = placeholder.createGraphics();
         g.setColor(Color.MAGENTA);
@@ -142,7 +149,6 @@ public class NPC {
     }
 
     public void update() {
-        // ... (logika animasi idle sudah ada) ...
         spriteCounter++;
         if (spriteCounter > ANIMATION_SPEED) {
             spriteNum++;
@@ -153,9 +159,7 @@ public class NPC {
         }
     }
 
-    // Ganti nama drawNPC menjadi draw agar konsisten
     public void draw(Graphics2D g2) {
-        // ... (logika draw NPC yang sudah ada, pastikan menggunakan gp.player.x dan gp.player.screenX, dst.) ...
         BufferedImage imageToDraw = null;
         if (idleFrames != null && idleFrames.length > 0 && spriteNum < idleFrames.length && idleFrames[spriteNum] != null) {
             imageToDraw = idleFrames[spriteNum];
@@ -175,12 +179,11 @@ public class NPC {
             g2.drawImage(imageToDraw, screenX, screenY, gp.tileSize, gp.tileSize, null);
             if (gp.debugMode) {
                 g2.setColor(new Color(255, 0, 255, 100));
-                g2.drawRect(screenX + hitbox.x, screenY + hitbox.y, hitbox.width, hitbox.height); // Gambar hitbox NPC
-                // Gambar juga interactionTriggerArea NPC untuk debug
-                Rectangle actualTriggerArea = getInteractionTriggerAreaWorld(); // Dapatkan area trigger dalam koordinat dunia
+                g2.drawRect(screenX + hitbox.x, screenY + hitbox.y, hitbox.width, hitbox.height); 
+                Rectangle actualTriggerArea = getInteractionTriggerAreaWorld(); 
                 int triggerScreenX = actualTriggerArea.x - gp.player.x + gp.player.screenX;
                 int triggerScreenY = actualTriggerArea.y - gp.player.y + gp.player.screenY;
-                g2.setColor(new Color(0, 255, 255, 80)); // Cyan transparan
+                g2.setColor(new Color(0, 255, 255, 80)); 
                 g2.drawRect(triggerScreenX, triggerScreenY, actualTriggerArea.width, actualTriggerArea.height);
 
                 g2.setColor(Color.WHITE);
@@ -189,11 +192,10 @@ public class NPC {
         }
     }
 
-    public String getSpawnMapName() { // Pastikan getter ini ada
+    public String getSpawnMapName() { 
         return spawnMapName;
     }
 
-    // Getter untuk area interaksi NPC (dalam koordinat dunia)
     public Rectangle getInteractionTriggerAreaWorld() {
         return new Rectangle(worldX + hitbox.x, worldY + hitbox.y, hitbox.width, hitbox.height);
     }
@@ -209,28 +211,21 @@ public class NPC {
     }
 
     public void showStatus(Graphics2D g2) {
-        // draw Sub Windownya
         int frameX = gp.tileSize*9;
         int frameY = gp.tileSize;
         int frameWidth = gp.tileSize*6;
         int frameHeight = gp.tileSize*5;
         drawSubwindow(g2, frameX, frameY, frameWidth, frameHeight);
 
-
-        // Metode ini bisa digunakan untuk menampilkan status NPC, misalnya saat dialog
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Arial", Font.BOLD, 16));
         String statusText = "NPC: " + name;
         statusText += " (" + (relationship != null ? relationship : "Single") + ")";
         
-        // Gambar latar belakang untuk teks
-        // Gambar teks
         g2.setColor(Color.WHITE);
         g2.drawString(statusText, frameX + 20, frameY + 40);
-        // Gambar garis bawah
         g2.setStroke(new BasicStroke(2));
 
-        // Gambar heart points
         g2.setFont(new Font("Arial", Font.PLAIN, 14));
         String heartPointsText = "Heart Points: " + heartPoints;
 
@@ -242,11 +237,9 @@ public class NPC {
         g2.drawString(heartPointsText, frameX + 20, frameY + 80);
         g2.setColor(Color.WHITE);
 
-
-        // Gambar loved items
-        int y = frameY + 100; // Mulai dari posisi Y setelah heart points
+        int y = frameY + 100; 
         FontMetrics fm = g2.getFontMetrics();
-        int maxWidth = frameWidth - 40; // padding kiri-kanan
+        int maxWidth = frameWidth - 40; 
         int x = frameX + 20;
 
         if (lovedItems != null && lovedItems.length > 0) {
@@ -254,19 +247,16 @@ public class NPC {
             for (Item item : lovedItems) {
             lovedItemsText += item.getName() + ", ";
             }
-            // Hapus koma terakhir
             if (lovedItemsText.endsWith(", ")) {
             lovedItemsText = lovedItemsText.substring(0, lovedItemsText.length() - 2);
             }
-
-            // Bungkus teks jika terlalu panjang untuk frame
             String[] words = lovedItemsText.split(" ");
             StringBuilder line = new StringBuilder();
             for (String word : words) {
             String testLine = line + (line.length() == 0 ? "" : " ") + word;
             if (fm.stringWidth(testLine) > maxWidth) {
                 g2.drawString(line.toString(), x, y);
-                y += fm.getHeight() + 4; // spacing antar baris
+                y += fm.getHeight() + 4;
                 line = new StringBuilder(word);
             } else {
                 if (line.length() > 0) line.append(" ");
@@ -275,29 +265,26 @@ public class NPC {
             }
             if (line.length() > 0) {
             g2.drawString(line.toString(), x, y);
-            y += fm.getHeight() + 8; // spacing antar section
+            y += fm.getHeight() + 8; 
             }
         }
 
-        // Gambar liked items, mulai dari y setelah loved items
         if (likedItems != null && likedItems.length > 0) {
             String likedItemsText = "Liked Items: ";
             for (Item item : likedItems) {
             likedItemsText += item.getName() + ", ";
             }
-            // Hapus koma terakhir
             if (likedItemsText.endsWith(", ")) {
             likedItemsText = likedItemsText.substring(0, likedItemsText.length() - 2);
             }
 
-            // Bungkus teks jika terlalu panjang untuk frame
             String[] words = likedItemsText.split(" ");
             StringBuilder line = new StringBuilder();
             for (String word : words) {
             String testLine = line + (line.length() == 0 ? "" : " ") + word;
             if (fm.stringWidth(testLine) > maxWidth) {
                 g2.drawString(line.toString(), x, y);
-                y += fm.getHeight() + 4; // spacing antar baris
+                y += fm.getHeight() + 4;
                 line = new StringBuilder(word); 
             } else {
                 if (line.length() > 0) line.append(" ");
@@ -306,29 +293,26 @@ public class NPC {
             }
             if (line.length() > 0) {
             g2.drawString(line.toString(), x, y);
-            y += fm.getHeight() + 8; // spacing antar section
+            y += fm.getHeight() + 8; 
             }
         }
 
-        // Gambar hated items, mulai dari y setelah liked items
         if (hatedItems != null && hatedItems.length > 0) {
             String hatedItemsText = "Hated Items: ";
             for (Item item : hatedItems) {
             hatedItemsText += item.getName() + ", ";
             }
-            // Hapus koma terakhir
             if (hatedItemsText.endsWith(", ")) {
             hatedItemsText = hatedItemsText.substring(0, hatedItemsText.length() - 2);
             }
 
-            // Bungkus teks jika terlalu panjang untuk frame
             String[] words = hatedItemsText.split(" ");
             StringBuilder line = new StringBuilder();
             for (String word : words) {
             String testLine = line + (line.length() == 0 ? "" : " ") + word;
             if (fm.stringWidth(testLine) > maxWidth) {
                 g2.drawString(line.toString(), x, y);
-                y += fm.getHeight() + 4; // spacing antar baris
+                y += fm.getHeight() + 4; 
                 line = new StringBuilder(word); 
             } else {
                 if (line.length() > 0) line.append(" ");
@@ -337,7 +321,7 @@ public class NPC {
             }
             if (line.length() > 0) {
             g2.drawString(line.toString(), x, y);
-            y += fm.getHeight() + 8; // spacing antar section
+            y += fm.getHeight() + 8; 
             }
         } else {
             String hatedItemsText = "Hated Items: Seluruh item yang bukan merupakan lovedItems dan likedItems.";
@@ -347,7 +331,7 @@ public class NPC {
             String testLine = line + (line.length() == 0 ? "" : " ") + word;
             if (fm.stringWidth(testLine) > maxWidth) {
                 g2.drawString(line.toString(), x, y);
-                y += fm.getHeight() + 4; // spacing antar baris
+                y += fm.getHeight() + 4;
                 line = new StringBuilder(word); 
             } else {
                 if (line.length() > 0) line.append(" ");
@@ -356,9 +340,9 @@ public class NPC {
             }
             if (line.length() > 0) {
             g2.drawString(line.toString(), x, y);
-            y += fm.getHeight() + 8; // spacing antar section
+            y += fm.getHeight() + 8; 
             }
-            y += fm.getHeight() + 8; // spacing antar section
+            y += fm.getHeight() + 8;
         }
         
 
@@ -399,18 +383,18 @@ public class NPC {
         if (leftPressed) {
             selectedActionIndex--;
             if (selectedActionIndex < 0) {
-                selectedActionIndex = actions.length - 1; // Loop ke akhir
+                selectedActionIndex = actions.length - 1; 
             }
         } else if (rightPressed) {
             selectedActionIndex++;
             if (selectedActionIndex >= actions.length) {
-                selectedActionIndex = 0; // Loop ke awal
+                selectedActionIndex = 0; 
             }
         }
     }
 
     public String confirmAction() {
-        return actions[selectedActionIndex]; // Mengembalikan aksi yang sedang dipilih
+        return actions[selectedActionIndex];
     }
 
 
@@ -428,9 +412,9 @@ public class NPC {
         g2.drawString(dialogues[currentDialogueIndex], x + 20, y + 70);
 
         if (currentDialogueIndex >= dialogues.length) {
-            currentDialogueIndex = 0; // Reset dialog jika sudah selesai
-            isTalking = false; // Selesai berbicara
-            showActionMenu = true; // Tampilkan menu aksi setelah dialog selesai
+            currentDialogueIndex = 0; 
+            isTalking = false; 
+            showActionMenu = true; 
         }
     }
 
@@ -446,18 +430,16 @@ public class NPC {
         g2.setColor(Color.WHITE);
         g2.drawString(speakerName + ":", x + 20, y + 35);
         
-        // Gambar pertanyaan pernikahan
-        // Gambar pilihan jawaban
         if (heartPoints >= 150 && relationship != "Married" && gp.player.getEquippedItem() != null && gp.player.getEquippedItem().getName().equals("ring")) {
-            g2.drawString(proposingAnswers[0], x + 20, y + 100); // Jawaban positif
-            relationship = "Proposed"; // Set hubungan menjadi "Proposed"
-            return true; // Mengembalikan true untuk menandakan bahwa pertanyaan pernikahan telah ditampilkan
+            g2.drawString(proposingAnswers[0], x + 20, y + 100); 
+            relationship = "Proposed"; 
+            return true; 
         } else if (relationship == "Married") {
-            g2.drawString(proposingAnswers[3], x + 20, y + 100); // Jawaban sudah menikah
+            g2.drawString(proposingAnswers[3], x + 20, y + 100); 
             return true;
 
         } else {
-            g2.drawString(proposingAnswers[1], x + 20, y + 100); // Jawaban menolak
+            g2.drawString(proposingAnswers[1], x + 20, y + 100); 
             return false;
         }
         
