@@ -972,21 +972,39 @@ public boolean energyReducedInThisChat = false;
     public void marrying(Graphics2D g2) {
         int energyUsed = 0;
 
+        // currentNPC.drawMarrying akan menangani UI dan logika proposal pernikahan,
+        // dan mengembalikan true jika diterima, false jika ditolak.
         Boolean hasil = currentNPC.drawMarrying(g2, currentNPC.getName());
+
         if (hasil == true) {
             System.out.println("Player: Congratulations! You are now married to " + currentNPC.getName() + ".");
-            partner = currentNPC;
-            energyUsed = 80;
+            this.partner = currentNPC; // Tetapkan NPC ini sebagai partner pemain
+            energyUsed = 80; // Misalnya, biaya energi untuk menikah
+
+            // Panggil metode triggerWeddingDayEvent dari GamePanel
+            // 'this' adalah instance Player saat ini, dan this.partner adalah NPC yang baru saja dinikahi.
+            gp.triggerWeddingDayEvent(this, this.partner);
+
+            // Catatan: triggerWeddingDayEvent di GamePanel akan menangani perubahan gameState,
+            // skip waktu, teleportasi pemain, dll.
+            // Metode tersebut juga mengatur gp.player.currentNPC menjadi null di akhirnya,
+            // yang sesuai karena interaksi dialog pernikahan telah selesai.
+
         } else {
             System.out.println("Player: " + currentNPC.getName() + " has declined the marriage proposal.");
-            partner = null;
+            this.partner = null; // Pastikan partner adalah null jika pernikahan ditolak
             energyUsed = 0;
         }
+
+        // Logika pengurangan energi
         if (!energyReducedInThisChat) {
             setEnergy(getEnergy() - energyUsed);
-            energyReducedInThisChat = true;
-
+            energyReducedInThisChat = true; // Tandai bahwa energi telah dikurangi untuk siklus interaksi ini
         }
+
+        // Flag `currentNPC.isMarried` yang menyebabkan metode ini dipanggil
+        // akan di-reset di loop update GamePanel setelah interaksi dialog ini selesai.
+        // Jadi, tidak perlu di-reset secara eksplisit di sini.
     }
 
      public void gifting(Graphics2D g2) {

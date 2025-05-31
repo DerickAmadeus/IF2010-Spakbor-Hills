@@ -53,6 +53,7 @@ public class GamePanel extends JPanel implements Runnable {
     public final int inGameHelpState  = 11;
     public final int shippingState = 19;
     public final int shippingOptionState = 20;
+    public final int cutsceneState = 21;
     public int gameState = titleState;
     public String[] initialSeason = { "Spring", "Summer", "Fall", "Winter" };
     public int currentSeasonIndex = 0;
@@ -1806,5 +1807,47 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
         repaint(); 
+    }
+
+    public void triggerWeddingDayEvent(Player player, NPC spouse) {
+        System.out.println("Wedding event triggered with " + spouse.getName() + "!");
+
+        // (Opsional) gameState = cutsceneState;
+
+        // 1. Logika untuk memindahkan pemain dan pasangan ke rumah
+        int playerHouseMapID = 3; // ID Peta Rumah Pemain (sesuaikan jika berbeda)
+        int playerHouseSpawnTileX = 7; // Contoh koordinat tile X di dalam rumah
+        int playerHouseSpawnTileY = 10; // Contoh koordinat tile Y di dalam rumah
+
+        // Konversi ke koordinat pixel
+        int targetPlayerPixelX = playerHouseSpawnTileX * tileSize;
+        int targetPlayerPixelY = playerHouseSpawnTileY * tileSize;
+
+        this.map.loadMapByID(playerHouseMapID); // Muat peta rumah
+
+        player.x = targetPlayerPixelX;          // Atur posisi X pemain
+        player.y = targetPlayerPixelY;          // Atur posisi Y pemain
+        player.setLocation(playerHouseMapID);   // Update nama lokasi pemain
+        player.direction = "down";              // Atur arah default pemain
+        player.collisionOn = false;
+
+        // (Opsional) Atur posisi NPC pasangan jika perlu
+        // spouse.x = ...; spouse.y = ...; spouse.setLocation(playerHouseMapID);
+
+        // 2. Skip waktu ke malam hari
+        this.gameHour = 22;
+        this.gameMinute = 0;
+
+        // 3. Pulihkan energi pemain
+        player.setEnergy(Player.getMaxEnergy());
+
+        // 4. Selesaikan event dan kembali ke playState
+        this.gameState = playState;
+        player.currentNPC = null; // Bersihkan NPC yang sedang diajak bicara
+        player.energyReducedInThisChat = false; // Reset flag energi untuk interaksi berikutnya
+
+        System.out.println("Wedding event concluded. Player is at home. Time: " + gameHour + ":" + gameMinute);
+        // Anda mungkin perlu memanggil repaint() jika perubahan tidak langsung terlihat
+        // atau jika Anda tidak berada dalam loop game utama saat ini (meskipun seharusnya berada).
     }
 }
