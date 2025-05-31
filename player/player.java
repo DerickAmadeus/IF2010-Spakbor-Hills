@@ -604,6 +604,8 @@ public class Player {
             this.location = "Emily's Store";
         } else if (locationID == 9) {
             this.location = "Abigail's House";
+        } else if (locationID == 11) {
+            this.location = "Ocean";
         }
     }
 

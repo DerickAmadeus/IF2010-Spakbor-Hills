@@ -243,6 +243,8 @@ public class GamePanel extends JPanel implements Runnable {
         transitions.add(new TransitionData(9, 7, 13, 1, 1, 4, 62, 4, false, tileSize));
 
         // Tambahkan transisi lain sesuai kebutuhan Anda
+        transitions.add(new TransitionData(0, 31, 10, 1, 3, 11, 0, 10, false, tileSize));
+        transitions.add(new TransitionData(11, 0, 8, 1, 6, 0, 30, 10, false, tileSize)); // Farm Map ke Forest Map
     }
 
     public void checkMapTransitions() {
