@@ -192,10 +192,10 @@ public class GamePanel extends JPanel implements Runnable {
         // Area pemicu, Door
 
         //muncul di depan door rumah
-        transitions.add(new TransitionData(0, 23, 23, 1, 1, 3, 7, 12, false, tileSize));
+        transitions.add(new TransitionData(0, map.getDoorLocationTileX(), map.getDoorLocationTileY(), 1, 1, 3, 7, 12, false, tileSize));
         // No additional transitions needed here for background color change.
 
-        transitions.add(new TransitionData(3, 7, 13, 1, 1, 0, 23, 24, false, tileSize));
+        transitions.add(new TransitionData(3, 7, 13, 1, 1, 0, map.getDoorLocationTileX(), map.getDoorLocationTileY() + 1, false, tileSize));
 
         // Farm Map ke NPC map and backwards
         transitions.add(new TransitionData(0, 30, 30, 1, 1, 4, 4, 5, false, tileSize));
@@ -749,6 +749,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
+        System.out.println(map.getDoorLocationTileX() + " " + map.getDoorLocationTileY());
         if (gameState == titleState) {
             if (keyHandler.enterPressed) {
                 if (titlePage.commandNumber == 3) {
