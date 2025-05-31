@@ -10,14 +10,14 @@ import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.Font; 
-import java.awt.FontMetrics; 
-import java.awt.BasicStroke; 
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.BasicStroke;
 
 public class NPC {
     public int worldX, worldY;
     public Rectangle hitbox;
-    public Rectangle interactionTriggerArea; 
+    public Rectangle interactionTriggerArea;
 
     GamePanel gp;
 
@@ -27,15 +27,18 @@ public class NPC {
     private int spriteCounter = 0;
     private int spriteNum = 0;
     private final int ANIMATION_SPEED = 15;
-    private final int IDLE_FRAME_COUNT = 6; 
+    private final int IDLE_FRAME_COUNT = 6;
     private boolean showActionMenu = false;
-    private String[] actions = {"Talk", "Give", "Propose", "Marry", "Leave"};
+    private String[] actions = { "Talk", "Give", "Propose", "Marry", "Leave" };
     public int selectedActionIndex = 0;
-    private String[] proposingAnswers = {"AAWWWWWWWWWWW SO SWEEETTTT. AKU MAUUUUUUUUUU", "Dih Effort Dulu Bang","Dah kau lamar bang aku", "Dah nikah kita"}; // Contoh jawaban untuk pertanyaan pernikahan
-    public String[] giftingAnswers = {"Wow! I love this! Thank you so much!", "I like this, thanks!", "Appreciated.", "Is this a joke..."};
-    public String[] marriageAnswers = {"I do! Let's get married!", "I'm not ready for marriage yet.", "No.", "Don't cheat on your wife!"}; 
+    private String[] proposingAnswers = { "AAWWWWWWWWWWW SO SWEEETTTT. AKU MAUUUUUUUUUU", "Dih Effort Dulu Bang",
+            "Dah kau lamar bang aku", "Dah nikah kita" }; // Contoh jawaban untuk pertanyaan pernikahan
+    public String[] giftingAnswers = { "Wow! I love this! Thank you so much!", "I like this, thanks!", "Appreciated.",
+            "Is this a joke..." };
+    public String[] marriageAnswers = { "I do! Let's get married!", "I'm not ready for marriage yet.", "No.",
+            "Don't cheat on your wife!" };
     public String name;
-    public String spawnMapName; 
+    public String spawnMapName;
     private int heartPoints;
     private Item[] lovedItems;
     private Item[] likedItems;
@@ -48,7 +51,8 @@ public class NPC {
     public boolean isGifted = false;
     public boolean isMarried = false;
 
-    public NPC(GamePanel gp, String name, String spawnMapName, int tileX, int tileY, Item[] loveditems, Item[] likedItems, Item[] hatedItems) {
+    public NPC(GamePanel gp, String name, String spawnMapName, int tileX, int tileY, Item[] loveditems,
+            Item[] likedItems, Item[] hatedItems) {
         this.gp = gp;
         inventory = new Inventory<>(gp);
         this.name = name;
@@ -56,52 +60,54 @@ public class NPC {
         this.lovedItems = loveditems;
         this.likedItems = likedItems;
         this.hatedItems = hatedItems;
-        this.selectedActionIndex = 0; 
+        this.selectedActionIndex = 0;
         this.spawnMapName = spawnMapName;
         this.worldX = tileX * gp.tileSize;
         this.worldY = tileY * gp.tileSize;
-        this.hitbox = new Rectangle(0, 0, gp.tileSize, gp.tileSize); 
+        this.hitbox = new Rectangle(0, 0, gp.tileSize, gp.tileSize);
         daysCanMarry = 0; // Default value, can be set later
 
-    
         this.interactionTriggerArea = new Rectangle(worldX, worldY, gp.tileSize, gp.tileSize);
         loadIdleAnimation();
-        setDefaultDialogues(); 
+        setDefaultDialogues();
     }
 
     private void setDefaultDialogues() {
         if (this.name.equalsIgnoreCase("MT")) {
-            dialogues = new String[]{
-                "Halo, petualang muda!",
-                "Desa kami damai berkat para pahlawan sepertimu.",
-                "Sudahkah kamu mencoba memancing di danau?"
+            dialogues = new String[] {
+                    "Halo, petualang muda!",
+                    "Desa kami damai berkat para pahlawan sepertimu.",
+                    "Sudahkah kamu mencoba memancing di danau?"
             };
         } else if (this.name.equalsIgnoreCase("Merchant")) {
-            dialogues = new String[]{
-                "Barang baru datang! Mau lihat?",
-                "Aku punya penawaran spesial untukmu hari ini.",
-                "Jangan ragu untuk bertanya jika ada yang menarik."
+            dialogues = new String[] {
+                    "Barang baru datang! Mau lihat?",
+                    "Aku punya penawaran spesial untukmu hari ini.",
+                    "Jangan ragu untuk bertanya jika ada yang menarik."
             };
         } else if (this.name.equalsIgnoreCase("Fisherman")) {
-            dialogues = new String[]{
-                "Ikan hari ini sedang bagus-bagusnya!",
-                "Kesabaran adalah kunci memancing, nak.",
-                "Ada monster di danau itu... atau hanya perasaanku saja ya?"
+            dialogues = new String[] {
+                    "Ikan hari ini sedang bagus-bagusnya!",
+                    "Kesabaran adalah kunci memancing, nak.",
+                    "Ada monster di danau itu... atau hanya perasaanku saja ya?"
             };
         } else {
-            dialogues = new String[]{"Hmm..."};
+            dialogues = new String[] { "Hmm..." };
         }
     }
 
     public Item[] getLovedItems() {
         return lovedItems;
     }
+
     public Item[] getLikedItems() {
         return likedItems;
     }
+
     public Item[] getHatedItems() {
         return hatedItems;
     }
+
     public void interact() {
         if (!showActionMenu) {
             showActionMenu = true;
@@ -122,7 +128,7 @@ public class NPC {
 
         System.out.println("Loading animation for NPC: " + name);
         for (int i = 0; i < IDLE_FRAME_COUNT; i++) {
-            String imagePath = "/NPC/" + name + "/idle_" + i + ".png"; 
+            String imagePath = "/NPC/" + name + "/idle_" + i + ".png";
             try {
                 InputStream is = getClass().getResourceAsStream(imagePath);
                 if (is == null) {
@@ -165,7 +171,8 @@ public class NPC {
 
     public void draw(Graphics2D g2) {
         BufferedImage imageToDraw = null;
-        if (idleFrames != null && idleFrames.length > 0 && spriteNum < idleFrames.length && idleFrames[spriteNum] != null) {
+        if (idleFrames != null && idleFrames.length > 0 && spriteNum < idleFrames.length
+                && idleFrames[spriteNum] != null) {
             imageToDraw = idleFrames[spriteNum];
         } else if (idleFrames != null && idleFrames.length > 0 && idleFrames[0] != null) {
             imageToDraw = idleFrames[0];
@@ -177,17 +184,17 @@ public class NPC {
         int screenY = worldY - gp.player.y + gp.player.screenY;
 
         if (worldX + gp.tileSize > gp.player.x - gp.player.screenX &&
-            worldX - gp.tileSize < gp.player.x + gp.player.screenX + gp.screenWidth &&
-            worldY + gp.tileSize > gp.player.y - gp.player.screenY &&
-            worldY - gp.tileSize < gp.player.y + gp.player.screenY + gp.screenHeight) {
+                worldX - gp.tileSize < gp.player.x + gp.player.screenX + gp.screenWidth &&
+                worldY + gp.tileSize > gp.player.y - gp.player.screenY &&
+                worldY - gp.tileSize < gp.player.y + gp.player.screenY + gp.screenHeight) {
             g2.drawImage(imageToDraw, screenX, screenY, gp.tileSize, gp.tileSize, null);
             if (gp.debugMode) {
                 g2.setColor(new Color(255, 0, 255, 100));
-                g2.drawRect(screenX + hitbox.x, screenY + hitbox.y, hitbox.width, hitbox.height); 
-                Rectangle actualTriggerArea = getInteractionTriggerAreaWorld(); 
+                g2.drawRect(screenX + hitbox.x, screenY + hitbox.y, hitbox.width, hitbox.height);
+                Rectangle actualTriggerArea = getInteractionTriggerAreaWorld();
                 int triggerScreenX = actualTriggerArea.x - gp.player.x + gp.player.screenX;
                 int triggerScreenY = actualTriggerArea.y - gp.player.y + gp.player.screenY;
-                g2.setColor(new Color(0, 255, 255, 80)); 
+                g2.setColor(new Color(0, 255, 255, 80));
                 g2.drawRect(triggerScreenX, triggerScreenY, actualTriggerArea.width, actualTriggerArea.height);
 
                 g2.setColor(Color.WHITE);
@@ -196,7 +203,7 @@ public class NPC {
         }
     }
 
-    public String getSpawnMapName() { 
+    public String getSpawnMapName() {
         return spawnMapName;
     }
 
@@ -205,27 +212,27 @@ public class NPC {
     }
 
     public void drawSubwindow(Graphics2D g2, int frameX, int frameY, int frameWidth, int frameHeight) {
-        Color c = new Color(53,33,0, 255);
+        Color c = new Color(53, 33, 0, 255);
         g2.setColor(c);
         g2.fillRoundRect(frameX, frameY, frameWidth, frameHeight, 35, 35);
-        c = new Color(255,255,255);
+        c = new Color(255, 255, 255);
         g2.setColor(c);
         g2.setStroke(new BasicStroke(5));
-        g2.drawRoundRect(frameX+5, frameY+5, frameWidth-10, frameHeight-10, 25, 25);
+        g2.drawRoundRect(frameX + 5, frameY + 5, frameWidth - 10, frameHeight - 10, 25, 25);
     }
 
     public void showStatus(Graphics2D g2) {
-        int frameX = gp.tileSize*9;
+        int frameX = gp.tileSize * 9;
         int frameY = gp.tileSize;
-        int frameWidth = gp.tileSize*6;
-        int frameHeight = gp.tileSize*5;
+        int frameWidth = gp.tileSize * 6;
+        int frameHeight = gp.tileSize * 5;
         drawSubwindow(g2, frameX, frameY, frameWidth, frameHeight);
 
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Arial", Font.BOLD, 16));
         String statusText = "NPC: " + name;
         statusText += " (" + (relationship != null ? relationship : "Single") + ")";
-        
+
         g2.setColor(Color.WHITE);
         g2.drawString(statusText, frameX + 20, frameY + 40);
         g2.setStroke(new BasicStroke(2));
@@ -241,114 +248,117 @@ public class NPC {
         g2.drawString(heartPointsText, frameX + 20, frameY + 80);
         g2.setColor(Color.WHITE);
 
-        int y = frameY + 100; 
+        int y = frameY + 100;
         FontMetrics fm = g2.getFontMetrics();
-        int maxWidth = frameWidth - 40; 
+        int maxWidth = frameWidth - 40;
         int x = frameX + 20;
 
         if (lovedItems != null && lovedItems.length > 0) {
             String lovedItemsText = "Loved Items: ";
             for (Item item : lovedItems) {
-            lovedItemsText += item.getName() + ", ";
+                lovedItemsText += item.getName() + ", ";
             }
             if (lovedItemsText.endsWith(", ")) {
-            lovedItemsText = lovedItemsText.substring(0, lovedItemsText.length() - 2);
+                lovedItemsText = lovedItemsText.substring(0, lovedItemsText.length() - 2);
             }
             String[] words = lovedItemsText.split(" ");
             StringBuilder line = new StringBuilder();
             for (String word : words) {
-            String testLine = line + (line.length() == 0 ? "" : " ") + word;
-            if (fm.stringWidth(testLine) > maxWidth) {
-                g2.drawString(line.toString(), x, y);
-                y += fm.getHeight() + 4;
-                line = new StringBuilder(word);
-            } else {
-                if (line.length() > 0) line.append(" ");
-                line.append(word);
-            }
+                String testLine = line + (line.length() == 0 ? "" : " ") + word;
+                if (fm.stringWidth(testLine) > maxWidth) {
+                    g2.drawString(line.toString(), x, y);
+                    y += fm.getHeight() + 4;
+                    line = new StringBuilder(word);
+                } else {
+                    if (line.length() > 0)
+                        line.append(" ");
+                    line.append(word);
+                }
             }
             if (line.length() > 0) {
-            g2.drawString(line.toString(), x, y);
-            y += fm.getHeight() + 8; 
+                g2.drawString(line.toString(), x, y);
+                y += fm.getHeight() + 8;
             }
         }
 
         if (likedItems != null && likedItems.length > 0) {
             String likedItemsText = "Liked Items: ";
             for (Item item : likedItems) {
-            likedItemsText += item.getName() + ", ";
+                likedItemsText += item.getName() + ", ";
             }
             if (likedItemsText.endsWith(", ")) {
-            likedItemsText = likedItemsText.substring(0, likedItemsText.length() - 2);
+                likedItemsText = likedItemsText.substring(0, likedItemsText.length() - 2);
             }
 
             String[] words = likedItemsText.split(" ");
             StringBuilder line = new StringBuilder();
             for (String word : words) {
-            String testLine = line + (line.length() == 0 ? "" : " ") + word;
-            if (fm.stringWidth(testLine) > maxWidth) {
-                g2.drawString(line.toString(), x, y);
-                y += fm.getHeight() + 4;
-                line = new StringBuilder(word); 
-            } else {
-                if (line.length() > 0) line.append(" ");
-                line.append(word);
-            }
+                String testLine = line + (line.length() == 0 ? "" : " ") + word;
+                if (fm.stringWidth(testLine) > maxWidth) {
+                    g2.drawString(line.toString(), x, y);
+                    y += fm.getHeight() + 4;
+                    line = new StringBuilder(word);
+                } else {
+                    if (line.length() > 0)
+                        line.append(" ");
+                    line.append(word);
+                }
             }
             if (line.length() > 0) {
-            g2.drawString(line.toString(), x, y);
-            y += fm.getHeight() + 8; 
+                g2.drawString(line.toString(), x, y);
+                y += fm.getHeight() + 8;
             }
         }
 
         if (hatedItems != null && hatedItems.length > 0) {
             String hatedItemsText = "Hated Items: ";
             for (Item item : hatedItems) {
-            hatedItemsText += item.getName() + ", ";
+                hatedItemsText += item.getName() + ", ";
             }
             if (hatedItemsText.endsWith(", ")) {
-            hatedItemsText = hatedItemsText.substring(0, hatedItemsText.length() - 2);
+                hatedItemsText = hatedItemsText.substring(0, hatedItemsText.length() - 2);
             }
 
             String[] words = hatedItemsText.split(" ");
             StringBuilder line = new StringBuilder();
             for (String word : words) {
-            String testLine = line + (line.length() == 0 ? "" : " ") + word;
-            if (fm.stringWidth(testLine) > maxWidth) {
-                g2.drawString(line.toString(), x, y);
-                y += fm.getHeight() + 4; 
-                line = new StringBuilder(word); 
-            } else {
-                if (line.length() > 0) line.append(" ");
-                line.append(word);
-            }
+                String testLine = line + (line.length() == 0 ? "" : " ") + word;
+                if (fm.stringWidth(testLine) > maxWidth) {
+                    g2.drawString(line.toString(), x, y);
+                    y += fm.getHeight() + 4;
+                    line = new StringBuilder(word);
+                } else {
+                    if (line.length() > 0)
+                        line.append(" ");
+                    line.append(word);
+                }
             }
             if (line.length() > 0) {
-            g2.drawString(line.toString(), x, y);
-            y += fm.getHeight() + 8; 
+                g2.drawString(line.toString(), x, y);
+                y += fm.getHeight() + 8;
             }
         } else {
             String hatedItemsText = "Hated Items: Seluruh item yang bukan merupakan lovedItems dan likedItems.";
             String[] words = hatedItemsText.split(" ");
             StringBuilder line = new StringBuilder();
             for (String word : words) {
-            String testLine = line + (line.length() == 0 ? "" : " ") + word;
-            if (fm.stringWidth(testLine) > maxWidth) {
-                g2.drawString(line.toString(), x, y);
-                y += fm.getHeight() + 4;
-                line = new StringBuilder(word); 
-            } else {
-                if (line.length() > 0) line.append(" ");
-                line.append(word);
-            }
+                String testLine = line + (line.length() == 0 ? "" : " ") + word;
+                if (fm.stringWidth(testLine) > maxWidth) {
+                    g2.drawString(line.toString(), x, y);
+                    y += fm.getHeight() + 4;
+                    line = new StringBuilder(word);
+                } else {
+                    if (line.length() > 0)
+                        line.append(" ");
+                    line.append(word);
+                }
             }
             if (line.length() > 0) {
-            g2.drawString(line.toString(), x, y);
-            y += fm.getHeight() + 8; 
+                g2.drawString(line.toString(), x, y);
+                y += fm.getHeight() + 8;
             }
             y += fm.getHeight() + 8;
         }
-        
 
     }
 
@@ -387,12 +397,12 @@ public class NPC {
         if (leftPressed) {
             selectedActionIndex--;
             if (selectedActionIndex < 0) {
-                selectedActionIndex = actions.length - 1; 
+                selectedActionIndex = actions.length - 1;
             }
         } else if (rightPressed) {
             selectedActionIndex++;
             if (selectedActionIndex >= actions.length) {
-                selectedActionIndex = 0; 
+                selectedActionIndex = 0;
             }
         }
     }
@@ -400,7 +410,6 @@ public class NPC {
     public String confirmAction() {
         return actions[selectedActionIndex];
     }
-
 
     public void drawNPCDialog(Graphics2D g2, String speakerName) {
         int x = gp.tileSize * 1;
@@ -416,9 +425,9 @@ public class NPC {
         g2.drawString(dialogues[currentDialogueIndex], x + 20, y + 70);
 
         if (currentDialogueIndex >= dialogues.length) {
-            currentDialogueIndex = 0; 
-            isTalking = false; 
-            showActionMenu = true; 
+            currentDialogueIndex = 0;
+            isTalking = false;
+            showActionMenu = true;
         }
     }
 
@@ -433,21 +442,22 @@ public class NPC {
         g2.setFont(new Font("Arial", Font.PLAIN, 20));
         g2.setColor(Color.WHITE);
         g2.drawString(speakerName + ":", x + 20, y + 35);
-        
-        if (heartPoints >= 150 && relationship != "Married" && gp.player.getEquippedItem() != null && gp.player.getEquippedItem().getName().equals("Proposal Ring")) {
-            g2.drawString(proposingAnswers[0], x + 20, y + 100); 
-            relationship = "Proposed"; 
-            return true; 
+
+        if (heartPoints >= 150 && relationship != "Married" && gp.player.getEquippedItem() != null
+                && gp.player.getEquippedItem().getName().equals("Proposal Ring")) {
+            g2.drawString(proposingAnswers[0], x + 20, y + 100);
+            relationship = "Proposed";
+            return true;
         } else if (relationship == "Married") {
-            g2.drawString(proposingAnswers[3], x + 20, y + 100); 
+            g2.drawString(proposingAnswers[3], x + 20, y + 100);
             return true;
 
         } else {
-            g2.drawString(proposingAnswers[1], x + 20, y + 100); 
+            g2.drawString(proposingAnswers[1], x + 20, y + 100);
             return false;
         }
-        
-    } 
+
+    }
 
     public void drawGifting(Graphics2D g2, String speakerName, int response) {
         int x = gp.tileSize * 1;
@@ -461,13 +471,13 @@ public class NPC {
         g2.setColor(Color.WHITE);
         g2.drawString(speakerName + ":", x + 20, y + 35);
         if (response == 1) {
-            g2.drawString(giftingAnswers[0], x + 20, y + 100); 
+            g2.drawString(giftingAnswers[0], x + 20, y + 100);
         } else if (response == 2) {
-            g2.drawString(giftingAnswers[1], x + 20, y + 100); 
-        } else if (response == 3){
-            g2.drawString(giftingAnswers[3], x + 20, y + 100); 
+            g2.drawString(giftingAnswers[1], x + 20, y + 100);
+        } else if (response == 3) {
+            g2.drawString(giftingAnswers[3], x + 20, y + 100);
         } else {
-            g2.drawString(giftingAnswers[2], x + 20, y + 100); 
+            g2.drawString(giftingAnswers[2], x + 20, y + 100);
         }
     }
 
@@ -484,21 +494,20 @@ public class NPC {
         g2.drawString(speakerName + ":", x + 20, y + 35);
 
         if (heartPoints >= 150 && relationship == "Proposed" && daysCanMarry <= gp.gameDay) {
-            g2.drawString(marriageAnswers[0], x + 20, y + 100); 
-            relationship = "Married"; 
-            return true; 
+            g2.drawString(marriageAnswers[0], x + 20, y + 100);
+            relationship = "Married";
+            return true;
         } else if (relationship == "Married") {
-            g2.drawString(marriageAnswers[3], x + 20, y + 100); 
-            return false; 
-        } else if (daysCanMarry > gp.gameDay) {
-            g2.drawString(marriageAnswers[1], x + 20, y + 100); 
-            return false; 
-        } else {
-            g2.drawString(marriageAnswers[2], x + 20, y + 100); 
+            g2.drawString(marriageAnswers[3], x + 20, y + 100);
             return false;
-            
-        }
+        } else if (daysCanMarry > gp.gameDay) {
+            g2.drawString(marriageAnswers[1], x + 20, y + 100);
+            return false;
+        } else {
+            g2.drawString(marriageAnswers[2], x + 20, y + 100);
+            return false;
 
+        }
 
     }
 
@@ -509,7 +518,7 @@ public class NPC {
     public void addHeartPoints(int points) {
         heartPoints += points;
         if (heartPoints > 150) {
-            heartPoints = 150; 
+            heartPoints = 150;
         }
     }
 
@@ -518,5 +527,9 @@ public class NPC {
         if (heartPoints < 0) {
             heartPoints = 0;
         }
+    }
+
+    public String getRelationship() {
+        return relationship;
     }
 }

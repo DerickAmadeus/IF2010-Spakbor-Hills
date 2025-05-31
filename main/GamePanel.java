@@ -1703,18 +1703,11 @@ public class GamePanel extends JPanel implements Runnable {
             playerInput.draw(g2);
             g2.dispose();
             return;
-        } else if (gameState == statisticsState) {
-            statistics.draw(g2);
-            g2.dispose();
-            return;
-        }
-
-        
-        if (map.currentMapID == 3) { // Ganti angka 3 jika ID peta rumah Anda berbeda
-            g2.setColor(java.awt.Color.black); // Atur latar belakang menjadi hitam untuk rumah
-            g2.fillRect(0, 0, screenWidth, screenHeight);
-        } else {
-            // Jika bukan peta rumah, gambar latar belakang luar ruangan seperti biasa
+        } if (map.currentMapID == 3) { // Ganti angka 3 jika ID peta rumah Anda berbeda
+                g2.setColor(java.awt.Color.black); // Atur latar belakang menjadi hitam untuk rumah
+                g2.fillRect(0, 0, screenWidth, screenHeight);
+            } else {
+                // Jika bukan peta rumah, gambar latar belakang luar ruangan seperti biasa
             if (backgroundImage != null) {
                 g2.drawImage(backgroundImage, 0, 0, screenWidth, screenHeight, null);
             } else {
@@ -1755,7 +1748,7 @@ public class GamePanel extends JPanel implements Runnable {
             case "Winter":
                 g2.setColor(Color.CYAN);
             default:
-                break;
+            break;
         }
         g2.drawString(currentSeason, 500, 50);
 
@@ -1789,7 +1782,7 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
         }
-
+        
         if (gameState == inventoryState && (seller == null || (seller != null && !seller.isBuying))) {
             player.openInventory(g2);
         } else if (gameState == inventoryState && seller != null && seller.isBuying) {
@@ -1826,6 +1819,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
         if (gameState == playerInfoState) {
             playerInfo.draw(g2); 
+        }
+        if (gameState == statisticsState) {
+            statistics.draw(g2);
         }
         if (gameState == watchingState) {
             activeTV.screen(g2, this);

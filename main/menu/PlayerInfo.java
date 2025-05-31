@@ -64,7 +64,9 @@ public class PlayerInfo {
 
         Player p = gp.player;                      // referensi pemain
         String[] rows = {
-            "Name            : " + p.getPlayerName(),
+            "Hi, " + p.getPlayerName() + "!",
+            "you're currently at " + p.getLocation() + ".",
+            "",
             "Farm Name       : " + p.getFarmName(),
             "Gender          : " + p.getGender(),
             "Energy          : " + p.getEnergy() + " / 100",
