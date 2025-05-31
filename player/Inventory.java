@@ -268,6 +268,7 @@ public class Inventory<T extends Item> {
 
         T item = itemContainer.get(selectedItemIndex);
         boolean validGiftingOption = !(item instanceof Equipment || item instanceof Seeds);
+        boolean validSellingOption = !(item instanceof Equipment);
         int x = 200, y = 100, w = 400, h = 150;
 
         drawSubwindow(g2, x, y, w, h);
@@ -290,13 +291,20 @@ public class Inventory<T extends Item> {
             } else {
                 g2.setColor(Color.white);
             }
-            if (gp.player.currentNPC != null && gp.player.currentNPC.isGifted && validGiftingOption) {
-                g2.drawString(gifting[i], textX, textY + (i * 40));
-            } else if(gp.player.currentNPC != null && gp.player.currentNPC.isGifted && !validGiftingOption) {
-                g2.drawString("You cannot gift " + item.getClass().getSimpleName() + "!", textX, textY);
+            if(gp.player.currentNPC == null){
+                if(!validSellingOption && gp.player.currentNPC == null){
+                g2.drawString("You cannot sell " + item.getClass().getSimpleName() + "!", textX, textY);
             }
-            else if (gp.player.currentNPC == null || !gp.player.currentNPC.isGifted){
-                g2.drawString(options[i], textX, textY + (i * 40));
+            }
+            else{
+                if (gp.player.currentNPC != null && gp.player.currentNPC.isGifted && validGiftingOption) {
+                    g2.drawString(gifting[i], textX, textY + (i * 40));
+                } else if(gp.player.currentNPC != null && gp.player.currentNPC.isGifted && !validGiftingOption) {
+                    g2.drawString("You cannot gift " + item.getClass().getSimpleName() + "!", textX, textY);
+                }
+                else if (gp.player.currentNPC == null || !gp.player.currentNPC.isGifted){
+                    g2.drawString(options[i], textX, textY + (i * 40));
+                }
             }
         }
     }

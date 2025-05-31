@@ -628,9 +628,7 @@ public class Player {
     }
 
     public void setMoney(int amount) {
-        if (money - amount >= 0) { 
-            this.money = amount; 
-        }
+        this.money = amount; 
     }
 
     public int getEnergy() {
@@ -1060,9 +1058,9 @@ public boolean energyReducedInThisChat = false;
         if(sb.lastday < gp.gameDay) {
             sb.binCount = 0;
             sb.lastday = gp.gameDay;
-            money += storedMoney;
+            /*money += storedMoney;
             storedMoney = 0;
-            System.out.println("Player: Shipping bin has been emptied, Current Money: " + money + " coins.");
+            System.out.println("Player: Shipping bin has been emptied, Current Money: " + money + " coins.");*/
         }
         if (sb.binCount < sb.maxSlot) {
             if (inventory.getItemCount(sellingItem) > 0) {
