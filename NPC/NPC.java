@@ -1,11 +1,8 @@
-// Di dalam kelas NPC.java
 package NPC;
 
 import main.GamePanel;
+import player.Inventory;
 import Items.*;
-
-
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,47 +10,40 @@ import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.Font; // Tambahkan untuk dialog
-import java.awt.FontMetrics; // Tambahkan untuk dialog
-import java.awt.BasicStroke; // Tambahkan untuk dialog
+import java.awt.Font; 
+import java.awt.FontMetrics; 
+import java.awt.BasicStroke; 
 
 public class NPC {
     public int worldX, worldY;
     public Rectangle hitbox;
-    public Rectangle interactionTriggerArea; // Area di sekitar NPC untuk memicu interaksi
+    public Rectangle interactionTriggerArea; 
 
     GamePanel gp;
 
-    // Dialog
     public String[] dialogues;
     public int currentDialogueIndex = 0;
-
-    // Variabel untuk animasi (sudah ada)
     private BufferedImage[] idleFrames;
     private int spriteCounter = 0;
     private int spriteNum = 0;
     private final int ANIMATION_SPEED = 15;
-    private final int IDLE_FRAME_COUNT = 6; // Anda set 6, sebelumnya saya contohkan 8
+    private final int IDLE_FRAME_COUNT = 6; 
     private boolean showActionMenu = false;
     private String[] actions = {"Talk", "Give", "Propose", "Marry", "Leave"};
     public int selectedActionIndex = 0;
     private String[] proposingAnswers = {"AAWWWWWWWWWWW SO SWEEETTTT. AKU MAUUUUUUUUUU", "Dih Effort Dulu Bang","Dah kau lamar bang aku", "Dah nikah kita"}; // Contoh jawaban untuk pertanyaan pernikahan
-    public String[] giftingAnswers = {"Terima kasih!", "Aku suka ini!", "Hmmm okee.", "Aku tidak suka ini."}; // Contoh jawaban untuk pemberian item
-
-
-
-    // Variabel NPC
+    public String[] giftingAnswers = {"Wow! I love this! Thank you so much!", "I like this, thanks!", "Appreciated.", "Is this a joke..."}; 
     public String name;
-    public String spawnMapName; // Menggunakan int untuk ID map
+    public String spawnMapName; 
     private int heartPoints;
     private Item[] lovedItems;
     private Item[] likedItems;
     private Item[] hatedItems;
     private String relationship;
+    private Inventory<Item> inventory = new Inventory<>(gp);
     public boolean isTalking = false;
     public boolean isProposed = false;
     public boolean isGifted = false;
-
 
     public NPC(GamePanel gp, String name, String spawnMapName, int tileX, int tileY, Item[] loveditems, Item[] likedItems, Item[] hatedItems) {
         this.gp = gp;
@@ -62,33 +52,19 @@ public class NPC {
         this.lovedItems = loveditems;
         this.likedItems = likedItems;
         this.hatedItems = hatedItems;
-        this.selectedActionIndex = 0; // Inisialisasi indeks aksi yang dipilih
-
-        
-
-
-
-
-
-
+        this.selectedActionIndex = 0; 
         this.spawnMapName = spawnMapName;
         this.worldX = tileX * gp.tileSize;
         this.worldY = tileY * gp.tileSize;
-        this.hitbox = new Rectangle(0, 0, gp.tileSize, gp.tileSize); // Hitbox relatif terhadap worldX, worldY
+        this.hitbox = new Rectangle(0, 0, gp.tileSize, gp.tileSize); 
 
-        // Tentukan area interaksi NPC dalam koordinat dunia.
-        // Contoh: Sama dengan hitboxnya, atau sedikit lebih besar.
-        // Di sini kita buat sama dengan hitbox NPC.
+    
         this.interactionTriggerArea = new Rectangle(worldX, worldY, gp.tileSize, gp.tileSize);
-        // Jika ingin lebih besar, contoh:
-        // this.interactionTriggerArea = new Rectangle(worldX - gp.tileSize / 2, worldY - gp.tileSize / 2, gp.tileSize * 2, gp.tileSize * 2);
-
         loadIdleAnimation();
-        setDefaultDialogues(); // Inisialisasi dialog default untuk NPC
+        setDefaultDialogues(); 
     }
 
     private void setDefaultDialogues() {
-        // Contoh dialog, bisa Anda kembangkan per NPC
         if (this.name.equalsIgnoreCase("MT")) {
             dialogues = new String[]{
                 "Halo, petualang muda!",
@@ -112,9 +88,15 @@ public class NPC {
         }
     }
 
-    // Metode yang dipanggil ketika pemain berinteraksi dengan NPC ini
-
-// NPC.java
+    public Item[] getLovedItems() {
+        return lovedItems;
+    }
+    public Item[] getLikedItems() {
+        return likedItems;
+    }
+    public Item[] getHatedItems() {
+        return hatedItems;
+    }
     public void interact() {
         if (!showActionMenu) {
             showActionMenu = true;
@@ -125,13 +107,10 @@ public class NPC {
 
     private void loadIdleAnimation() {
         idleFrames = new BufferedImage[IDLE_FRAME_COUNT];
-        // Anda menyebutkan IDLE_FRAME_COUNT = 6, jadi pastikan ada 6 frame (0-5)
-        // Path diubah menjadi /npc/<NamaNPC>/idle_<nomorFrame>.png
-        // jika Anda memiliki folder terpisah untuk setiap NPC
+
         System.out.println("Loading animation for NPC: " + name);
         for (int i = 0; i < IDLE_FRAME_COUNT; i++) {
-            String imagePath = "/NPC/" + name + "/idle_" + i + ".png"; // Path dengan subfolder per NPC
-            // Jika tidak ada subfolder, gunakan: String imagePath = "/NPC/" + name + "_idle_" + i + ".png";
+            String imagePath = "/NPC/" + name + "/idle_" + i + ".png"; 
             try {
                 InputStream is = getClass().getResourceAsStream(imagePath);
                 if (is == null) {
@@ -241,7 +220,6 @@ public class NPC {
         // Metode ini bisa digunakan untuk menampilkan status NPC, misalnya saat dialog
         g2.setColor(Color.WHITE);
         g2.setFont(new Font("Arial", Font.BOLD, 16));
-        FontMetrics metrics = g2.getFontMetrics();
         String statusText = "NPC: " + name;
         statusText += " (" + (relationship != null ? relationship : "Single") + ")";
         
@@ -456,7 +434,6 @@ public class NPC {
         }
     }
 
-
     public boolean drawProposingAnswer(Graphics2D g2, String speakerName) {
         int x = gp.tileSize * 1;
         int y = gp.tileSize * 8;
@@ -486,7 +463,7 @@ public class NPC {
         
     }
 
-    public int drawGifting(Graphics2D g2, String speakerName) {
+    public void drawGifting(Graphics2D g2, String speakerName, int response) {
         int x = gp.tileSize * 1;
         int y = gp.tileSize * 8;
         int width = gp.tileSize * 14;
@@ -497,15 +474,16 @@ public class NPC {
         g2.setFont(new Font("Arial", Font.PLAIN, 20));
         g2.setColor(Color.WHITE);
         g2.drawString(speakerName + ":", x + 20, y + 35);
-        return 10;
+        if (response == 1) {
+            g2.drawString(giftingAnswers[0], x + 20, y + 100); 
+        } else if (response == 2) {
+            g2.drawString(giftingAnswers[1], x + 20, y + 100); 
+        } else if (response == 3){
+            g2.drawString(giftingAnswers[3], x + 20, y + 100); 
+        } else {
+            g2.drawString(giftingAnswers[2], x + 20, y + 100); 
+        }
     }
-
-
-
-
-
-
-    
 
     public String getName() {
         return name;
@@ -514,9 +492,14 @@ public class NPC {
     public void addHeartPoints(int points) {
         heartPoints += points;
         if (heartPoints > 150) {
-            heartPoints = 150; // Maksimal 100
+            heartPoints = 150; 
         }
     }
 
-
+    public void substractHeartPoints(int points) {
+        heartPoints -= points;
+        if (heartPoints < 0) {
+            heartPoints = 0;
+        }
+    }
 }

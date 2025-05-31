@@ -5,7 +5,6 @@ import java.awt.event.KeyListener;
 
 
 public class KeyHandler implements KeyListener{
-
     public boolean enterPressed, upPressed, downPressed, leftPressed, rightPressed, interactPressed, f1Pressed, invPressed, fpressed ,escapePressed, rPressed; // Boolean flags for key states
     public boolean input0, input9;
     GamePanel gp; // Reference to the GamePanel
@@ -32,7 +31,7 @@ public class KeyHandler implements KeyListener{
                 enterPressed = true;   
                 if (gp.titlePage.commandNumber == 0){        // NEW GAME
                     gp.gameState = gp.farmNameInputState;        // diproses di GamePanel.update()
-                } else if (gp.titlePage.commandNumber == 2) { // HELP
+                } else if (gp.titlePage.commandNumber == 1) { // HELP
                 gp.gameState = gp.helpState;
                 } else if (gp.titlePage.commandNumber == 3) { // QUIT
                     System.exit(0);
@@ -60,6 +59,7 @@ public class KeyHandler implements KeyListener{
             gp.playerInput.keyPressed(e);
             return;
         }
+
 
         if (gp.gameState != gp.titleState && gp.gameState != gp.helpState && gp.gameState != gp.farmNameInputState && gp.gameState != gp.fishingState){
             if (code == KeyEvent.VK_W) {
