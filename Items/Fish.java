@@ -27,9 +27,6 @@ public class Fish extends Item implements Sellable, Edible{
         this.disappearTime = disappearTime;
     }    
 
-    //Test
-
-    //Getter
     public  ArrayList<String> getSeason(){
         return season;
     }
@@ -80,13 +77,12 @@ public class Fish extends Item implements Sellable, Edible{
             if (end >= start) {
                 totalJam += end - start;
             } else {
-                // Jam melewati tengah malam, misalnya 19 -> 2 = 7 jam
                 totalJam += (24 - start) + end;
             }
         }
 
         if (jumlahSeason == 0 || jumlahWeather == 0 || jumlahLokasi == 0 || totalJam == 0) {
-            return 0; // Hindari pembagian dengan nol
+            return 0; 
         }
 
         double factorSeason = 4.0 / jumlahSeason;
@@ -135,11 +131,11 @@ public class Fish extends Item implements Sellable, Edible{
 
         Fish fish = (Fish) o;
 
-        return this.getName().equals(fish.getName()); // Atau sesuaikan dengan ID unik yang kamu punya
+        return this.getName().equals(fish.getName()); 
     }
 
     @Override
     public int hashCode() {
-        return this.getName().hashCode(); // Atau kombinasi field yang unik
+        return this.getName().hashCode(); 
     }
 }

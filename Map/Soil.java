@@ -85,17 +85,17 @@ public class Soil extends Tile {
 
     public Crops[] loadInitialCrops() {
         return new Crops[] {
-            new Crops("Parsnip", "Sayuran akar musim semi", 35, 50, 1),
-            new Crops("Cauliflower", "Sayuran bunga putih", 150, 200, 1),
-            new Crops("Potato", "Umbi penghasil karbohidrat", 80, 0, 1),
-            new Crops("Wheat", "Serealia untuk dijadikan tepung", 30, 50, 3),
-            new Crops("Blueberry", "Buah kecil biru musim panas", 40, 150, 3),
-            new Crops("Tomato", "Buah merah serbaguna", 60, 90, 1),
-            new Crops("Hot Pepper", "Cabai pedas untuk musim panas", 40, 0, 1),
-            new Crops("Melon", "Buah musim panas besar dan manis", 250, 0, 1),
-            new Crops("Cranberry", "Buah musim gugur asam", 25, 0, 10),
-            new Crops("Pumpkin", "Buah besar untuk musim gugur", 250, 300, 1),
-            new Crops("Grape", "Buah ungu yang bisa dijadikan wine", 10, 100, 20)
+            new Crops("Parsnip", 35, 50, 1),
+            new Crops("Cauliflower", 150, 200, 1),
+            new Crops("Potato", 80, 0, 1),
+            new Crops("Wheat", 30, 50, 3),
+            new Crops("Blueberry", 40, 150, 3),
+            new Crops("Tomato", 60, 90, 1),
+            new Crops("Hot Pepper", 40, 0, 1),
+            new Crops("Melon", 250, 0, 1),
+            new Crops("Cranberry", 25, 0, 10),
+            new Crops("Pumpkin", 250, 300, 1),
+            new Crops("Grape", 10, 100, 20)
         };
     }
 

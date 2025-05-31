@@ -5,9 +5,14 @@ import player.Player;
 public class Food extends Item implements Sellable, Buyable, Edible{
     private int energyGain;
 
-    public Food(String name, String description, int hargaJual, int hargaBeli, int energyGain) {
-        super(name, description, hargaJual, hargaBeli);
-        this.energyGain = energyGain; //setter
+    public Food(String name, int hargaJual, int hargaBeli, int energyGain) {
+        super(name, "", hargaJual, hargaBeli);
+        this.energyGain = energyGain;
+
+        this.setDescription(
+            "Sell Price: " + hargaJual + " | Buy Price: " + hargaBeli +
+            " | Energy Gain: " + energyGain 
+        );
     }
     
     public int getEnergyGain() {

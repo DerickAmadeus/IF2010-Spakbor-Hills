@@ -5,9 +5,14 @@ import player.Player;
 public class Crops extends Item implements Sellable, Buyable, Edible{
     private int jumlahPerPanen;
 
-    public Crops(String name, String description, int hargaJual, int hargaBeli, int jumlahPerPanen) {
-        super(name, description, hargaJual, hargaBeli);
-        this.jumlahPerPanen = jumlahPerPanen; //setter
+    public Crops(String name, int hargaJual, int hargaBeli, int jumlahPerPanen) {
+        super(name, "", hargaJual, hargaBeli);
+        this.jumlahPerPanen = jumlahPerPanen; 
+
+        this.setDescription(
+            "Sell Price: " + hargaJual + " | Buy Price: " + hargaBeli
+            + " | Amount Harvested: " + jumlahPerPanen
+        );
     }
     
     public int getJumlahPerPanen() {
@@ -43,12 +48,12 @@ public class Crops extends Item implements Sellable, Buyable, Edible{
 
         Crops crops = (Crops) o;
 
-        return this.getName().equals(crops.getName()); // Atau sesuaikan dengan ID unik yang kamu punya
+        return this.getName().equals(crops.getName()); 
     }
 
     @Override
     public int hashCode() {
-        return this.getName().hashCode(); // Atau kombinasi field yang unik
+        return this.getName().hashCode(); 
     }
 
 }
