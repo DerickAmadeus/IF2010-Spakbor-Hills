@@ -68,7 +68,7 @@ public class InGameHelp {
         "=== TIME SYSTEM ===",
         "- Day starts at 6:00 AM",
         "- Each in-game minute = 1 real second",
-        "- At 12:00 AM, player will fall asleep",
+        "- At 02:00 AM, player will fall asleep",
         "",
         "=== INVENTORY ===",
         "- Press I to open inventory",
@@ -113,10 +113,10 @@ public class InGameHelp {
 
 
             //title
-            g2.setFont(helpFont.deriveFont(Font.BOLD, 20F));
+            g2.setFont(helpFont.deriveFont(Font.BOLD, 22F));
             g2.setColor(new Color(255, 215, 0));
             int titleX = getX(title, g2);
-            int titleY = frameY + gp.tileSize * 2 - 55;
+            int titleY = frameY + gp.tileSize * 2 - 50;
             g2.drawString(title, titleX, titleY);
 
             //subtitle
@@ -129,7 +129,7 @@ public class InGameHelp {
 
             // scroll
             Shape oldClip = g2.getClip();
-            int contentX = frameX + 20;
+            int contentX = frameX + gp.tileSize;
             int contentY = frameY + 80;
             int contentWidth = frameWidth - 40;
             int contentHeight = frameHeight - 110;
@@ -154,8 +154,7 @@ public class InGameHelp {
                
             // BACK 
             g2.setFont(helpFont.deriveFont(Font.BOLD, 20F));
-            int margin = 20;
-            int backX  = frameX + 20 + (commandNumber == 0 ? gp.tileSize : 0);
+            int backX  = frameX + gp.tileSize + (commandNumber == 0 ? gp.tileSize : 0);
             int backY  = frameY + frameHeight - 20;  
 
             g2.setColor(Color.BLACK);

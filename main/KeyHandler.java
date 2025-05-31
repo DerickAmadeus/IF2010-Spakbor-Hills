@@ -29,8 +29,11 @@ public class KeyHandler implements KeyListener{
                 if (gp.titlePage.commandNumber > 3) gp.titlePage.commandNumber = 0;
             } else if (code == KeyEvent.VK_ENTER){
                 enterPressed = true;   
-                if (gp.titlePage.commandNumber == 0){        // NEW GAME
-                    gp.gameState = gp.farmNameInputState;        // diproses di GamePanel.update()
+                if (gp.titlePage.commandNumber == 0){
+                        gp.farmName.reset();           
+                        gp.playerInput.reset();              
+                        gp.gameState = gp.farmNameInputState; 
+                        gp.keyHandler.enterPressed = false;
                 } else if (gp.titlePage.commandNumber == 1) { // HELP
                 gp.gameState = gp.helpState;
                 } else if (gp.titlePage.commandNumber == 3) { // QUIT
@@ -103,6 +106,11 @@ public class KeyHandler implements KeyListener{
         
         if (gp.gameState == gp.inGameHelpState) {          
             gp.inGameHelp.keyPressed(e);                   
+            return;                                       
+        }
+
+        if (gp.gameState == gp.playerInfoState) {          
+            gp.playerInfo.keyPressed(e);                   
             return;                                       
         }
 
