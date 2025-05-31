@@ -261,6 +261,24 @@ public class GamePanel extends JPanel implements Runnable {
                             " To Map ID " + transition.targetMapID +
                             " at player pos (" + transition.targetPlayerX / tileSize + ", " +
                             transition.targetPlayerY / tileSize + ")");
+                    if (transition.targetMapID == 5) {
+                        npcs[0].visitingFrequency += 1;
+                    }
+                    if (transition.targetMapID == 6) {
+                        npcs[1].visitingFrequency += 1;
+                    }
+                    if (transition.targetMapID == 7) {
+                        npcs[2].visitingFrequency += 1;
+                    }
+                    if (transition.targetMapID == 8) {
+                        npcs[3].visitingFrequency += 1;
+                    }
+                    if (transition.targetMapID == 9) {
+                        npcs[5].visitingFrequency += 1;
+                    }
+                    if (transition.targetMapID == 10) {
+                        npcs[4].visitingFrequency += 1;
+                    }
 
                     int previousMapID = map.currentMapID; // Simpan ID map sebelumnya
 
@@ -281,11 +299,8 @@ public class GamePanel extends JPanel implements Runnable {
                         addMinutes(15);
                         player.setEnergy(player.getEnergy() - 10);
                     } 
-                    transition.startCooldown(); // Mulai cooldown untuk transisi yang baru saja digunakan
+                    transition.startCooldown(); 
 
-                    // Mencegah langsung kembali: terapkan cooldown pada transisi yang mengarah
-                    // kembali
-                    // jika pemain spawn di atasnya.
                     for (TransitionData otherTransition : transitions) {
                         if (otherTransition.sourceMapID == map.currentMapID && // Jika transisi lain ada di map baru
                                 otherTransition.targetMapID == previousMapID) { // Dan mengarah kembali ke map lama
